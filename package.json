@@ -1,0 +1,26 @@
+{
+  "name": "factory-lady"
+, "description": "a factory library for javascript / node.js inspired by factory_girl"
+, "main": "./index"
+, "author": "Peter Jihoon Kim"
+, "version": "0.1.0"
+, "keywords": ["factory", "test", "bdd", "tdd", "fixture"]
+, "repository" : {
+    "type" : "git"
+  , "url" : "http://github.com/petejkim/factory-lady.git"
+  }
+, "bugs" : {
+    "url" : "http://github.com/petejkim/factory-lady/issues"
+  }
+, "licenses" : [
+    { "type" : "MIT"
+    , "url" : "http://github.com/petejkim/factory-lady/raw/master/LICENSE"
+    }
+  ]
+, "dependencies": {}
+, "devDependencies": {
+    "mocha"        : ">= 0.7.1"
+  , "should"       : ">= 0.4.2"
+  }
+}
+
