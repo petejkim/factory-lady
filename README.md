@@ -2,7 +2,7 @@
 
 Factory-lady is a factory library for [Node.js](http://nodejs.org/) / JavaScript inspired by [Factory\_girl](http://github.com/thoughtbot/factory_girl). It works asynchronously and supports lazy attributes as well as associations.
 
-It works as long as `new` keyword is used on the model to instantiate new objects and `save` method is used to persist objects. For example, [Mongoose](http://github.com/LearnBoost/mongoose.git) models follow such convention.
+It works as long as `new` keyword is used on the model to instantiate new objects and `save` method is used to persist objects. For example, [Mongoose](http://github.com/LearnBoost/mongoose) models follow such convention.
 
 ## Installation
 
