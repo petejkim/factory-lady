@@ -3,7 +3,7 @@ var should = require('should');
 var context = describe;
 
 describe('Factory', function() {
-  var Model, Person, Job;
+  var Model, Person, Job, Robot;
 
   before(function() {
     Model = function() {};
@@ -18,6 +18,17 @@ describe('Factory', function() {
 
     Job = function() {};
     Job.prototype = new Model();
+
+    Robot = function() {};
+    Robot.prototype = new Model();
+    Robot.prototype.set = function(attr, val) {
+      this.setterCalled = true;
+      this[attr] = val;
+    };
+    Robot.prototype.get = function(attr) {
+      this.getterCalled = true;
+      return this[attr];
+    };
   });
 
   beforeEach(function() {
@@ -33,6 +44,11 @@ describe('Factory', function() {
     Factory.define('job', Job, {
       title: 'Engineer'
     , company: 'Foobar Inc.'
+    });
+
+    Factory.define('robot', Robot, {
+      name: 'Bender Bending Rodríguez'
+    , title: Factory.assoc('job', 'title')
     });
   });
 
@@ -70,6 +86,39 @@ describe('Factory', function() {
             person.job.company.should.eql('Foobar Inc.');
             person.job.saveCalled.should.be.true;
             person.title.should.eql('Engineer');
+            done();
+          });
+        });
+      });
+
+      context('factory model with getters and setters', function() {
+        before(function() {
+          Factory.setter = 'set';
+          Factory.getter = 'get';
+        });
+
+        after(function() {
+          Factory.getter = Factory.setter = null;
+        });
+
+        it('builds using defined setter', function(done) {
+          Factory.build('robot', function(robot) {
+            (robot instanceof Robot).should.be.true;
+            robot.get('name').should.eql('Bender Bending Rodríguez');
+            robot.get('title').should.eql('Engineer');
+            robot.getterCalled.should.be.true;
+            robot.setterCalled.should.be.true;
+            done();
+          });
+        });
+
+        it('builds assoc. attribute with defined getter', function(done) {
+          Job.prototype.get = function() {
+            return 'calledGetter';
+          };
+          Factory.build('robot', function(robot) {
+            robot.title.should.eql('calledGetter')
+            Job.prototype.get = undefined;
             done();
           });
         });
