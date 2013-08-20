@@ -38,7 +38,8 @@ describe('Factory', function() {
 
   describe('#build', function() {
     it('builds, but does not save the object', function(done) {
-      Factory.build('job', function(job) {
+      Factory.build('job', function(err, job) {
+        if (err) done(err);
         (job instanceof Job).should.be.true;
         job.title.should.eql('Engineer');
         job.company.should.eql('Foobar Inc.');
@@ -48,7 +49,8 @@ describe('Factory', function() {
 
       context('passing attributes as second argument', function() {
         it('sets them', function(done) {
-          Factory.build('job', { title: "Artist", company: "Bazqux Co." }, function(job) {
+          Factory.build('job', { title: "Artist", company: "Bazqux Co." }, function(err, job) {
+            if (err) done(err);
             (job instanceof Job).should.be.true;
             job.title.should.eql('Artist');
             job.company.should.eql('Bazqux Co.');
@@ -60,7 +62,8 @@ describe('Factory', function() {
 
       context('factory containing an association', function() {
         it('is able to handle that', function(done) {
-          Factory.build('person', { age: 30 }, function(person) {
+          Factory.build('person', { age: 30 }, function(err, person) {
+            if (err) done(err);
             (person instanceof Person).should.be.true;
             person.should.not.have.property('saveCalled');
             person.name.should.eql('person 1');
@@ -79,7 +82,8 @@ describe('Factory', function() {
 
   describe('#create', function() {
     it('builds and saves the object', function(done) {
-      Factory.create('job', function(job) {
+      Factory.create('job', function(err, job) {
+        if (err) done(err);
         (job instanceof Job).should.be.true;
         job.title.should.eql('Engineer');
         job.company.should.eql('Foobar Inc.');
@@ -90,7 +94,8 @@ describe('Factory', function() {
 
     context('passing attributes as second argument', function() {
       it('sets them', function(done) {
-        Factory.create('job', { title: "Artist", company: "Bazqux Co." }, function(job) {
+        Factory.create('job', { title: "Artist", company: "Bazqux Co." }, function(err, job) {
+          if (err) done(err);
           (job instanceof Job).should.be.true;
           job.title.should.eql('Artist');
           job.company.should.eql('Bazqux Co.');
@@ -102,7 +107,8 @@ describe('Factory', function() {
 
     context('Factory(...) instead of Factory.create(...)', function() {
       it('is aliased, so it does the same thing as #create', function(done) {
-        Factory('job', function(job) {
+        Factory('job', function(err, job) {
+          if (err) done(err);
           (job instanceof Job).should.be.true;
           job.title.should.eql('Engineer');
           job.company.should.eql('Foobar Inc.');
