@@ -99,6 +99,12 @@ Factory 'post', (post) ->
   # same as Factory.create
 ```
 
+## Running tests:
+
+```npm i
+node ./node_modules/mocha/bin/mocha ./test
+```
+
 ## License
 
 Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
