@@ -28,11 +28,15 @@ describe('Factory', function() {
     , age: 25
     , job: Factory.assoc('job')
     , title: Factory.assoc('job', 'title')
+    , job_description: Factory.assoc('job', 'description')
+    , job_description_alternate: Factory.assoc('job', 'description_alternate')
     });
 
     Factory.define('job', Job, {
       title: 'Engineer'
-    , company: 'Foobar Inc.'
+    , company: function(cb) { cb('Foobar Inc.'); }
+    , description: function(cb) { cb('{{title}} in {{company}}'); }
+    , description_alternate: '{{title}}, {{company}}'
     });
   });
 
@@ -70,6 +74,52 @@ describe('Factory', function() {
             person.job.company.should.eql('Foobar Inc.');
             person.job.saveCalled.should.be.true;
             person.title.should.eql('Engineer');
+            done();
+          });
+        });
+      });
+
+      context('factory containing dependent attribute', function() {
+        it('is able to handle that where dependent attribute is a string', function(done){
+          Factory.build('person', function(person) {
+            (person instanceof Person).should.be.true;
+            (person.job instanceof Job).should.be.true;
+            person.should.not.have.property('saveCalled');
+            person.job.saveCalled.should.be.true;
+            person.job.title.should.eql('Engineer');
+            person.job.company.should.eql('Foobar Inc.');
+            person.job.description_alternate.should.eql('Engineer, Foobar Inc.');
+            person.job_description_alternate.should.eql('Engineer, Foobar Inc.');
+            done();
+          });
+        });
+
+        it('is able to handle that where dependent attribute is a function', function(done){
+          Factory.build('person', function(person) {
+            (person instanceof Person).should.be.true;
+            (person.job instanceof Job).should.be.true;
+            person.should.not.have.property('saveCalled');
+            person.job.saveCalled.should.be.true;
+            person.job.title.should.eql('Engineer');
+            person.job.company.should.eql('Foobar Inc.');
+            person.job.description.should.eql('Engineer in Foobar Inc.');
+            person.job_description.should.eql('Engineer in Foobar Inc.');
+            done();
+          });
+        });
+
+        it('is able to handle that where dependent attribute is passed as argument', function(done){
+          Factory.build('person', { name : 'John Doe, {{title}} - {{age}}' }, function(person) {
+            (person instanceof Person).should.be.true;
+            (person.job instanceof Job).should.be.true;
+            person.should.not.have.property('saveCalled');
+            person.job.saveCalled.should.be.true;
+            person.name.should.eql('John Doe, Engineer - 25');
+            person.title.should.eql('Engineer');
+            person.job.title.should.eql('Engineer');
+            person.job.company.should.eql('Foobar Inc.');
+            person.job.description.should.eql('Engineer in Foobar Inc.');
+            person.job_description.should.eql('Engineer in Foobar Inc.');
             done();
           });
         });
