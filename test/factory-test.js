@@ -32,7 +32,7 @@ describe('Factory', function() {
 
     Factory.define('job', Job, {
       title: 'Engineer'
-    , company: 'Foobar Inc.'
+    , company: function() { return 'Foobar Inc.' }
     });
   });
 
