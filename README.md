@@ -1,8 +1,8 @@
 # factory-girl
 
-`factory-girl` is a factory library for [Node.js](http://nodejs.org/) / JavaScript inspired by [Factory\_girl](http://github.com/thoughtbot/factory_girl). It works asynchronously and supports lazy attributes as well as associations.
+`factory-girl` is a factory library for [Node.js](http://nodejs.org/) and the browser that is inspired by [Factory\_girl](http://github.com/thoughtbot/factory_girl). It works asynchronously and supports associations and the use of functions for generating attributes.
 
-It is based on [factory-lady](https://github.com/petejkim/factory-lady), but uses an adapter to talk to your models (and doesn't use `throw` for errors that might occur during save).
+It started out as a fork of [factory-lady](https://github.com/petejkim/factory-lady), but the fork deviated quite a bit. This module uses an adapter to talk to your models so it can support different ORMs such as [Bookshelf](https://github.com/aexmachina/factory-girl-bookshelf) and [Sequelize](https://github.com/aexmachina/factory-girl-sequelize) (and doesn't use `throw` for errors that might occur during save).
 
 ## Installation
 
@@ -12,7 +12,7 @@ Node.js:
 npm install factory-girl
 ```
 
-To use `factory-girl` in the browser or other JavaScript environments, just include `index.js`.
+To use `factory-girl` in the browser or other JavaScript environments, just include `index.js` and access `window.Factory`.
 
 ## Defining Factories
 
@@ -26,16 +26,28 @@ var factory = require('factory-lady'),
 var emailCounter = 1;
 
 factory.define('user', User, {
-  email    : function() { return 'user' + emailCounter++ + '@example.com'; }, // lazy attribute
-  async    : function(cb) { somethingAsync(cb); }, // async lazy attribute
-  state    : 'activated',
-  password : '123456'
+  state: 'activated',
+  // define attributes using functions
+  email: function() {
+    return 'user' + emailCounter++ + '@example.com';
+  },
+  // or using async functions by accepting a callback
+  async: function(callback) {
+    somethingAsync(callback);
+  },
+  password: '123456'
 });
 
 factory.define('post', Post, {
-  user_id  : factory.assoc('user', 'id') // simply factory.assoc('user') for user object itself,
-  subject  : 'Hello World',
-  content  : 'Lorem ipsum dolor sit amet...'
+  // create associations using factory.assoc(model, attr)
+  // or factory.assoc('user') for user object itself
+  user_id: factory.assoc('user', 'id'),
+  subject: 'Hello World',
+  content: 'Lorem ipsum dolor sit amet...',
+  // you can refer to other attributes using `this`
+  slug: function() {
+    return slugify(this.subject);
+  }
 });
 ```
 

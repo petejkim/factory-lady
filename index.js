@@ -13,6 +13,9 @@
       userAttrs = {};
     }
 
+    if (!factories[name]) {
+      return callback(new Error("No factory defined for model '" + name + "'"));
+    }
     factory.build(name, userAttrs, function(err, doc) {
       var model = factories[name].model;
       factory.adapterFor(name).save(doc, model, function(err) {
@@ -36,6 +39,9 @@
       userAttrs = {};
     }
 
+    if (!factories[name]) {
+      return callback(new Error("No factory defined for model '" + name + "'"));
+    }
     var model = factories[name].model;
     var attrs = copy(factories[name].attributes);
     merge(attrs, userAttrs);
@@ -44,11 +50,11 @@
       var fn = attrs[key];
       if (typeof fn === 'function') {
         if (!fn.length) {
-          attrs[key] = fn();
+          attrs[key] = fn.call(attrs);
           cb();
         }
         else {
-          fn(function(err, value) {
+          fn.call(attrs, function(err, value) {
             if (err) return cb(err);
             attrs[key] = value;
             cb();
@@ -88,6 +94,22 @@
     }
     else {
       defaultAdapter = adapter;
+    }
+  }
+
+  factory.promisify = function(promiseLibrary) {
+    var promisified = {};
+    for (var i in factory) {
+      promisified[i] = factory[i];
+    }
+    var promisify = promiseLibrary.promisify || promiseLibrary.denodeify;
+    if (promisify) {
+      promisified.build = promisify(factory.build);
+      promisified.create = promisify(factory.create);
+      return promisified;
+    }
+    else {
+      throw new Error("No 'promisify' or 'denodeify' method found in supplied promise library");
     }
   }
 
