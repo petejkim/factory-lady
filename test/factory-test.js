@@ -1,8 +1,9 @@
-var Factory = require('..');
-var should = require('should');
-var context = describe;
+/* global describe */
+var factory = require('..'),
+    should = require('should'),
+    context = describe;
 
-describe('Factory', function() {
+describe('factory', function() {
   var Model, Person, Job;
 
   before(function() {
@@ -21,24 +22,28 @@ describe('Factory', function() {
   });
 
   beforeEach(function() {
-    var nameCounter = 1;
-
-    Factory.define('person', Person, {
-      name: function(cb) { cb("person " + nameCounter++); }
-    , age: 25
-    , job: Factory.assoc('job')
-    , title: Factory.assoc('job', 'title')
+    var nameCounter = 1, emailCounter = 1;
+    factory.define('person', Person, {
+      name: function(cb) {
+        process.nextTick(function() { // begone Zalgo!!
+          cb(null, "Person " + nameCounter++);
+        });
+      },
+      email: function() { return "email" + (emailCounter++) + "@noemail.com"; },
+      age: 25,
+      job: factory.assoc('job'),
+      title: factory.assoc('job', 'title')
     });
 
-    Factory.define('job', Job, {
-      title: 'Engineer'
-    , company: 'Foobar Inc.'
+    factory.define('job', Job, {
+      title: 'Engineer',
+      company: 'Foobar Inc.'
     });
   });
 
   describe('#build', function() {
     it('builds, but does not save the object', function(done) {
-      Factory.build('job', function(job) {
+      factory.build('job', function(err, job) {
         (job instanceof Job).should.be.true;
         job.title.should.eql('Engineer');
         job.company.should.eql('Foobar Inc.');
@@ -48,7 +53,7 @@ describe('Factory', function() {
 
       context('passing attributes as second argument', function() {
         it('sets them', function(done) {
-          Factory.build('job', { title: "Artist", company: "Bazqux Co." }, function(job) {
+          factory.build('job', { title: "Artist", company: "Bazqux Co." }, function(err, job) {
             (job instanceof Job).should.be.true;
             job.title.should.eql('Artist');
             job.company.should.eql('Bazqux Co.');
@@ -60,10 +65,10 @@ describe('Factory', function() {
 
       context('factory containing an association', function() {
         it('is able to handle that', function(done) {
-          Factory.build('person', { age: 30 }, function(person) {
+          factory.build('person', { age: 30 }, function(err, person) {
             (person instanceof Person).should.be.true;
             person.should.not.have.property('saveCalled');
-            person.name.should.eql('person 1');
+            person.name.should.eql('Person 1');
             person.age.should.eql(30);
             (person.job instanceof Job).should.be.true;
             person.job.title.should.eql('Engineer');
@@ -79,7 +84,7 @@ describe('Factory', function() {
 
   describe('#create', function() {
     it('builds and saves the object', function(done) {
-      Factory.create('job', function(job) {
+      factory.create('job', function(err, job) {
         (job instanceof Job).should.be.true;
         job.title.should.eql('Engineer');
         job.company.should.eql('Foobar Inc.');
@@ -90,7 +95,7 @@ describe('Factory', function() {
 
     context('passing attributes as second argument', function() {
       it('sets them', function(done) {
-        Factory.create('job', { title: "Artist", company: "Bazqux Co." }, function(job) {
+        factory.create('job', { title: "Artist", company: "Bazqux Co." }, function(err, job) {
           (job instanceof Job).should.be.true;
           job.title.should.eql('Artist');
           job.company.should.eql('Bazqux Co.');
@@ -100,9 +105,9 @@ describe('Factory', function() {
       });
     });
 
-    context('Factory(...) instead of Factory.create(...)', function() {
+    context('factory(...) instead of factory.create(...)', function() {
       it('is aliased, so it does the same thing as #create', function(done) {
-        Factory('job', function(job) {
+        factory('job', function(err, job) {
           (job instanceof Job).should.be.true;
           job.title.should.eql('Engineer');
           job.company.should.eql('Foobar Inc.');
