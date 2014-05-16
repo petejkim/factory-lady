@@ -85,7 +85,7 @@
   };
 
   factory.adapterFor = function(name) {
-    return adapters.name || defaultAdapter;
+    return adapters[name] || defaultAdapter;
   }
 
   factory.setAdapter = function(adapter, name) {

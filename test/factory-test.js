@@ -93,6 +93,42 @@ describe('factory', function() {
       });
     });
 
+    context('yields errors', function() {
+
+      before(function() {
+        var Faulty = function() {};
+        Faulty.prototype.save = function(callback) {
+          callback(new Error('Save failed'));
+        };
+        factory.define('faulty', Faulty, {});
+      });
+      afterEach(function() {
+        factory.setAdapter(null, 'faulty');
+      });
+
+      it('from the adapter', function(done) {
+        var FaultyAdapter = function() {};
+        FaultyAdapter.prototype = new factory.Adapter();
+        FaultyAdapter.prototype.save = function(doc, Model, cb) {
+          cb(new Error('Save failed'));
+        };
+        factory.setAdapter(new FaultyAdapter(), 'faulty');
+        factory.create('faulty', function(err, faulty) {
+          (err instanceof Error).should.be.true;
+          err.message.should.eql('Save failed');
+          done();
+        });
+      });
+
+      it('from the model', function(done) {
+        factory.create('faulty', function(err, faulty) {
+          (err instanceof Error).should.be.true;
+          err.message.should.eql('Save failed');
+          done();
+        });
+      });
+    });
+
     context('passing attributes as second argument', function() {
       it('sets them', function(done) {
         factory.create('job', { title: "Artist", company: "Bazqux Co." }, function(err, job) {
@@ -117,5 +153,6 @@ describe('factory', function() {
       });
     });
   });
+
 });
 
