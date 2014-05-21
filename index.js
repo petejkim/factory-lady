@@ -1,24 +1,24 @@
 (function() {
   if (typeof module === 'undefined') {
     exports = this.factory = {};
-  }
+  };
 
-  var factories = {};
-  var defaultAdapter = null;
-  var adapters = {};
+  var factories = {},
+      defaultAdapter = null,
+      adapters = {};
 
   var factory = function(name, userAttrs, callback) {
     if (typeof userAttrs === 'function') {
       callback = userAttrs;
       userAttrs = {};
     }
-
     if (!factories[name]) {
       return callback(new Error("No factory defined for model '" + name + "'"));
     }
     factory.build(name, userAttrs, function(err, doc) {
       var model = factories[name].model;
       factory.adapterFor(name).save(doc, model, function(err) {
+        if (!err) factories[name].created.push(doc);
         callback(err, doc);
       });
     });
@@ -29,7 +29,8 @@
   factory.define = function(name, model, attributes) {
     factories[name] = {
       model: model,
-      attributes: attributes
+      attributes: attributes,
+      created: []
     };
   };
 
@@ -66,7 +67,8 @@
       }
     }, function(err) {
       if (err) return callback(err);
-      var doc = factory.adapterFor(name).build(model, attrs);
+      var adapter = factory.adapterFor(name),
+          doc = adapter.build(model, attrs);
       callback(null, doc);
     });
   };
@@ -74,19 +76,15 @@
   factory.assoc = function(name, attr) {
     return function(callback) {
       factory.create(name, function(err, doc) {
-        if (attr) {
-          callback(err, doc[attr]);
-        }
-        else {
-          callback(err, doc);
-        }
+        if (err) return callback(err);
+        callback(null, attr ? doc[attr] : doc);
       });
     };
   };
 
   factory.adapterFor = function(name) {
     return adapters[name] || defaultAdapter;
-  }
+  };
 
   factory.setAdapter = function(adapter, name) {
     if (name) {
@@ -95,7 +93,7 @@
     else {
       defaultAdapter = adapter;
     }
-  }
+  };
 
   factory.promisify = function(promiseLibrary) {
     var promisified = {};
@@ -111,7 +109,17 @@
     else {
       throw new Error("No 'promisify' or 'denodeify' method found in supplied promise library");
     }
-  }
+  };
+
+  factory.cleanup = function(callback) {
+    asyncForEach(keys(factories), function(name, cb1) {
+      var model = factories[name].model,
+          adapter = factory.adapterFor(name);
+      asyncForEach(factories[name].created, function(doc, cb2) {
+        adapter.destroy(doc, model, cb2);
+      }, cb1);
+    }, callback);
+  };
 
   var Adapter = function() {};
   factory.Adapter = Adapter;
@@ -131,6 +139,9 @@
   Adapter.prototype.save = function(doc, Model, cb) {
     doc.save(cb);
   };
+  Adapter.prototype.destroy = function(doc, Model, cb) {
+    doc.destroy(cb);
+  };
   defaultAdapter = new Adapter();
 
   function merge(obj1, obj2) {
@@ -143,14 +154,14 @@
       }
     }
     return obj1;
-  }
+  };
   function copy(obj) {
     var newObj = {};
     if (obj) {
       merge(newObj, obj);
     }
     return newObj;
-  }
+  };
   function keys(obj) {
     var keys = [], key;
     for (key in obj) {
@@ -159,21 +170,20 @@
       }
     }
     return keys;
-  }
-  var asyncForEach = function(array, handler, callback) {
-    var length = array.length, index = -1;
-
-    var processNext = function(err) {
+  };
+  function asyncForEach(array, handler, callback) {
+    var length = array.length,
+        index = -1;
+    function processNext(err) {
       if (err) return callback(err);
       index++;
       if (index < length) {
-        var item = array[index];
-        handler(item, processNext);
-      } else {
-        callback();
+        handler(array[index], processNext);
+      }
+      else {
+        callback && callback();
       }
     };
-
     processNext();
   };
 

@@ -13,9 +13,13 @@ describe('factory', function() {
       this.saveCalled = true;
       callback();
     };
+    Model.prototype.destroy = function(callback) {
+      this.destroyCalled = true;
+      callback();
+    };
 
     Person = function() {};
-    Person.protoype = new Model();
+    Person.prototype = new Model();
 
     Job = function() {};
     Job.prototype = new Model();
@@ -25,11 +29,13 @@ describe('factory', function() {
     var nameCounter = 1, emailCounter = 1;
     factory.define('person', Person, {
       name: function(cb) {
-        process.nextTick(function() { // begone Zalgo!!
+        process.nextTick(function() { // Zalgo begone!!
           cb(null, "Person " + nameCounter++);
         });
       },
-      email: function() { return "email" + (emailCounter++) + "@noemail.com"; },
+      email: function() {
+        return "email" + (emailCounter++) + "@noemail.com";
+      },
       age: 25,
       job: factory.assoc('job'),
       title: factory.assoc('job', 'title')
@@ -68,7 +74,7 @@ describe('factory', function() {
           factory.build('person', { age: 30 }, function(err, person) {
             (person instanceof Person).should.be.true;
             person.should.not.have.property('saveCalled');
-            person.name.should.eql('Person 1');
+            person.name.should.eql('Person 2');
             person.age.should.eql(30);
             (person.job instanceof Job).should.be.true;
             person.job.title.should.eql('Engineer');
@@ -149,6 +155,21 @@ describe('factory', function() {
           job.company.should.eql('Foobar Inc.');
           job.saveCalled.should.be.true;
           done();
+        });
+      });
+    });
+  });
+
+  describe('#cleanup', function() {
+    it('removes created models', function(done) {
+      factory.create('person', function(err, person) {
+        factory.create('job', function(err, job) {
+          factory.cleanup(function(err) {
+            person.destroyCalled.should.be.true;
+            person.job.destroyCalled.should.be.true;
+            job.destroyCalled.should.be.true;
+            done(err);            
+          });
         });
       });
     });
