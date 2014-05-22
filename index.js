@@ -5,7 +5,8 @@
 
   var factories = {},
       defaultAdapter = null,
-      adapters = {};
+      adapters = {},
+      created = [];
 
   var factory = function(name, userAttrs, callback) {
     if (typeof userAttrs === 'function') {
@@ -18,7 +19,7 @@
     factory.build(name, userAttrs, function(err, doc) {
       var model = factories[name].model;
       factory.adapterFor(name).save(doc, model, function(err) {
-        if (!err) factories[name].created.push(doc);
+        if (!err) created.push([name, doc]);
         callback(err, doc);
       });
     });
@@ -29,8 +30,7 @@
   factory.define = function(name, model, attributes) {
     factories[name] = {
       model: model,
-      attributes: attributes,
-      created: []
+      attributes: attributes
     };
   };
 
@@ -109,14 +109,14 @@
   };
 
   factory.cleanup = function(callback) {
-    asyncForEach(keys(factories), function(name, cb1) {
-      var model = factories[name].model,
-          adapter = factory.adapterFor(name);
-      asyncForEach(factories[name].created, function(doc, cb2) {
-        adapter.destroy(doc, model, cb2);
-      }, cb1);
-      factories[name].created = [];
+    asyncForEach(created.reverse(), function(tuple, cb) {
+      var name = tuple[0],
+          doc = tuple[1],
+          adapter = factory.adapterFor(name),
+          model = factories[name].model;
+      adapter.destroy(doc, model, cb);
     }, callback);
+    created = [];
   };
 
   var Adapter = function() {};
