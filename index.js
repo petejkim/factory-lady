@@ -96,19 +96,16 @@
   };
 
   factory.promisify = function(promiseLibrary) {
+    var promisify = promiseLibrary.promisify || promiseLibrary.denodeify;
+    if (!promisify) throw new Error("No 'promisify' or 'denodeify' method found in supplied promise library");
     var promisified = {};
     for (var i in factory) {
       promisified[i] = factory[i];
     }
-    var promisify = promiseLibrary.promisify || promiseLibrary.denodeify;
-    if (promisify) {
-      promisified.build = promisify(factory.build);
-      promisified.create = promisify(factory.create);
-      return promisified;
-    }
-    else {
-      throw new Error("No 'promisify' or 'denodeify' method found in supplied promise library");
-    }
+    promisified.build = promisify(factory.build);
+    promisified.create = promisify(factory.create);
+    promisified.cleanup = promisify(factory.cleanup);
+    return promisified;
   };
 
   factory.cleanup = function(callback) {
@@ -118,6 +115,7 @@
       asyncForEach(factories[name].created, function(doc, cb2) {
         adapter.destroy(doc, model, cb2);
       }, cb1);
+      factories[name].created = [];
     }, callback);
   };
 
@@ -139,6 +137,9 @@
   Adapter.prototype.save = function(doc, Model, cb) {
     doc.save(cb);
   };
+  /**
+    Be aware that the model may have already been destroyed
+   */
   Adapter.prototype.destroy = function(doc, Model, cb) {
     doc.destroy(cb);
   };
