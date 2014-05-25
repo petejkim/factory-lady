@@ -18,8 +18,6 @@ To use `factory-girl` in the browser or other JavaScript environments, just incl
 
 ## Defining Factories
 
-JavaScript:
-
 ```javascript
 var factory = require('factory-lady'),
     User    = require('../../app/models/user'),
@@ -28,7 +26,7 @@ var factory = require('factory-lady'),
 var emailCounter = 1;
 
 factory.define('user', User, {
-  state: 'activated',
+  state: 'active',
   // define attributes using functions
   email: function() {
     return 'user' + emailCounter++ + '@example.com';
@@ -39,19 +37,20 @@ factory.define('user', User, {
   },
   password: '123456'
 });
+console.log(factory.build('user')); => {state: 'active', email: 'user1@example.com', async: 'foo', password: '123456'}
 
 factory.define('post', Post, {
   // create associations using factory.assoc(model, attr)
   // or factory.assoc('user') for user object itself
   user_id: factory.assoc('user', 'id'),
   subject: 'Hello World',
-  content: 'Lorem ipsum dolor sit amet...',
   // you can refer to other attributes using `this`
   slug: function() {
     return slugify(this.subject);
   }
 });
 ```
+console.log(factory.build('post')); => {user_id: 123, subject: 'Hello World', slug: 'hello-world'}
 
 ## Using Factories
 
