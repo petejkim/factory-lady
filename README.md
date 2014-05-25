@@ -49,8 +49,8 @@ factory.define('post', Post, {
     return slugify(this.subject);
   }
 });
-```
 console.log(factory.build('post')); => {user_id: 123, subject: 'Hello World', slug: 'hello-world'}
+```
 
 ## Using Factories
 
