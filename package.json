@@ -1,10 +1,9 @@
 {
   "name": "factory-girl",
-  "version": "0.1.5",
   "description": "A factory library for javascript / node.js inspired by factory_girl",
   "main": "./index",
   "author": "Simon Wade",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "keywords": ["factory", "test", "bdd", "tdd", "fixture"],
   "repository" : {
     "type" : "git"
