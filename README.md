@@ -54,8 +54,6 @@ console.log(factory.build('post')); => {user_id: 123, subject: 'Hello World', sl
 
 ## Using Factories
 
-JavaScript:
-
 ```javascript
 factory.build('post', function(err, post) {
   // post is a Post instance that is not saved
