@@ -3,28 +3,33 @@
   "description": "A factory library for Node.js and JavaScript inspired by factory_girl",
   "main": "./index",
   "author": "Simon Wade",
-  "version": "0.1.6",
-  "keywords": ["factory", "test", "bdd", "tdd", "fixture"],
-  "repository" : {
-    "type" : "git"
-  , "url" : "http://github.com/aexmachina/factory-girl.git"
+  "version": "0.2.0",
+  "keywords": [
+    "factory",
+    "test",
+    "bdd",
+    "tdd",
+    "fixture"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aexmachina/factory-girl.git"
   },
-  "bugs" : {
-    "url" : "http://github.com/aexmachina/factory-girl/issues"
+  "bugs": {
+    "url": "http://github.com/aexmachina/factory-girl/issues"
   },
-  "licenses" : [
+  "licenses": [
     {
-      "type" : "MIT",
-      "url" : "http://github.com/aexmachina/factory-girl/raw/master/LICENSE"
+      "type": "MIT",
+      "url": "http://github.com/aexmachina/factory-girl/raw/master/LICENSE"
     }
   ],
   "dependencies": {},
   "devDependencies": {
-    "mocha"        : ">= 0.7.1",
-    "should"       : ">= 0.4.2"
+    "mocha": ">= 0.7.1",
+    "should": ">= 0.4.2"
   },
   "scripts": {
     "test": "make test"
   }
 }
-
