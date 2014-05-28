@@ -1,4 +1,4 @@
-/* global describe */
+/* global describe, beforeEach, afterEach */
 var factory = require('..'),
     should = require('should'),
     context = describe;
@@ -156,6 +156,88 @@ describe('factory', function() {
           job.saveCalled.should.be.true;
           done();
         });
+      });
+    });
+  });
+
+  describe('#buildMany', function() {
+    it('builds a given set of objects', function (done) {
+      var attrsArray = [{title: 'Scientist'}, {}];
+      factory.buildMany('job', attrsArray, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(2);
+        var job = jobs[0];
+        (job instanceof Job).should.be.true;
+        job.title.should.eql('Scientist');
+        job.should.not.have.property('saveCalled');
+        jobs[1].title.should.eql('Engineer');
+        done();
+      });
+    });
+    it('builds more than the given set of objects', function (done) {
+      var attrsArray = [{title: 'Scientist'}, {}];
+      factory.buildMany('job', attrsArray, 10, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(10);
+        var job = jobs[0];
+        (job instanceof Job).should.be.true;
+        job.title.should.eql('Scientist');
+        jobs[9].title.should.eql('Engineer');
+        done();
+      });
+    });
+    it('builds a number of objects', function (done) {
+      factory.buildMany('job', 10, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(10);
+        var job = jobs[0];
+        (job instanceof Job).should.be.true;
+        jobs[9].title.should.eql('Engineer');
+        done();
+      });
+    });
+  });
+
+  describe('#createMany', function() {
+    it('creates a given set of objects', function (done) {
+      var attrsArray = [{title: 'Scientist'}, {}];
+      debugger;
+
+      factory.createMany('job', attrsArray, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(2);
+        var job = jobs[0];
+        (job instanceof Job).should.be.true;
+        job.title.should.eql('Scientist');
+        job.saveCalled.should.be.true;
+        jobs[1].title.should.eql('Engineer');
+        jobs[1].saveCalled.should.be.true;
+        done();
+      });
+    });
+    it('creates more than the given set of objects', function (done) {
+      var attrsArray = [{title: 'Scientist'}];
+      factory.createMany('job', attrsArray, 10, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(10);
+        var job = jobs[0];
+        (job instanceof Job).should.be.true;
+        job.saveCalled.should.be.true;
+        job.title.should.eql('Scientist');
+        jobs[9].title.should.eql('Engineer');
+        done();
+      });
+    });
+    it('creates a number of objects', function (done) {
+      factory.createMany('job', 10, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(10);
+        var job = jobs[0];
+        (job instanceof Job).should.be.true;
+        job.saveCalled.should.be.true;
+        job.title.should.eql('Engineer');
+        jobs[9].title.should.eql('Engineer');
+        done();
       });
     });
   });

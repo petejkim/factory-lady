@@ -72,6 +72,20 @@ factory('post', function(err, post) {
 });
 ```
 
+### `buildMany` and `createMany`
+
+```
+factory.buildMany('post', 10, function(err, posts) {
+  // build 10 posts
+});
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], function(err, posts) {
+  // build 2 posts using the specified attributes
+});
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, posts) {
+  // build 10 posts using the specified attributes for the first and second
+});
+```
+
 ## License
 
 Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
