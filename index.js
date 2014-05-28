@@ -164,6 +164,8 @@
     }
     promisified.build = promisify(factory.build);
     promisified.create = promisify(factory.create);
+    promisified.buildMany = promisify(factory.buildMany);
+    promisified.createMany = promisify(factory.createMany);
     promisified.cleanup = promisify(factory.cleanup);
     return promisified;
   };
