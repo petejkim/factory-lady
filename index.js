@@ -121,9 +121,9 @@
 
     function _buildMany(args) {
       var results = [];
-      asyncForEach(args.attrsArray, function(attrs, cb) {
+      asyncForEach(args.attrsArray, function(attrs, cb, index) {
         factory.build(args.name, attrs, function(err, doc) {
-          if (!err) results.push(doc);
+          if (!err) results[index] = doc;
           cb(err);
         });
       }, function(err) {
@@ -160,9 +160,9 @@
       callback = args.callback;
       args.callback = function(err, docs) {
         if (err) return args.callback(err);
-        asyncForEach(docs, function(doc, cb) {
+        asyncForEach(docs, function(doc, cb, index) {
           save(name, doc, function(err) {
-            if (!err) results.push(doc);
+            if (!err) results[index] = doc;
             cb(err);
           });
         }, function(err) {
@@ -233,6 +233,7 @@
   module.exports = new Factory();
   module.exports.Adapter = Adapter;
   module.exports.Factory = Factory;
+  module.exports.ObjectAdapter = require('./lib/object-adapter');
 
   function merge(obj1, obj2) {
     if (obj1 && obj2) {
@@ -268,7 +269,7 @@
       if (err) return callback(err);
       index++;
       if (index < length) {
-        handler(array[index], processNext);
+        handler(array[index], processNext, index);
       }
       else {
         callback && callback();

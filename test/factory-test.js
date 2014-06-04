@@ -263,11 +263,10 @@ describe('factory', function() {
     });
   });
 
-  describe('ObjectAdapter class', function() {
+  describe('ObjectAdapter', function() {
     it('can be used to return raw objects', function() {
-      var another = new factory.Factory(),
-          ObjectAdapter = require('../lib/object-adapter');
-      another.setAdapter(new ObjectAdapter(), 'anotherModel');
+      var another = new factory.Factory();
+      another.setAdapter(new factory.ObjectAdapter(), 'anotherModel');
       another.define('anotherModel', Job, {
         title: 'Scientist',
         company: 'Foobar Inc.'
