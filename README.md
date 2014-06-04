@@ -66,10 +66,6 @@ factory.build('post', {title: 'Foo', content: 'Bar'}, function(err, post) {
 factory.create('post', function(err, post) {
   // post is a saved Post instance
 });
-
-factory('post', function(err, post) {
-  // same as factory.create
-});
 ```
 
 ### `buildMany` and `createMany`
@@ -84,6 +80,18 @@ factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], function(err, posts)
 factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, posts) {
   // build 10 posts using the specified attributes for the first and second
 });
+```
+
+## Creating new Factories and Adapters
+
+```javascript
+var anotherFactory = new factory.Factory();
+var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
+anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
+
+// the ObjectAdapter simply returns raw objects
+var ObjectAdapter = require('factory-girl/lib/object-adapter');
+anotherFactory.setAdapter(ObjectAdapter, 'post'); // use the ObjectAdapter for posts
 ```
 
 ## License

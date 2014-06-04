@@ -74,7 +74,7 @@ describe('factory', function() {
           factory.build('person', { age: 30 }, function(err, person) {
             (person instanceof Person).should.be.true;
             person.should.not.have.property('saveCalled');
-            person.name.should.eql('Person 2');
+            person.name.should.eql('Person 1');
             person.age.should.eql(30);
             (person.job instanceof Job).should.be.true;
             person.job.title.should.eql('Engineer');
@@ -147,17 +147,6 @@ describe('factory', function() {
       });
     });
 
-    context('factory(...) instead of factory.create(...)', function() {
-      it('is aliased, so it does the same thing as #create', function(done) {
-        factory('job', function(err, job) {
-          (job instanceof Job).should.be.true;
-          job.title.should.eql('Engineer');
-          job.company.should.eql('Foobar Inc.');
-          job.saveCalled.should.be.true;
-          done();
-        });
-      });
-    });
   });
 
   describe('#buildMany', function() {
@@ -253,6 +242,38 @@ describe('factory', function() {
             done(err);            
           });
         });
+      });
+    });
+  });
+
+  describe('Factory class', function() {
+    it('can be used to create new Factories', function() {
+      var another = new factory.Factory();
+      another.should.not.eql(factory);
+      another.define('anotherModel', Job, {
+        title: 'Scientist',
+        company: 'Foobar Inc.'
+      });
+      another.build('anotherModel', function(err, job) {
+        job.title.should.eql('Scientist');
+      });
+      factory.build('anotherModel', function(err) {
+        should.exist(err);
+      });
+    });
+  });
+
+  describe('ObjectAdapter class', function() {
+    it('can be used to return raw objects', function() {
+      var another = new factory.Factory(),
+          ObjectAdapter = require('../lib/object-adapter');
+      another.setAdapter(new ObjectAdapter(), 'anotherModel');
+      another.define('anotherModel', Job, {
+        title: 'Scientist',
+        company: 'Foobar Inc.'
+      });
+      another.build('anotherModel', function(err, job) {
+        job.constructor.should.eql(Object);
       });
     });
   });
