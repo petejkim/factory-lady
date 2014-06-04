@@ -25,6 +25,7 @@ var factory = require('factory-lady'),
 
 var emailCounter = 1;
 
+// define a factory using define()
 factory.define('user', User, {
   state: 'active',
   // define attributes using functions
@@ -70,7 +71,9 @@ factory.create('post', function(err, post) {
 
 ### `buildMany` and `createMany`
 
-```
+Allow you to create a number of models at once.
+
+```javascript
 factory.buildMany('post', 10, function(err, posts) {
   // build 10 posts
 });
@@ -80,6 +83,16 @@ factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], function(err, posts)
 factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, posts) {
   // build 10 posts using the specified attributes for the first and second
 });
+// factory.createMany takes the same arguments as buildMany, but returns saved models
+```
+
+### `buildSync`
+
+When you have factories that don't use async property functions, you can use `buildSync()`. 
+Be aware that `assoc()` is an async function, so it can't be used with `buildSync()`.
+
+```javascript
+var doc = factory.buildSync('post', {title: 'Foo'});
 ```
 
 ## Creating new Factories and Adapters
@@ -90,7 +103,7 @@ var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
 anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
 
 // the ObjectAdapter simply returns raw objects
-var ObjectAdapter = require('factory-girl/lib/object-adapter');
+var ObjectAdapter = factory.ObjectAdapter;
 anotherFactory.setAdapter(ObjectAdapter, 'post'); // use the ObjectAdapter for posts
 ```
 

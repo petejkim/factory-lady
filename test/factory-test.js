@@ -278,5 +278,49 @@ describe('factory', function() {
     });
   });
 
+  describe('#buildSync', function() {
+    var Post;
+    beforeEach(function() {
+      Post = function() {};
+      Post.prototype = new Model();
+      factory.define('post', Post, {
+        heading: 'The Importance of Being Ernest',
+        title: function() {
+          return this.heading;
+        }
+      });
+    });
+
+    it('builds, but does not save the object', function() {
+      var post = factory.buildSync('post');
+      (post instanceof Post).should.be.true;
+      post.heading.should.eql('The Importance of Being Ernest');
+      post.should.not.have.property('saveCalled');
+    });
+
+    context('passing attributes as second argument', function() {
+      it('sets them', function() {
+        var post = factory.buildSync('post', { title: "Bazqux Co." });
+        (post instanceof Post).should.be.true;
+        post.heading.should.eql('The Importance of Being Ernest');
+        post.title.should.eql('Bazqux Co.');
+        post.should.not.have.property('saveCalled');
+      });
+    });
+
+    it('allows synchronous function properties', function() {
+      var post = factory.buildSync('post');
+      (post instanceof Post).should.be.true;
+      post.title.should.eql('The Importance of Being Ernest');
+    });
+
+    it('throws if the factory has async properties', function() {
+      (function() {
+        factory.buildSync('person');
+      }).should.throw();
+    });
+
+  });
+
 });
 

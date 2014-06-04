@@ -72,6 +72,26 @@
       });
     };
 
+    factory.buildSync = function(name, attrs) {
+      if (!factories[name]) {
+        throw new Error("No factory defined for model '" + name + "'");
+      }
+      var model = factories[name].model;
+      attrs = merge(copy(factories[name].attributes), attrs);
+      var names = keys(attrs);
+      for (var i = 0; i < names.length; i++) {
+        var key = names[i], fn = attrs[key];
+        if (typeof fn == 'function') {
+          if (fn.length) {
+            throw new Error("buildSync only supports synchronous property functions (with no arguments): the function for '" + name + "." + key + "' expects " + fn.length + " arguments");
+          }
+          attrs[key] = fn.call(attrs);
+        }
+      }
+      var adapter = factory.adapterFor(name);
+      return adapter.build(model, attrs);
+    };
+
     factory.assoc = function(name, attr) {
       return function(callback) {
         factory.create(name, function(err, doc) {
