@@ -4,7 +4,7 @@
 
 `factory-girl` is a factory library for [Node.js](http://nodejs.org/) and the browser that is inspired by [Factory\_girl](http://github.com/thoughtbot/factory_girl). It works asynchronously and supports associations and the use of functions for generating attributes.
 
-It started out as a fork of [factory-lady](https://github.com/petejkim/factory-lady), but the fork deviated quite a bit. This module uses an adapter to talk to your models so it can support different ORMs such as [Bookshelf](https://github.com/aexmachina/factory-girl-bookshelf) and [Sequelize](https://github.com/aexmachina/factory-girl-sequelize) (and doesn't use `throw` for errors that might occur during save).
+It started out as a fork of [factory-lady](https://github.com/petejkim/factory-lady), but the fork deviated quite a bit. This module uses an adapter to talk to your models so it can support different ORMs such as [Bookshelf](https://github.com/aexmachina/factory-girl-bookshelf),  [Sequelize](https://github.com/aexmachina/factory-girl-sequelize), and [JugglingDB](https://github.com/rehanift/factory-girl-jugglingdb) (and doesn't use `throw` for errors that might occur during save).
 
 ## Installation
 
