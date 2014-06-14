@@ -18,7 +18,7 @@ To use `factory-girl` in the browser or other JavaScript environments, just incl
 
 ## Defining Factories
 
-```javascript
+```
 var factory = require('factory-lady'),
     User    = require('../../app/models/user'),
     Post    = require('../../app/models/post');
@@ -55,7 +55,7 @@ console.log(factory.build('post')); => {user_id: 123, subject: 'Hello World', sl
 
 ## Using Factories
 
-```javascript
+```
 factory.build('post', function(err, post) {
   // post is a Post instance that is not saved
 });
@@ -73,7 +73,7 @@ factory.create('post', function(err, post) {
 
 Allow you to create a number of models at once.
 
-```javascript
+```
 factory.buildMany('post', 10, function(err, posts) {
   // build 10 posts
 });
@@ -83,6 +83,9 @@ factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], function(err, posts)
 factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, posts) {
   // build 10 posts using the specified attributes for the first and second
 });
+factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
+  // build 10 posts using the specified attributes for all of them
+});
 // factory.createMany takes the same arguments as buildMany, but returns saved models
 ```
 
@@ -91,13 +94,13 @@ factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, po
 When you have factories that don't use async property functions, you can use `buildSync()`. 
 Be aware that `assoc()` is an async function, so it can't be used with `buildSync()`.
 
-```javascript
+```
 var doc = factory.buildSync('post', {title: 'Foo'});
 ```
 
 ## Creating new Factories and Adapters
 
-```javascript
+```
 var anotherFactory = new factory.Factory();
 var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
 anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter

@@ -185,13 +185,22 @@ describe('factory', function() {
         done();
       });
     });
+    it('builds a number of objects with the same attrs', function (done) {
+      factory.buildMany('job', {title: 'Scientist'}, 10, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(10);
+        var job = jobs[0];
+        (job instanceof Job).should.be.true;
+        job.title.should.eql('Scientist');
+        jobs[9].title.should.eql('Scientist');
+        done();
+      });
+    });
   });
 
   describe('#createMany', function() {
     it('creates a given set of objects', function (done) {
       var attrsArray = [{title: 'Scientist'}, {}];
-      debugger;
-
       factory.createMany('job', attrsArray, function (err, jobs) {
         if (err) return done(err);
         jobs.length.should.eql(2);

@@ -132,13 +132,21 @@
     }
 
     function parseBuildManyArgs(name, attrsArray, num, callback) {
-      if (typeof num == 'function') { // name, attrsArray, callback
+      if (typeof num == 'function') { // name, Array, callback
         callback = num;
         num = attrsArray.length;
       }
       if (typeof attrsArray == 'number') { // name, num, callback
         num = attrsArray;
         attrsArray = null;
+      }
+      if (!(attrsArray instanceof Array)) { // name, Object, num, callback
+        if (typeof num != 'number') throw new Error("num must be specified when attrsArray is not an array");
+        var attrs = attrsArray;
+        attrsArray = new Array(num);
+        for (var i = 0; i < num; i++) {
+          attrsArray[i] = attrs;
+        }
       }
       if (!attrsArray) {
         attrsArray = new Array(num);
