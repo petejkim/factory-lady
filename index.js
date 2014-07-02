@@ -15,6 +15,7 @@
         return callback(new Error("No factory defined for model '" + name + "'"));
       }
       factory.build(name, attrs, function(err, doc) {
+        if(err) return callback(err);
         save(name, doc, callback);
       });
     };
