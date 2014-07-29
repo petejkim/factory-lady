@@ -167,7 +167,7 @@
           results = [];
       callback = args.callback;
       args.callback = function(err, docs) {
-        if (err) return args.callback(err);
+        if (err) return callback(err);
         asyncForEach(docs, function(doc, cb, index) {
           save(name, doc, function(err) {
             if (!err) results[index] = doc;
