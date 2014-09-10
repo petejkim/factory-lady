@@ -19,7 +19,7 @@ To use `factory-girl` in the browser or other JavaScript environments, just incl
 ## Defining Factories
 
 ```
-var factory = require('factory-lady'),
+var factory = require('factory-girl'),
     User    = require('../../app/models/user'),
     Post    = require('../../app/models/post');
 
