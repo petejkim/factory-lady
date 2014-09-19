@@ -14,7 +14,7 @@ Node.js:
 npm install factory-girl
 ```
 
-To use `factory-girl` in the browser or other JavaScript environments, just include `index.js` and access `window.Factory`.
+Also works in the browser or other JavaScript environments.
 
 ## Defining Factories
 
@@ -27,49 +27,48 @@ var emailCounter = 1;
 
 // define a factory using define()
 factory.define('user', User, {
+  // define attributes using properties
   state: 'active',
-  // define attributes using functions
+  // ...or functions
   email: function() {
-    return 'user' + emailCounter++ + '@example.com';
+    return 'user' + emailCounter++ + '@demo.com';
   },
-  // or using async functions by accepting a callback
+  // provide async functions by accepting a callback
   async: function(callback) {
     somethingAsync(callback);
-  },
-  password: '123456'
+  }
 });
-console.log(factory.build('user')); => {state: 'active', email: 'user1@example.com', async: 'foo', password: '123456'}
+console.log(factory.build('user')); => {state: 'active', email: 'user1@demo.com', async: 'foo'}
 
 factory.define('post', Post, {
   // create associations using factory.assoc(model, attr)
-  // or factory.assoc('user') for user object itself
-  user_id: factory.assoc('user', 'id'),
+  user_id: factory.assoc('user', 'id'), // or factory.assoc('user') returns the user object
   subject: 'Hello World',
   // you can refer to other attributes using `this`
   slug: function() {
     return slugify(this.subject);
   }
 });
-console.log(factory.build('post')); => {user_id: 123, subject: 'Hello World', slug: 'hello-world'}
+console.log(factory.build('post')); => {user_id: 1, subject: 'Hello World', slug: 'hello-world'}
 ```
 
 ## Using Factories
 
 ```
 factory.build('post', function(err, post) {
-  // post is a Post instance that is not saved
+  // build a Post instance that is not saved
 });
 
 factory.build('post', {title: 'Foo', content: 'Bar'}, function(err, post) {
-  // build a post and override title and content
+  // build a post and override the title and content
 });
 
 factory.create('post', function(err, post) {
-  // post is a saved Post instance
+  // build and save a Post instance
 });
 ```
 
-### `buildMany` and `createMany`
+### Factory#buildMany
 
 Allow you to create a number of models at once.
 
@@ -86,10 +85,13 @@ factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, po
 factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
   // build 10 posts using the specified attributes for all of them
 });
-// factory.createMany takes the same arguments as buildMany, but returns saved models
 ```
 
-### `buildSync`
+### Factory#createMany
+
+`factory.createMany` takes the same arguments as `buildMany`, but returns saved models.
+
+### Factory#buildSync
 
 When you have factories that don't use async property functions, you can use `buildSync()`. 
 Be aware that `assoc()` is an async function, so it can't be used with `buildSync()`.
@@ -100,18 +102,23 @@ var doc = factory.buildSync('post', {title: 'Foo'});
 
 ## Creating new Factories and Adapters
 
+Use Adapters for different databases and ORMs.
+
 ```
 var anotherFactory = new factory.Factory();
 var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
 anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
+```
 
-// the ObjectAdapter simply returns raw objects
+Or use the ObjectAdapter that simply returns raw objects.
+
+```
 var ObjectAdapter = factory.ObjectAdapter;
 anotherFactory.setAdapter(ObjectAdapter, 'post'); // use the ObjectAdapter for posts
 ```
 
 ## License
 
-Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
-Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
+Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).  
+Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).  
 
