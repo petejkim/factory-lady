@@ -26,10 +26,11 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "chai": "^1.10.0",
     "mocha": ">= 0.7.1",
     "should": ">= 0.4.2"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha"
   }
 }

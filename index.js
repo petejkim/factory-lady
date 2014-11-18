@@ -217,6 +217,9 @@
     this.set(props, doc, Model);
     return doc;
   };
+  Adapter.prototype.get = function(doc, attr, Model) {
+    return doc[attr];
+  };
   Adapter.prototype.set = function(props, doc, Model) {
     var key;
     for (key in props) {

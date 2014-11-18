@@ -1,7 +1,7 @@
 /* global describe, beforeEach, afterEach */
-var factory = require('..'),
-    should = require('should'),
-    context = describe;
+var factory = require('..');
+var should = require('should');
+var context = describe;
 
 describe('factory', function() {
   var Model, Person, Job;
