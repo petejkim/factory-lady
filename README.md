@@ -103,7 +103,7 @@ var doc = factory.buildSync('post', {title: 'Foo'});
 
 ## Creating new Factories and Adapters
 
-Adapters provide support for different databases and ORMs.
+Adapters provide [support for different databases and ORMs](https://www.npmjs.org/browse/keyword/factory-girl).
 
 ``` javascript
 var anotherFactory = new factory.Factory();
