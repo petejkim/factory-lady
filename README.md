@@ -10,16 +10,16 @@ It started out as a fork of [factory-lady](https://github.com/petejkim/factory-l
 
 Node.js:
 
-```
+``` bash
 npm install factory-girl
 ```
 
-Also works in the browser or other JavaScript environments.
+To use `factory-girl` in the browser or other JavaScript environments, just include `index.js` and access `window.Factory`.
 
 ## Defining Factories
 
-```
-var factory = require('factory-lady'),
+``` javascript
+var factory = require('factory-girl'),
     User    = require('../../app/models/user'),
     Post    = require('../../app/models/post');
 
@@ -42,7 +42,8 @@ console.log(factory.build('user')); => {state: 'active', email: 'user1@demo.com'
 
 factory.define('post', Post, {
   // create associations using factory.assoc(model, attr)
-  user_id: factory.assoc('user', 'id'), // or factory.assoc('user') returns the user object
+  // or factory.assoc('user') for user object itself
+  user_id: factory.assoc('user', 'id'),
   subject: 'Hello World',
   // you can refer to other attributes using `this`
   slug: function() {
@@ -54,17 +55,17 @@ console.log(factory.build('post')); => {user_id: 1, subject: 'Hello World', slug
 
 ## Using Factories
 
-```
+``` javascript
 factory.build('post', function(err, post) {
-  // build a Post instance that is not saved
+  // post is a Post instance that is not saved
 });
 
 factory.build('post', {title: 'Foo', content: 'Bar'}, function(err, post) {
-  // build a post and override the title and content
+  // build a post and override title and content
 });
 
 factory.create('post', function(err, post) {
-  // build and save a Post instance
+  // post is a saved Post instance
 });
 ```
 
@@ -72,7 +73,7 @@ factory.create('post', function(err, post) {
 
 Allow you to create a number of models at once.
 
-```
+``` javascript
 factory.buildMany('post', 10, function(err, posts) {
   // build 10 posts
 });
@@ -96,15 +97,15 @@ factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
 When you have factories that don't use async property functions, you can use `buildSync()`. 
 Be aware that `assoc()` is an async function, so it can't be used with `buildSync()`.
 
-```
+``` javascript
 var doc = factory.buildSync('post', {title: 'Foo'});
 ```
 
 ## Creating new Factories and Adapters
 
-Use Adapters for different databases and ORMs.
+Adapters provide support for different databases and ORMs.
 
-```
+``` javascript
 var anotherFactory = new factory.Factory();
 var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
 anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
