@@ -15,7 +15,7 @@
         return callback(new Error("No factory defined for model '" + name + "'"));
       }
       factory.build(name, attrs, function(err, doc) {
-        if(err) return callback(err);
+        if (err) return callback(err);
         save(name, doc, callback);
       });
     };
@@ -216,6 +216,9 @@
     var doc = new Model();
     this.set(props, doc, Model);
     return doc;
+  };
+  Adapter.prototype.get = function(doc, attr, Model) {
+    return doc[attr];
   };
   Adapter.prototype.set = function(props, doc, Model) {
     var key;
