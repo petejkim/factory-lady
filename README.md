@@ -38,7 +38,7 @@ factory.define('user', User, {
     somethingAsync(callback);
   }
 });
-console.log(factory.build('user')); => {state: 'active', email: 'user1@demo.com', async: 'foo'}
+console.log(factory.build('user')); // => {state: 'active', email: 'user1@demo.com', async: 'foo'}
 
 factory.define('post', Post, {
   // create associations using factory.assoc(model, attr)
@@ -50,7 +50,7 @@ factory.define('post', Post, {
     return slugify(this.subject);
   }
 });
-console.log(factory.build('post')); => {user_id: 1, subject: 'Hello World', slug: 'hello-world'}
+console.log(factory.build('post')); // => {user_id: 1, subject: 'Hello World', slug: 'hello-world'}
 ```
 
 ## Using Factories
