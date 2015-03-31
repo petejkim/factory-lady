@@ -14,9 +14,19 @@
       if (!factories[name]) {
         return callback(new Error("No factory defined for model '" + name + "'"));
       }
-      factory.build(name, attrs, function(err, doc) {
+
+      factory.build(name, attrs, function(err, doc, options) {
         if (err) return callback(err);
-        save(name, doc, callback);
+
+        save(name, doc, function(saveErr, saveDoc) {
+          if(saveErr) return callback(saveErr);
+
+          if (factories[name].callbacks.afterCreate) {
+            factories[name].callbacks.afterCreate.call(this, saveDoc, options, callback);
+          } else {
+            callback(saveErr, saveDoc);
+          }
+        });
       });
     };
 
@@ -29,9 +39,14 @@
     }
 
     factory.define = function(name, model, attributes) {
+      var afterCreate = extractKey(attributes, 'afterCreate');
+
       factories[name] = {
         model: model,
-        attributes: attributes
+        attributes: attributes,
+        callbacks: {
+          afterCreate: afterCreate
+        }
       };
     };
 
@@ -46,6 +61,8 @@
       }
       var model = factories[name].model;
       attrs = merge(copy(factories[name].attributes), attrs);
+
+      var options = extractKey(attrs, '_options', {});
 
       asyncForEach(keys(attrs), function(key, cb) {
         var fn = attrs[key];
@@ -69,7 +86,7 @@
         if (err) return callback(err);
         var adapter = factory.adapterFor(name),
             doc = adapter.build(model, attrs);
-        callback(null, doc);
+        callback(null, doc, options);
       });
     };
 
@@ -288,6 +305,18 @@
       }
     }
     processNext();
+  }
+  function extractKey(obj, key, defaultValue) {
+    defaultValue = defaultValue || null;
+
+    if (obj && obj[key]) {
+      var value = obj[key];
+      delete obj[key];
+    } else {
+      var value = defaultValue;
+    }
+
+    return value;
   }
 
 }());
