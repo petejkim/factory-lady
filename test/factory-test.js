@@ -238,6 +238,14 @@ describe('factory', function() {
         done();
       });
     });
+
+    it("allows the creation of many objects", function(done) {
+      factory.createMany('job', 1000, function (err, jobs) {
+        if (err) return done(err);
+        jobs.length.should.eql(1000);
+        done();
+      });
+    });
   });
 
   describe('#cleanup', function() {
