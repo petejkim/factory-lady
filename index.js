@@ -284,7 +284,7 @@
         handler(array[index], processNext, index);
       }
       else {
-        callback && callback();
+        callback && setImmediate(callback);
       }
     }
     processNext();
