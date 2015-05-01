@@ -93,11 +93,12 @@
       return adapter.build(model, attrs);
     };
 
-    factory.assoc = function(name, attr) {
+    factory.assoc = function(name, key, attrs) {
+      attrs = attrs || {};
       return function(callback) {
-        factory.create(name, function(err, doc) {
+        factory.create(name, attrs, function(err, doc) {
           if (err) return callback(err);
-          callback(null, attr ? doc[attr] : doc);
+          callback(null, key ? doc[key] : doc);
         });
       };
     };
