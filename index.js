@@ -6,109 +6,29 @@
         adapters = {},
         created = [];
 
-    factory.create = function(name, attrs, callback) {
-      if (typeof attrs === 'function') {
-        callback = attrs;
-        attrs = {};
-      }
-      if (!factories[name]) {
-        return callback(new Error("No factory defined for model '" + name + "'"));
-      }
-
-      factory.build(name, attrs, function(err, doc, options) {
-        if (err) return callback(err);
-
-        save(name, doc, function(saveErr, saveDoc) {
-          if(saveErr) return callback(saveErr);
-
-          if (factories[name].callbacks.afterCreate) {
-            factories[name].callbacks.afterCreate.call(this, saveDoc, options, callback);
-          } else {
-            callback(saveErr, saveDoc);
-          }
-        });
-      });
-    };
-
-    function save(name, doc, callback) {
-      var model = factories[name].model;
-      factory.adapterFor(name).save(doc, model, function (err) {
-        if (!err) created.push([name, doc]);
-        callback(err, doc);
-      });
-    }
-
-    factory.define = function(name, model, attributes) {
-      var afterCreate = extractKey(attributes, 'afterCreate');
+    factory.define = function(name, model, attributes, options) {
+      options = options || {};
 
       factories[name] = {
         model: model,
         attributes: attributes,
-        callbacks: {
-          afterCreate: afterCreate
-        }
+        options: options
       };
     };
 
-    factory.build = function(name, attrs, callback) {
-      if (typeof attrs === 'function') {
-        callback = attrs;
-        attrs = {};
-      }
-
-      if (!factories[name]) {
-        return callback(new Error("No factory defined for model '" + name + "'"));
-      }
-      var model = factories[name].model;
-      attrs = merge(copy(factories[name].attributes), attrs);
-
-      var options = extractKey(attrs, '_options', {});
-
-      asyncForEach(keys(attrs), function(key, cb) {
-        var fn = attrs[key];
-        if (typeof fn === 'function') {
-          if (!fn.length) {
-            attrs[key] = fn.call(attrs);
-            cb();
-          }
-          else {
-            fn.call(attrs, function(err, value) {
-              if (err) return cb(err);
-              attrs[key] = value;
-              cb();
-            });
-          }
-        }
-        else {
-          cb();
-        }
-      }, function(err) {
-        if (err) return callback(err);
-        var adapter = factory.adapterFor(name),
-            doc = adapter.build(model, attrs);
-        callback(null, doc, options);
-      });
+    var builderProxy = function(fnName) {
+      return function() {
+        var builder = new Builder();
+        return builder[fnName].apply(this, arguments);
+      };
     };
 
-    factory.buildSync = function(name, attrs) {
-      if (!factories[name]) {
-        throw new Error("No factory defined for model '" + name + "'");
-      }
-      var model = factories[name].model;
-      attrs = merge(copy(factories[name].attributes), attrs);
-      var names = keys(attrs);
-      for (var i = 0; i < names.length; i++) {
-        var key = names[i], fn = attrs[key];
-        if (typeof fn == 'function') {
-          if (fn.length) {
-            throw new Error("buildSync only supports synchronous property functions (with no arguments): the function for '" + name + "." + key + "' expects " + fn.length + " arguments");
-          }
-          attrs[key] = fn.call(attrs);
-        }
-      }
-      var adapter = factory.adapterFor(name);
-      return adapter.build(model, attrs);
-    };
+    factory.withOptions = builderProxy('withOptions');
+    factory.build = builderProxy('build');
+    factory.buildSync = builderProxy('buildSync');
+    factory.buildMany = builderProxy('buildMany');
+    factory.create = builderProxy('create');
+    factory.createMany = builderProxy('createMany');
 
     factory.assoc = function(name, attr) {
       return function(callback) {
@@ -130,72 +50,6 @@
       else {
         defaultAdapter = adapter;
       }
-    };
-
-    factory.buildMany = function(name, attrsArray, num, callback) {
-      var args = parseBuildManyArgs.apply(null, arguments);
-      _buildMany(args);
-    };
-
-    function _buildMany(args) {
-      var results = [];
-      asyncForEach(args.attrsArray, function(attrs, cb, index) {
-        factory.build(args.name, attrs, function(err, doc) {
-          if (!err) results[index] = doc;
-          cb(err);
-        });
-      }, function(err) {
-        args.callback(err, results);
-      });
-    }
-
-    function parseBuildManyArgs(name, attrsArray, num, callback) {
-      if (typeof num == 'function') { // name, Array, callback
-        callback = num;
-        num = attrsArray.length;
-      }
-      if (typeof attrsArray == 'number') { // name, num, callback
-        num = attrsArray;
-        attrsArray = null;
-      }
-      if (!(attrsArray instanceof Array)) { // name, Object, num, callback
-        if (typeof num != 'number') throw new Error("num must be specified when attrsArray is not an array");
-        var attrs = attrsArray;
-        attrsArray = new Array(num);
-        for (var i = 0; i < num; i++) {
-          attrsArray[i] = attrs;
-        }
-      }
-      if (!attrsArray) {
-        attrsArray = new Array(num);
-      }
-      else if( attrsArray.length !== num ) {
-        attrsArray.length = num;
-      }
-      return {
-        name: name,
-        attrsArray: attrsArray,
-        num: num,
-        callback: callback
-      };
-    }
-
-    factory.createMany = function(name, attrsArray, num, callback) {
-      var args = parseBuildManyArgs.apply(null, arguments),
-          results = [];
-      callback = args.callback;
-      args.callback = function(err, docs) {
-        if (err) return callback(err);
-        asyncForEach(docs, function(doc, cb, index) {
-          save(name, doc, function(err) {
-            if (!err) results[index] = doc;
-            cb(err);
-          });
-        }, function(err) {
-          callback(err, results);
-        });
-      };
-      _buildMany(args);
     };
 
     factory.promisify = function(promiseLibrary) {
@@ -225,6 +79,174 @@
       }, callback);
       created = [];
     };
+
+    var Builder = function() {
+      var builder = this;
+      builder.options = {};
+
+      builder.withOptions = function(options) {
+        merge(builder.options, options);
+        return builder;
+      }
+
+      builder.create = function(name, attrs, callback) {
+        if (typeof attrs === 'function') {
+          callback = attrs;
+          attrs = {};
+        }
+        if (!factories[name]) {
+          return callback(new Error("No factory defined for model '" + name + "'"));
+        }
+
+        builder.build(name, attrs, function(err, doc, options) {
+          if (err) return callback(err);
+
+          save(name, doc, function(saveErr, saveDoc) {
+            if(saveErr) return callback(saveErr);
+
+            if (factories[name].options.afterCreate) {
+              factories[name].options.afterCreate.call(this, saveDoc, options, callback);
+            } else {
+              callback(saveErr, saveDoc);
+            }
+          });
+        });
+      };
+
+      builder.build = function(name, attrs, callback) {
+        if (typeof attrs === 'function') {
+          callback = attrs;
+          attrs = {};
+        }
+
+        if (!factories[name]) {
+          return callback(new Error("No factory defined for model '" + name + "'"));
+        }
+        var model = factories[name].model;
+        attrs = merge(copy(factories[name].attributes), attrs);
+
+        var options = builder.options;
+
+        asyncForEach(keys(attrs), function(key, cb) {
+          var fn = attrs[key];
+          if (typeof fn === 'function') {
+            if (!fn.length) {
+              attrs[key] = fn.call(attrs);
+              cb();
+            }
+            else {
+              fn.call(attrs, function(err, value) {
+                if (err) return cb(err);
+                attrs[key] = value;
+                cb();
+              });
+            }
+          }
+          else {
+            cb();
+          }
+        }, function(err) {
+          if (err) return callback(err);
+          var adapter = factory.adapterFor(name),
+              doc = adapter.build(model, attrs);
+          callback(null, doc, options);
+        });
+      };
+
+      builder.buildSync = function(name, attrs) {
+        if (!factories[name]) {
+          throw new Error("No factory defined for model '" + name + "'");
+        }
+        var model = factories[name].model;
+        attrs = merge(copy(factories[name].attributes), attrs);
+        var names = keys(attrs);
+        for (var i = 0; i < names.length; i++) {
+          var key = names[i], fn = attrs[key];
+          if (typeof fn == 'function') {
+            if (fn.length) {
+              throw new Error("buildSync only supports synchronous property functions (with no arguments): the function for '" + name + "." + key + "' expects " + fn.length + " arguments");
+            }
+            attrs[key] = fn.call(attrs);
+          }
+        }
+        var adapter = factory.adapterFor(name);
+        return adapter.build(model, attrs);
+      };
+
+      builder.buildMany = function(name, attrsArray, num, callback) {
+        var args = parseBuildManyArgs.apply(null, arguments);
+        buildMany(args);
+      };
+
+      builder.createMany = function(name, attrsArray, num, callback) {
+        var args = parseBuildManyArgs.apply(null, arguments),
+            results = [];
+        callback = args.callback;
+        args.callback = function(err, docs) {
+          if (err) return callback(err);
+          asyncForEach(docs, function(doc, cb, index) {
+            save(name, doc, function(err) {
+              if (!err) results[index] = doc;
+              cb(err);
+            });
+          }, function(err) {
+            callback(err, results);
+          });
+        };
+        buildMany(args);
+      };
+
+      function buildMany(args) {
+        var results = [];
+        asyncForEach(args.attrsArray, function(attrs, cb, index) {
+          builder.build(args.name, attrs, function(err, doc) {
+            if (!err) results[index] = doc;
+            cb(err);
+          });
+        }, function(err) {
+          args.callback(err, results);
+        });
+      }
+
+      function parseBuildManyArgs(name, attrsArray, num, callback) {
+        if (typeof num == 'function') { // name, Array, callback
+          callback = num;
+          num = attrsArray.length;
+        }
+        if (typeof attrsArray == 'number') { // name, num, callback
+          num = attrsArray;
+          attrsArray = null;
+        }
+        if (!(attrsArray instanceof Array)) { // name, Object, num, callback
+          if (typeof num != 'number') throw new Error("num must be specified when attrsArray is not an array");
+          var attrs = attrsArray;
+          attrsArray = new Array(num);
+          for (var i = 0; i < num; i++) {
+            attrsArray[i] = attrs;
+          }
+        }
+        if (!attrsArray) {
+          attrsArray = new Array(num);
+        }
+        else if( attrsArray.length !== num ) {
+          attrsArray.length = num;
+        }
+        return {
+          name: name,
+          attrsArray: attrsArray,
+          num: num,
+          callback: callback
+        };
+      }
+
+      function save(name, doc, callback) {
+        var model = factories[name].model;
+        factory.adapterFor(name).save(doc, model, function (err) {
+          if (!err) created.push([name, doc]);
+          callback(err, doc);
+        });
+      }
+    }
   };
 
   var Adapter = function() {};
@@ -305,18 +327,6 @@
       }
     }
     processNext();
-  }
-  function extractKey(obj, key, defaultValue) {
-    defaultValue = defaultValue || null;
-
-    if (obj && obj[key]) {
-      var value = obj[key];
-      delete obj[key];
-    } else {
-      var value = defaultValue;
-    }
-
-    return value;
   }
 
 }());

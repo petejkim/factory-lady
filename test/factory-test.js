@@ -248,7 +248,7 @@ describe('factory', function() {
             person.destroyCalled.should.be.true;
             person.job.destroyCalled.should.be.true;
             job.destroyCalled.should.be.true;
-            done(err);            
+            done(err);
           });
         });
       });
