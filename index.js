@@ -98,14 +98,14 @@
           return callback(new Error("No factory defined for model '" + name + "'"));
         }
 
-        builder.build(name, attrs, function(err, doc, options) {
+        builder.build(name, attrs, function(err, doc) {
           if (err) return callback(err);
 
           save(name, doc, function(saveErr, saveDoc) {
             if(saveErr) return callback(saveErr);
 
             if (factories[name].options.afterCreate) {
-              factories[name].options.afterCreate.call(this, saveDoc, options, callback);
+              factories[name].options.afterCreate.call(this, saveDoc, builder.options, callback);
             } else {
               callback(saveErr, saveDoc);
             }
@@ -124,8 +124,6 @@
         }
         var model = factories[name].model;
         attrs = merge(copy(factories[name].attributes), attrs);
-
-        var options = builder.options;
 
         asyncForEach(keys(attrs), function(key, cb) {
           var fn = attrs[key];
@@ -149,7 +147,7 @@
           if (err) return callback(err);
           var adapter = factory.adapterFor(name),
               doc = adapter.build(model, attrs);
-          callback(null, doc, options);
+          callback(null, doc);
         });
       };
 
