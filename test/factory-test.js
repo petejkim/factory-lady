@@ -2,6 +2,7 @@
 var factory = require('..');
 var should = require('should');
 var context = describe;
+var sinon = require('sinon');
 
 describe('factory', function() {
   var Model, Person, Job;
@@ -147,6 +148,35 @@ describe('factory', function() {
       });
     });
 
+    context('defined with an afterCreate handler', function() {
+      var spy = sinon.spy();
+
+      before(function() {
+        factory.define('job with after create', Job, {
+          title: 'Engineer',
+          company: 'Foobar Inc.'
+        }, {
+          afterCreate: function(doc, options, done) {
+            spy.apply(null, arguments);
+            doc.title = 'Astronaut';
+            done(null, doc);
+          }
+        });
+      });
+
+      it('calls afterCreate', function() {
+        factory.create('job with after create', function(err, job) {
+          spy.called.should.be.true;
+        });
+      });
+
+      it('allows afterCreate to mutate the model', function() {
+        factory.create('job with after create', function(err, job) {
+          job.title.should.eql('Astronaut')
+        });
+      });
+    });
+
   });
 
   describe('#buildMany', function() {
@@ -256,7 +286,7 @@ describe('factory', function() {
             person.destroyCalled.should.be.true;
             person.job.destroyCalled.should.be.true;
             job.destroyCalled.should.be.true;
-            done(err);            
+            done(err);
           });
         });
       });
@@ -336,6 +366,55 @@ describe('factory', function() {
       }).should.throw();
     });
 
+  });
+
+  describe('#withOptions', function() {
+    it('chains to expose the builder functions', function() {
+      var builder = factory.withOptions({ key: 'value' });
+
+      builder.should.have.property('build');
+      builder.should.have.property('buildSync');
+      builder.should.have.property('buildMany');
+      builder.should.have.property('create');
+      builder.should.have.property('createMany');
+
+      var job = builder.buildSync('job', { title: 'Mechanic' });
+      (job instanceof Job).should.be.true;
+      job.company.should.eql('Foobar Inc.');
+      job.title.should.eql('Mechanic');
+    });
+
+    it('passes options through to defined afterCreate handler', function() {
+      factory.define('job with after create', Job, {
+        title: 'Engineer',
+        company: 'Foobar Inc.'
+      }, {
+        afterCreate: function(doc, options, done) {
+          options.key.should.eql('value');
+          done(null, doc);
+        }
+      });
+
+      factory.withOptions({ key: 'value' }).create('job with after create', function() {});
+    });
+
+    it('allows for chaining to merge options', function() {
+      factory.define('job with after create', Job, {
+        title: 'Engineer',
+        company: 'Foobar Inc.'
+      }, {
+        afterCreate: function(doc, options, done) {
+          options.key.should.eql('value 2');
+          options.anotherKey.should.eql('value');
+          done(null, doc);
+        }
+      });
+
+      var builder = factory.withOptions({ key: 'value' });
+      builder.withOptions({ key: 'value 2', anotherKey: 'value' });
+
+      builder.create('job with after create', function() {});
+    });
   });
 
 });
