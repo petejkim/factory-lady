@@ -41,9 +41,12 @@ factory.define('user', User, {
 console.log(factory.build('user')); // => {state: 'active', email: 'user1@demo.com', async: 'foo'}
 
 factory.define('post', Post, {
-  // create associations using factory.assoc(model, attr)
-  // or factory.assoc('user') for user object itself
-  user_id: factory.assoc('user', 'id'),
+  // create associations using factory.assoc(model, key)
+  // or factory.assoc('user') to return the user object itself
+
+  // optionally provide default values to the associated
+  // factory by passing an object as third argument
+  user_id: factory.assoc('user', 'id', { role: author }),
   subject: 'Hello World',
   // you can refer to other attributes using `this`
   slug: function() {

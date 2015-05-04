@@ -38,7 +38,7 @@ describe('factory', function() {
         return "email" + (emailCounter++) + "@noemail.com";
       },
       age: 25,
-      job: factory.assoc('job'),
+      job: factory.assoc('job', null, { company: 'Bazqux Co.' }),
       title: factory.assoc('job', 'title')
     });
 
@@ -79,7 +79,7 @@ describe('factory', function() {
             person.age.should.eql(30);
             (person.job instanceof Job).should.be.true;
             person.job.title.should.eql('Engineer');
-            person.job.company.should.eql('Foobar Inc.');
+            person.job.company.should.eql('Bazqux Co.');
             person.job.saveCalled.should.be.true;
             person.title.should.eql('Engineer');
             done();
