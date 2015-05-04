@@ -19,7 +19,7 @@
     var builderProxy = function(fnName) {
       return function() {
         var builder = new Builder();
-        return builder[fnName].apply(this, arguments);
+        return builder[fnName].apply(builder, arguments);
       };
     };
 
@@ -62,11 +62,23 @@
           promisified[i] = factory[i];
         }
       }
-      promisified.build = promisify(factory.build);
-      promisified.create = promisify(factory.create);
-      promisified.buildMany = promisify(factory.buildMany);
-      promisified.createMany = promisify(factory.createMany);
+
+      var promisifiedBuilderProxy = function(fnName) {
+        return function() {
+          var builder = new Builder();
+          builder.promisify(promisify)
+          return builder[fnName].apply(builder, arguments);
+        };
+      };
+
+      promisified.withOptions = promisifiedBuilderProxy('withOptions');
+      promisified.build = promisifiedBuilderProxy('build');
+      promisified.buildMany = promisifiedBuilderProxy('buildMany');
+      promisified.create = promisifiedBuilderProxy('create');
+      promisified.createMany = promisifiedBuilderProxy('createMany');
+
       promisified.cleanup = promisify(factory.cleanup);
+
       return promisified;
     };
 
@@ -84,6 +96,13 @@
     var Builder = function() {
       var builder = this;
       builder.options = {};
+
+      builder.promisify = function(promisify) {
+        builder.build = promisify(builder.build);
+        builder.create = promisify(builder.create);
+        builder.buildMany = promisify(builder.buildMany);
+        builder.createMany = promisify(builder.createMany);
+      }
 
       builder.withOptions = function(options) {
         merge(builder.options, options);
