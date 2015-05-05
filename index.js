@@ -107,7 +107,7 @@
       builder.withOptions = function(options) {
         merge(builder.options, options);
         return builder;
-      }
+      };
 
       builder.create = function(name, attrs, callback) {
         if (typeof attrs === 'function') {

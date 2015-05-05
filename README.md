@@ -38,7 +38,9 @@ factory.define('user', User, {
     somethingAsync(callback);
   }
 });
-console.log(factory.build('user')); // => {state: 'active', email: 'user1@demo.com', async: 'foo'}
+factory.build('user', function(err, user) {
+  console.log(user.attributes); // => {state: 'active', email: 'user1@demo.com', async: 'foo'}
+));
 
 factory.define('post', Post, {
   // create associations using factory.assoc(model, key)
@@ -50,12 +52,10 @@ factory.define('post', Post, {
     return slugify(this.subject);
   }
 });
-console.log(factory.build('post')); // => {user_id: 1, subject: 'Hello World', slug: 'hello-world'}
+factory.build('post', function(err, post) {
+  console.log(post.attributes); // => {user_id: 1, subject: 'Hello World', slug: 'hello-world'}
+));
 ```
-
-### Factory#assoc
-
-You can optionally provide attributes to the associated factory by passing an object as third argument.
 
 ## Using Factories
 
@@ -72,6 +72,10 @@ factory.create('post', function(err, post) {
   // post is a saved Post instance
 });
 ```
+
+### Factory#assoc
+
+You can optionally provide attributes to the associated factory by passing an object as third argument.
 
 ### Factory#buildMany
 
@@ -117,7 +121,7 @@ anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
 
 Or use the ObjectAdapter that simply returns raw objects.
 
-```
+```javascript
 var ObjectAdapter = factory.ObjectAdapter;
 anotherFactory.setAdapter(ObjectAdapter, 'post'); // use the ObjectAdapter for posts
 ```
