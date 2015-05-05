@@ -26,6 +26,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "bluebird": "^2.9.25",
     "chai": "^1.10.0",
     "mocha": ">= 0.7.1",
     "should": ">= 0.4.2",

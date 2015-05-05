@@ -417,5 +417,32 @@ describe('factory', function() {
     });
   });
 
+  describe('#promisify', function() {
+    var promisifiedFactory;
+
+    before(function() {
+      var Promise = require('bluebird');
+      promisifiedFactory = factory.promisify(Promise);
+    });
+
+    it('promisifies #build', function(done) {
+      promisifiedFactory.build('job').then(function(job) {
+        (job instanceof Job).should.be.true;
+        job.title.should.eql('Engineer');
+        job.company.should.eql('Foobar Inc.');
+        done();
+      });
+    });
+
+    it('works with chained builders too', function(done) {
+      promisifiedFactory.withOptions({}).build('job').then(function(job) {
+        (job instanceof Job).should.be.true;
+        job.title.should.eql('Engineer');
+        job.company.should.eql('Foobar Inc.');
+        done();
+      });
+    });
+  });
+
 });
 
