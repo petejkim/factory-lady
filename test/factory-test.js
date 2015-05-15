@@ -24,6 +24,9 @@ describe('factory', function() {
 
     Job = function() {};
     Job.prototype = new Model();
+
+    Company = function() {};
+    Company.prototype = new Model();
   });
 
   beforeEach(function() {
@@ -45,6 +48,11 @@ describe('factory', function() {
     factory.define('job', Job, {
       title: 'Engineer',
       company: 'Foobar Inc.'
+    });
+
+    factory.define('company', Company, {
+      name: 'Fruit Company',
+      employees: factory.multi_assoc(3, 'person')
     });
   });
 
@@ -82,6 +90,26 @@ describe('factory', function() {
             person.job.company.should.eql('Bazqux Co.');
             person.job.saveCalled.should.be.true;
             person.title.should.eql('Engineer');
+            done();
+          });
+        });
+      });
+
+      context('factory containing a multi association', function() {
+        it('is able to handle that', function(done){
+          factory.build('company', function(err, company) {
+            (company instanceof Company).should.be.true;
+            company.should.not.have.property('saveCalled');
+            company.name.should.eql('Fruit Company');
+            company.should.have.property('employees');
+            (company.employees instanceof Array).should.be.true;
+            company.employees.length.should.eql(3);
+            (company.employees[0] instanceof Person).should.be.true;
+            company.employees[0].name.should.eql('Person 2');
+            (company.employees[1] instanceof Person).should.be.true;
+            company.employees[1].name.should.eql('Person 3');
+            (company.employees[2] instanceof Person).should.be.true;
+            company.employees[2].name.should.eql('Person 4');
             done();
           });
         });

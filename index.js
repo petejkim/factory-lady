@@ -40,6 +40,24 @@
       };
     };
 
+    factory.multi_assoc = function(numElements, name, key, attrs){
+      attrs = attrs || {};
+      return function(callback) {
+        results = [];
+        for(var i = 0; i < numElements; ++i)
+          results[i] = null;
+        asyncForEach(results, function(elem, cb, index){
+          factory.create(name, attrs, function(err, doc) {
+            if(err) return cb(err);
+            results[index] = doc;
+            cb();
+          });
+        }, function(err) {
+          callback(err, results)
+        });
+      };
+    };
+
     factory.adapterFor = function(name) {
       return adapters[name] || defaultAdapter;
     };
