@@ -52,7 +52,7 @@ describe('factory', function() {
 
     factory.define('company', Company, {
       name: 'Fruit Company',
-      employees: factory.multi_assoc(3, 'person')
+      employees: factory.assocMany(3, 'person')
     });
   });
 

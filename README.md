@@ -50,8 +50,8 @@ factory.define('post', Post, {
   // create associations using factory.assoc(model, key)
   // or factory.assoc('user') to return the user object itself.
   user_id: factory.assoc('user', 'id'),
-  // create array of associations using factory.multi_assoc
-  comments: factory.multi_assoc(3, 'comment') // Will contains 3 elements
+  // create array of associations using factory.assocMany
+  comments: factory.assocMany(3, 'comment') // Will contains 3 elements
   subject: 'Hello World',
   // you can refer to other attributes using `this`
   slug: function() {
