@@ -40,21 +40,23 @@
       };
     };
 
-    factory.assocMany = function(numElements, name, key, attrs) {
-      attrs = attrs || {};
-      return function(callback) {
-        results = [];
-        for(var i = 0; i < numElements; ++i) {
-          results[i] = null;
+    factory.assocMany = function(name, key, num, attrsArray) {
+      if (arguments.length < 4) {
+        if (typeof key === 'number') {
+          attrsArray = num;
+          num = key;
+          key = null;
         }
-        asyncForEach(results, function(elem, cb, index) {
-          factory.create(name, attrs, function(err, doc) {
-            if(err) return cb(err);
-            results[index] = doc;
-            cb();
-          });
-        }, function(err) {
-          callback(err, results)
+      }
+      return function(callback) {
+        factory.createMany(name, attrsArray, num,  function(err, docs) {
+          if (err) return callback(err);
+          if (key) {
+            for (var i = 0; i < docs.length; ++i) {
+              docs[i] = docs[i][key];
+            }
+          }
+          callback(null, docs);
         });
       };
     };

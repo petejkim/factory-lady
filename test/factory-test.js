@@ -52,7 +52,8 @@ describe('factory', function() {
 
     factory.define('company', Company, {
       name: 'Fruit Company',
-      employees: factory.assocMany(3, 'person')
+      employees: factory.assocMany('person', 3),
+      managers: factory.assocMany('person', 'name', 2)
     });
   });
 
@@ -110,6 +111,12 @@ describe('factory', function() {
             company.employees[1].name.should.eql('Person 3');
             (company.employees[2] instanceof Person).should.be.true;
             company.employees[2].name.should.eql('Person 4');
+            (company.managers instanceof Array).should.be.true;
+            company.managers.length.should.eql(2);
+            (company.managers[0] instanceof Person).should.be.false;
+            company.managers[0].should.eql('Person 5');
+            (company.managers[1] instanceof Person).should.be.false;
+            company.managers[1].should.eql('Person 6');
             done();
           });
         });
