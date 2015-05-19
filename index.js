@@ -49,7 +49,7 @@
         }
       }
       return function(callback) {
-        factory.createMany(name, attrsArray, num,  function(err, docs) {
+        factory.createMany(name, attrsArray, num, function(err, docs) {
           if (err) return callback(err);
           if (key) {
             for (var i = 0; i < docs.length; ++i) {
