@@ -40,6 +40,27 @@
       };
     };
 
+    factory.assocMany = function(name, key, num, attrsArray) {
+      if (arguments.length < 4) {
+        if (typeof key === 'number') {
+          attrsArray = num;
+          num = key;
+          key = null;
+        }
+      }
+      return function(callback) {
+        factory.createMany(name, attrsArray, num, function(err, docs) {
+          if (err) return callback(err);
+          if (key) {
+            for (var i = 0; i < docs.length; ++i) {
+              docs[i] = docs[i][key];
+            }
+          }
+          callback(null, docs);
+        });
+      };
+    };
+
     factory.adapterFor = function(name) {
       return adapters[name] || defaultAdapter;
     };

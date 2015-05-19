@@ -42,10 +42,16 @@ factory.build('user', function(err, user) {
   console.log(user.attributes); // => {state: 'active', email: 'user1@demo.com', async: 'foo'}
 ));
 
+factory.define('comment', Comment, {
+  text: 'hello'
+});
+
 factory.define('post', Post, {
   // create associations using factory.assoc(model, key)
   // or factory.assoc('user') to return the user object itself.
   user_id: factory.assoc('user', 'id'),
+  // create array of associations using factory.assocMany(model, key, num)
+  comments: factory.assocMany('comment', 'text', 2)
   subject: 'Hello World',
   // you can refer to other attributes using `this`
   slug: function() {
@@ -53,7 +59,8 @@ factory.define('post', Post, {
   }
 });
 factory.build('post', function(err, post) {
-  console.log(post.attributes); // => {user_id: 1, subject: 'Hello World', slug: 'hello-world'}
+  console.log(post.attributes); // => {user_id: 1, comments: [{ text: 'hello' }, { text: 'hello' }], 
+                                // subject: 'Hello World', slug: 'hello-world'}
 ));
 ```
 
