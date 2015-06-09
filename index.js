@@ -1,10 +1,7 @@
 (function(factory) {
 
   if (typeof exports !== 'undefined') {
-    var _factory = factory();
-    module.exports = _factory;
-    module.exports.Factory = _factory.Factory;
-    module.exports.Adapter = _factory.Adapter;
+    module.exports = factory();
     module.exports.ObjectAdapter = require('./lib/object-adapter');
   }
   else if (typeof define === 'function' && define.amd) {
