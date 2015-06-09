@@ -361,8 +361,8 @@
       if (index < length) {
         handler(array[index], processNext, index);
       }
-      else {
-        callback && setImmediate(callback);
+      else if (callback) {
+        setImmediate ? setImmediate(callback) : setTimeout(callback, 0);
       }
     }
     processNext();
