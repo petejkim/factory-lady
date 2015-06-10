@@ -12,7 +12,7 @@
     });
   }
   else {
-    factory();
+    window.Factory = factory();
   }
 }(function() {
   var Factory = function() {
