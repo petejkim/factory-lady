@@ -1,4 +1,20 @@
-(function() {
+(function(factory) {
+
+  if (typeof exports !== 'undefined') {
+    module.exports = factory();
+    module.exports.ObjectAdapter = require('./lib/object-adapter');
+  }
+  else if (typeof define === 'function' && define.amd) {
+    define(['factory-girl-object-adapter'], function(ObjectAdapter) {
+      var _factory = factory();
+      _factory.ObjectAdapter = ObjectAdapter;
+      return _factory;
+    });
+  }
+  else {
+    window.Factory = factory();
+  }
+}(function() {
   var Factory = function() {
     var factory = this,
         factories = {},
@@ -316,15 +332,6 @@
     doc.destroy(cb);
   };
 
-  if (typeof module === 'undefined') {
-    this.factory = {};
-    module = this.factory;
-  }
-  module.exports = new Factory();
-  module.exports.Adapter = Adapter;
-  module.exports.Factory = Factory;
-  module.exports.ObjectAdapter = require('./lib/object-adapter');
-
   function merge(obj1, obj2) {
     if (obj1 && obj2) {
       var key;
@@ -368,5 +375,10 @@
     processNext();
   }
 
-}());
+  var factory = new Factory();
+  factory.Adapter = Adapter;
+  factory.Factory = Factory;
 
+  return factory;
+
+}));
