@@ -47,7 +47,12 @@ describe('factory', function() {
 
     factory.define('job', Job, {
       title: 'Engineer',
-      company: 'Foobar Inc.'
+      company: 'Foobar Inc.',
+      duties: {
+        cleaning: false,
+        writing: true,
+        computing: true
+      }
     });
 
     factory.define('company', Company, {
@@ -69,11 +74,14 @@ describe('factory', function() {
 
       context('passing attributes as second argument', function() {
         it('sets them', function(done) {
-          factory.build('job', { title: "Artist", company: "Bazqux Co." }, function(err, job) {
+          factory.build('job', { title: "Artist", company: "Bazqux Co.", duties: { cleaning: true, writing: false } }, function(err, job) {
             (job instanceof Job).should.be.true;
             job.title.should.eql('Artist');
             job.company.should.eql('Bazqux Co.');
             job.should.not.have.property('saveCalled');
+            job.duties.cleaning.should.be.true;
+            job.duties.writing.should.be.false;
+            job.duties.computing.should.be.true;
             done();
           });
         });
@@ -480,4 +488,3 @@ describe('factory', function() {
   });
 
 });
-

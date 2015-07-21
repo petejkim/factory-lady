@@ -24,7 +24,9 @@
       "url": "http://github.com/aexmachina/factory-girl/raw/master/LICENSE"
     }
   ],
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^3.10.0"
+  },
   "devDependencies": {
     "bluebird": "^2.9.25",
     "chai": "^3.0.0",

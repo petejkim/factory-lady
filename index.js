@@ -1,5 +1,6 @@
 (function(factory) {
 
+
   if (typeof exports !== 'undefined') {
     module.exports = factory();
     module.exports.ObjectAdapter = require('./lib/object-adapter');
@@ -332,17 +333,8 @@
     doc.destroy(cb);
   };
 
-  function merge(obj1, obj2) {
-    if (obj1 && obj2) {
-      var key;
-      for (key in obj2) {
-        if (obj2.hasOwnProperty(key)) {
-          obj1[key] = obj2[key];
-        }
-      }
-    }
-    return obj1;
-  }
+  var merge = require('lodash/object/merge');
+  
   function copy(obj) {
     var newObj = {};
     if (obj) {
