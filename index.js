@@ -301,7 +301,7 @@
           callback(err, doc);
         });
       }
-    }
+    };
   };
 
   var Adapter = function() {};

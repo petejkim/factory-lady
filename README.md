@@ -10,7 +10,7 @@ It started out as a fork of [factory-lady](https://github.com/petejkim/factory-l
 
 Node.js:
 
-``` bash
+```bash
 npm install factory-girl
 ```
 
@@ -18,7 +18,7 @@ To use `factory-girl` in the browser or other JavaScript environments, just incl
 
 ## Defining Factories
 
-``` javascript
+```javascript
 var factory = require('factory-girl'),
     User    = require('../../app/models/user'),
     Post    = require('../../app/models/post');
@@ -66,7 +66,7 @@ factory.build('post', function(err, post) {
 
 ## Using Factories
 
-``` javascript
+```javascript
 factory.build('post', function(err, post) {
   // post is a Post instance that is not saved
 });
@@ -88,7 +88,7 @@ You can optionally provide attributes to the associated factory by passing an ob
 
 Allow you to create a number of models at once.
 
-``` javascript
+```javascript
 factory.buildMany('post', 10, function(err, posts) {
   // build 10 posts
 });
@@ -112,25 +112,31 @@ factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
 When you have factories that don't use async property functions, you can use `buildSync()`. 
 Be aware that `assoc()` is an async function, so it can't be used with `buildSync()`.
 
-``` javascript
+```javascript
 var doc = factory.buildSync('post', {title: 'Foo'});
 ```
 
-## Creating new Factories and Adapters
+## Adapters
 
 Adapters provide [support for different databases and ORMs](https://www.npmjs.org/browse/keyword/factory-girl).
+Adapters can be registered for specific models, or as the 'default adapter', which is used for any models for which an adapter has not been specified. 
+See the adapter docs for usage, but typical usage is:
 
-``` javascript
+```javascript
+// use the bookshelf adapter as the default adapter
+require('factory-girl-bookshelf')();
+// use the ObjectAdapter (that simply returns raw objects) for the `post` model
+factory.setAdapter(factory.ObjectAdapter, 'post');
+```
+
+## Creating new Factories 
+
+You can create multiple factories which have different settings:
+
+```javascript
 var anotherFactory = new factory.Factory();
 var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
 anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
-```
-
-Or use the ObjectAdapter that simply returns raw objects.
-
-```javascript
-var ObjectAdapter = factory.ObjectAdapter;
-anotherFactory.setAdapter(ObjectAdapter, 'post'); // use the ObjectAdapter for posts
 ```
 
 ## License
