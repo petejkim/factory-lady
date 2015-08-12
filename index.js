@@ -333,7 +333,7 @@
     doc.destroy(cb);
   };
 
-  var merge = require('lodash/object/merge');
+  var merge = require('lodash.merge');
   
   function copy(obj) {
     var newObj = {};
