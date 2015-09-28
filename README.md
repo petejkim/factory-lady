@@ -19,48 +19,52 @@ To use `factory-girl` in the browser or other JavaScript environments, just incl
 ## Defining Factories
 
 ```javascript
-var factory = require('factory-girl'),
-    User    = require('../../app/models/user'),
-    Post    = require('../../app/models/post');
-
+var factory = require('factory-girl');
+var User    = require('../models/user');
+var Post    = require('../models/post');
 var emailCounter = 1;
 
-// define a factory using define()
-factory.define('user', User, {
+// a simple example
+factory.define('comment', Comment, {
   // define attributes using properties
+  text: 'This is a comment'
+});
+
+factory.define('user', User, {
   state: 'active',
   // ...or functions
   email: function() {
     return 'user' + emailCounter++ + '@demo.com';
   },
-  // provide async functions by accepting a callback
+  // async functions can be used by accepting a callback
   async: function(callback) {
     somethingAsync(callback);
+  },
+  // you can refer to other attributes using `this`
+  username: function() {
+    return this.email;
   }
 });
+// use factory.build() to create a new fixture
 factory.build('user', function(err, user) {
-  console.log(user.attributes); // => {state: 'active', email: 'user1@demo.com', async: 'foo'}
+  console.log(user.attributes);
+  // => {state: 'active', email: 'user1@demo.com', async: 'foo', username: 'user1@demo.com'}
 });
+```
 
-factory.define('comment', Comment, {
-  text: 'hello'
-});
+## Defining Associations
 
+```javascript
 factory.define('post', Post, {
   // create associations using factory.assoc(model, key)
   // or factory.assoc('user') to return the user object itself.
   user_id: factory.assoc('user', 'id'),
   // create array of associations using factory.assocMany(model, key, num)
   comments: factory.assocMany('comment', 'text', 2)
-  subject: 'Hello World',
-  // you can refer to other attributes using `this`
-  slug: function() {
-    return slugify(this.subject);
-  }
 });
 factory.build('post', function(err, post) {
-  console.log(post.attributes); // => {user_id: 1, comments: [{ text: 'hello' }, { text: 'hello' }], 
-                                // subject: 'Hello World', slug: 'hello-world'}
+  console.log(post.attributes);
+  // => { user_id: 1, comments: [{ text: 'hello' }, { text: 'hello' }] }
 });
 ```
 
