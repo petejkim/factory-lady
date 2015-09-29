@@ -143,6 +143,15 @@ var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
 anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
 ```
 
+## Like Promises?
+
+Me too! Bluebird and q are both supported:
+
+```javascript
+var bluebird = require('bluebird');
+var factory = require('factory-girl').promisify(bluebird);
+```
+
 ## License
 
 Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).  
