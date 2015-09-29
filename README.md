@@ -4,8 +4,6 @@
 
 `factory-girl` is a factory library for [Node.js](http://nodejs.org/) and the browser that is inspired by [Factory\_girl](http://github.com/thoughtbot/factory_girl). It works asynchronously and supports associations and the use of functions for generating attributes.
 
-It started out as a fork of [factory-lady](https://github.com/petejkim/factory-lady), but the fork deviated quite a bit. This module uses an adapter to talk to your models so it can support different ORMs such as [Bookshelf](https://github.com/aexmachina/factory-girl-bookshelf),  [Sequelize](https://github.com/aexmachina/factory-girl-sequelize), [JugglingDB](https://github.com/rehanift/factory-girl-jugglingdb), and [Mongoose](https://github.com/jesseclark/factory-girl-mongoose) (and doesn't use `throw` for errors that might occur during save).
-
 ## Installation
 
 Node.js:
@@ -16,27 +14,35 @@ npm install factory-girl
 
 To use `factory-girl` in the browser or other JavaScript environments, just include `index.js` and access `window.Factory`.
 
-## Defining Factories
+## Usage
 
 ```javascript
 var factory = require('factory-girl');
 var User    = require('../models/user');
+
+factory.define('user', User, {
+  username: 'Bob',
+  scores: 50,
+});
+
+factory.build('user', function(err, user) {
+  console.log(user.attributes);
+  // => {username: 'Bob', scores: 50}
+});
+```
+
+## Defining Factories
+
+```javascript
+var factory = require('factory-girl');
 var Post    = require('../models/post');
 var emailCounter = 1;
 
-// a simple example
-factory.define('comment', Comment, {
-  // define attributes using properties
-  text: 'This is a comment'
-});
-
 factory.define('user', User, {
-  state: 'active',
-  // ...or functions
   email: function() {
     return 'user' + emailCounter++ + '@demo.com';
   },
-  // async functions can be used by accepting a callback
+  // async functions can be used by accepting a callback as an argument
   async: function(callback) {
     somethingAsync(callback);
   },
@@ -45,7 +51,6 @@ factory.define('user', User, {
     return this.email;
   }
 });
-// use factory.build() to create a new fixture
 factory.build('user', function(err, user) {
   console.log(user.attributes);
   // => {state: 'active', email: 'user1@demo.com', async: 'foo', username: 'user1@demo.com'}
@@ -56,8 +61,7 @@ factory.build('user', function(err, user) {
 
 ```javascript
 factory.define('post', Post, {
-  // create associations using factory.assoc(model, key)
-  // or factory.assoc('user') to return the user object itself.
+  // create associations using factory.assoc(model, key) or factory.assoc('user') to return the user object itself.
   user_id: factory.assoc('user', 'id'),
   // create array of associations using factory.assocMany(model, key, num)
   comments: factory.assocMany('comment', 'text', 2)
@@ -74,11 +78,9 @@ factory.build('post', function(err, post) {
 factory.build('post', function(err, post) {
   // post is a Post instance that is not saved
 });
-
 factory.build('post', {title: 'Foo', content: 'Bar'}, function(err, post) {
   // build a post and override title and content
 });
-
 factory.create('post', function(err, post) {
   // post is a saved Post instance
 });
@@ -151,6 +153,10 @@ Me too! Bluebird and q are both supported:
 var bluebird = require('bluebird');
 var factory = require('factory-girl').promisify(bluebird);
 ```
+
+## History
+
+It started out as a fork of [factory-lady](https://github.com/petejkim/factory-lady), but the fork deviated quite a bit. This module uses an adapter to talk to your models so it can support different ORMs such as [Bookshelf](https://github.com/aexmachina/factory-girl-bookshelf),  [Sequelize](https://github.com/aexmachina/factory-girl-sequelize), [JugglingDB](https://github.com/rehanift/factory-girl-jugglingdb), and [Mongoose](https://github.com/jesseclark/factory-girl-mongoose) (and doesn't use `throw` for errors that might occur during save).
 
 ## License
 
