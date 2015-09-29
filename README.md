@@ -22,12 +22,12 @@ var User    = require('../models/user');
 
 factory.define('user', User, {
   username: 'Bob',
-  scores: 50,
+  score: 50,
 });
 
 factory.build('user', function(err, user) {
   console.log(user.attributes);
-  // => {username: 'Bob', scores: 50}
+  // => {username: 'Bob', score: 50}
 });
 ```
 
