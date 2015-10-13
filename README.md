@@ -74,8 +74,8 @@ factory.build('post', function(err, post) {
 ## Defining Sequences
 ```javascript
 factory.define('post', Post, {
-  // Returns the next number in the sequence starting with 1.
-  // Automatically increments for the instance.
+  // Creates a new sequence that returns the next number in the sequence for
+  // each created instance, starting with 1.
   num: factory.sequence(),
   // factory.sequence can be abbreviated as factory.seq
   email: factory.seq(function(n) {
