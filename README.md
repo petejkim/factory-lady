@@ -36,11 +36,10 @@ factory.build('user', function(err, user) {
 ```javascript
 var factory = require('factory-girl');
 var Post    = require('../models/post');
-var emailCounter = 1;
 
 factory.define('user', User, {
-  email: function() {
-    return 'user' + emailCounter++ + '@demo.com';
+  email: factory.sequence(function(n) {
+    return 'user' + n + '@demo.com';
   },
   // async functions can be used by accepting a callback as an argument
   async: function(callback) {
@@ -69,6 +68,23 @@ factory.define('post', Post, {
 factory.build('post', function(err, post) {
   console.log(post.attributes);
   // => { user_id: 1, comments: [{ text: 'hello' }, { text: 'hello' }] }
+});
+```
+
+## Defining Sequences
+```javascript
+factory.define('post', Post, {
+  // Returns the next number in the sequence starting with 1.
+  // Automatically increments for the instance.
+  num: factory.sequence(),
+  // factory.sequence can be abbreviated as factory.seq
+  email: factory.seq(function(n) {
+    return 'email' + n + '@test.com';
+  }),
+  // Can also be async
+  asyncProp: factory.seq(function(n, callback) {
+    somethingAsync(n, callback);
+  })
 });
 ```
 

@@ -5,7 +5,7 @@ var context = describe;
 var sinon = require('sinon');
 
 describe('factory', function() {
-  var Model, Person, Job;
+  var Model, Person, Job, Post;
 
   before(function() {
     Model = function() {};
@@ -27,6 +27,9 @@ describe('factory', function() {
 
     Company = function() {};
     Company.prototype = new Model();
+
+    Post = function() {};
+    Post.prototype = new Model();
   });
 
   beforeEach(function() {
@@ -59,6 +62,18 @@ describe('factory', function() {
       name: 'Fruit Company',
       employees: factory.assocMany('person', 3),
       managers: factory.assocMany('person', 'name', 2)
+    });
+
+    factory.define('post', Post, {
+      num: factory.sequence(),
+      email: factory.sequence(function(n) {
+        return 'email' + n + '@test.com';
+      }),
+      name: factory.seq(function(n, cb) {
+        process.nextTick(function() {
+          cb(null, 'Post' + n);
+        });
+      })
     });
   });
 
@@ -127,6 +142,18 @@ describe('factory', function() {
             company.managers[1].should.eql('Person 6');
             done();
           });
+        });
+      });
+
+      context('factory containing a sequence', function() {
+        it('is able to handle that', function(done) {
+          factory.build('post', function(err, post) {
+            (post instanceof Post).should.be.true;
+            post.num.should.eql(1);
+            post.email.should.equal('email1@test.com');
+            post.name.should.equal('Post1');
+            done();
+          })
         });
       });
     });
@@ -266,6 +293,13 @@ describe('factory', function() {
         (job instanceof Job).should.be.true;
         job.title.should.eql('Scientist');
         jobs[9].title.should.eql('Scientist');
+        done();
+      });
+    });
+    it('operates correctly with sequences', function(done) {
+      factory.buildMany('post', 3, function(err, posts) {
+        (posts[2].num - posts[1].num).should.eql(1);
+        (posts[1].num - posts[0].num).should.eql(1);
         done();
       });
     });
