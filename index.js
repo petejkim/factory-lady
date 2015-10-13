@@ -78,6 +78,28 @@
       };
     };
 
+    factory.sequence = function(fn) {
+      var result;
+      var sequenceNum = 1;
+
+      if (!fn || fn.length < 2) {
+        result = function() {
+          if (fn) {
+            return fn(sequenceNum++);
+          } else {
+            return sequenceNum++;
+          }
+        }
+      } else {
+        result = function(cb) {
+          return fn(sequenceNum++, cb);
+        }
+      }
+      return result;
+    };
+
+    factory.seq = factory.sequence;
+
     factory.adapterFor = function(name) {
       return adapters[name] || defaultAdapter;
     };
