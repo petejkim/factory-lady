@@ -219,9 +219,10 @@ describe('factory', function() {
     });
 
     context('defined with an afterCreate handler', function() {
-      var spy = sinon.spy();
+      var spy;
 
-      before(function() {
+      beforeEach(function() {
+        spy = sinon.spy();
         factory.define('job with after create', Job, {
           title: 'Engineer',
           company: 'Foobar Inc.'
@@ -242,9 +243,17 @@ describe('factory', function() {
 
       it('allows afterCreate to mutate the model', function() {
         factory.create('job with after create', function(err, job) {
-          job.title.should.eql('Astronaut')
+          job.title.should.eql('Astronaut');
         });
       });
+
+      it('calls afterCreate with createMany', function() {
+        var num = 10;
+        factory.createMany('job with after create', num, function(err) {
+          spy.callCount.should.equal(num);
+        });
+      });
+
     });
 
   });
@@ -472,7 +481,8 @@ describe('factory', function() {
         }
       });
 
-      factory.withOptions({ key: 'value' }).create('job with after create', function() {});
+      var builder = factory.withOptions({ key: 'value' });
+      builder.create('job with after create', function() {});
     });
 
     it('allows for chaining to merge options', function() {
@@ -487,9 +497,7 @@ describe('factory', function() {
         }
       });
 
-      var builder = factory.withOptions({ key: 'value' });
-      builder.withOptions({ key: 'value 2', anotherKey: 'value' });
-
+      var builder = factory.withOptions({ key: 'value 2', anotherKey: 'value' });
       builder.create('job with after create', function() {});
     });
   });

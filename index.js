@@ -1,6 +1,5 @@
+/* global window, define */
 (function(factory) {
-
-
   if (typeof exports !== 'undefined') {
     module.exports = factory();
     module.exports.ObjectAdapter = require('./lib/object-adapter');
@@ -86,14 +85,16 @@
         result = function() {
           if (fn) {
             return fn(sequenceNum++);
-          } else {
+          }
+          else {
             return sequenceNum++;
           }
-        }
-      } else {
+        };
+      }
+      else {
         result = function(cb) {
           return fn(sequenceNum++, cb);
-        }
+        };
       }
       return result;
     };
@@ -126,7 +127,7 @@
       var promisifiedBuilderProxy = function(fnName) {
         return function() {
           var builder = new Builder();
-          builder.promisify(promisify)
+          builder.promisify(promisify);
           return builder[fnName].apply(builder, arguments);
         };
       };
@@ -162,7 +163,7 @@
         builder.create = promisify(builder.create);
         builder.buildMany = promisify(builder.buildMany);
         builder.createMany = promisify(builder.createMany);
-      }
+      };
 
       builder.withOptions = function(options) {
         merge(builder.options, options);
@@ -180,16 +181,7 @@
 
         builder.build(name, attrs, function(err, doc) {
           if (err) return callback(err);
-
-          save(name, doc, function(saveErr, saveDoc) {
-            if(saveErr) return callback(saveErr);
-
-            if (factories[name].options.afterCreate) {
-              factories[name].options.afterCreate.call(this, saveDoc, builder.options, callback);
-            } else {
-              callback(saveErr, saveDoc);
-            }
-          });
+          save(name, doc, callback);
         });
       };
 
@@ -320,8 +312,14 @@
       function save(name, doc, callback) {
         var model = factories[name].model;
         factory.adapterFor(name).save(doc, model, function (err) {
-          if (!err) created.push([name, doc]);
-          callback(err, doc);
+          if (err) return callback(err);
+          created.push([name, doc]);
+          if (factories[name].options.afterCreate) {
+            factories[name].options.afterCreate.call(this, doc, builder.options, callback);
+          }
+          else {
+            callback(err, doc);
+          }
         });
       }
     };

@@ -56,6 +56,26 @@ factory.build('user', function(err, user) {
 });
 ```
 
+### Options
+
+Options can be provided when you define a model:
+
+```javascript
+factory.define('user', User, { foo: 'bar' }, options);
+```
+
+Alternatively you can create a new factory that specifies options for all of its models:
+ 
+```javascript
+var builder = factory.withOptions(options);
+```
+
+Currently the supported options are:
+
+#### `afterCreate: function(instance, options, callback)`
+
+Provides a function that is called after a new model instance is saved.
+
 ## Defining Associations
 
 ```javascript
@@ -72,6 +92,7 @@ factory.build('post', function(err, post) {
 ```
 
 ## Defining Sequences
+
 ```javascript
 factory.define('post', Post, {
   // Creates a new sequence that returns the next number in the sequence for
