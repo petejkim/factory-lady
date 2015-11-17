@@ -56,26 +56,6 @@ factory.build('user', function(err, user) {
 });
 ```
 
-### Options
-
-Options can be provided when you define a model:
-
-```javascript
-factory.define('user', User, { foo: 'bar' }, options);
-```
-
-Alternatively you can create a new factory that specifies options for all of its models:
- 
-```javascript
-var builder = factory.withOptions(options);
-```
-
-Currently the supported options are:
-
-#### `afterCreate: function(instance, options, callback)`
-
-Provides a function that is called after a new model instance is saved.
-
 ## Defining Associations
 
 ```javascript
@@ -111,6 +91,10 @@ factory.define('post', Post, {
 
 ## Using Factories
 
+### Factory#build
+
+Creates a new (unsaved) instance.
+
 ```javascript
 factory.build('post', function(err, post) {
   // post is a Post instance that is not saved
@@ -118,6 +102,13 @@ factory.build('post', function(err, post) {
 factory.build('post', {title: 'Foo', content: 'Bar'}, function(err, post) {
   // build a post and override title and content
 });
+```
+
+### Factory#create
+
+Builds and saves a new instance.
+
+```
 factory.create('post', function(err, post) {
   // post is a saved Post instance
 });
@@ -152,7 +143,7 @@ factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
 
 ### Factory#buildSync
 
-When you have factories that don't use async property functions, you can use `buildSync()`. 
+When you have factories that don't use async property functions, you can use `buildSync()`.
 Be aware that `assoc()` is an async function, so it can't be used with `buildSync()`.
 
 ```javascript
@@ -162,7 +153,7 @@ var doc = factory.buildSync('post', {title: 'Foo'});
 ## Adapters
 
 Adapters provide [support for different databases and ORMs](https://www.npmjs.org/browse/keyword/factory-girl).
-Adapters can be registered for specific models, or as the 'default adapter', which is used for any models for which an adapter has not been specified. 
+Adapters can be registered for specific models, or as the 'default adapter', which is used for any models for which an adapter has not been specified.
 See the adapter docs for usage, but typical usage is:
 
 ```javascript
@@ -172,7 +163,7 @@ require('factory-girl-bookshelf')();
 factory.setAdapter(factory.ObjectAdapter, 'post');
 ```
 
-## Creating new Factories 
+## Creating new Factories
 
 You can create multiple factories which have different settings:
 
@@ -199,4 +190,3 @@ It started out as a fork of [factory-lady](https://github.com/petejkim/factory-l
 
 Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).  
 Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).  
-
