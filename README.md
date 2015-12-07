@@ -180,7 +180,7 @@ See the adapter docs for usage, but typical usage is:
 // use the bookshelf adapter as the default adapter
 require('factory-girl-bookshelf')();
 // use the ObjectAdapter (that simply returns raw objects) for the `post` model
-factory.setAdapter(factory.ObjectAdapter, 'post');
+factory.setAdapter(new factory.ObjectAdapter(), 'post');
 ```
 
 ## Creating new Factories
@@ -190,7 +190,7 @@ You can create multiple factories which have different settings:
 ```javascript
 var anotherFactory = new factory.Factory();
 var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
-anotherFactory.setAdapter(BookshelfAdapter); // use the Bookshelf adapter
+anotherFactory.setAdapter(new BookshelfAdapter()); // use the Bookshelf adapter
 ```
 
 ## Like Promises?
