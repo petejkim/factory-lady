@@ -353,7 +353,7 @@
     doc.destroy(cb);
   };
 
-  var merge = require('lodash.merge');
+  var merge = typeof require === 'function' ? require('lodash.merge') : _.merge;
   
   function copy(obj) {
     var newObj = {};
