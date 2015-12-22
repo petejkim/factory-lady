@@ -381,7 +381,7 @@
         handler(array[index], processNext, index);
       }
       else if (callback) {
-        setImmediate ? setImmediate(callback) : setTimeout(callback, 0);
+        typeof setImmediate === 'function' ? setImmediate(callback) : setTimeout(callback, 0);
       }
     }
     processNext();
