@@ -35,7 +35,7 @@ factory.build('user', function(err, user) {
 
 ```javascript
 var factory = require('factory-girl');
-var Post    = require('../models/post');
+var User    = require('../models/user');
 
 factory.define('user', User, {
   email: factory.sequence(function(n) {
