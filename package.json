@@ -3,7 +3,7 @@
   "description": "A factory library for Node.js and JavaScript inspired by factory_girl",
   "main": "./index",
   "author": "Simon Wade",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "keywords": [
     "factory",
     "test",
@@ -39,6 +39,8 @@
     "test": "mocha"
   },
   "files": [
-    "lib", "test", "index.js"
+    "lib",
+    "test",
+    "index.js"
   ]
 }
