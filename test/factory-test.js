@@ -102,6 +102,43 @@ describe('factory', function() {
         });
       });
 
+      context('defined with an afterBuild handler', function() {
+        var spy;
+
+        beforeEach(function() {
+          spy = sinon.spy();
+          factory.define('job with after build', Job, {
+            title: 'Engineer',
+            company: 'Foobar Inc.'
+          }, {
+            afterBuild: function(doc, options, done) {
+              spy.apply(null, arguments);
+              doc.title = 'Astronaut';
+              done(null, doc);
+            }
+          });
+        });
+
+        it('calls afterBuild', function() {
+          factory.build('job with after build', function(err, job) {
+            spy.called.should.be.true;
+          });
+        });
+
+        it('allows afterBuild to mutate the model', function() {
+          factory.build('job with after build', function(err, job) {
+            job.title.should.eql('Astronaut');
+          });
+        });
+
+        it('calls afterBuild with buildMany', function() {
+          var num = 10;
+          factory.buildMany('job with after build', num, function(err) {
+            spy.callCount.should.equal(num);
+          });
+        });
+      });
+
       context('factory containing an association', function() {
         it('is able to handle that', function(done) {
           factory.build('person', { age: 30 }, function(err, person) {

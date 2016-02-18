@@ -219,7 +219,13 @@
           if (err) return callback(err);
           var adapter = factory.adapterFor(name),
               doc = adapter.build(model, attrs);
-          callback(null, doc);
+
+          if (factories[name].options.afterBuild) {
+            factories[name].options.afterBuild.call(
+              this, doc, builder.options, callback);
+          } else {
+            callback(null, doc);
+          }
         });
       };
 
@@ -354,7 +360,7 @@
   };
 
   var merge = typeof require === 'function' ? require('lodash.merge') : _.merge;
-  
+
   function copy(obj) {
     var newObj = {};
     if (obj) {
