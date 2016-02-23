@@ -170,6 +170,10 @@ Be aware that `assoc()` is an async function, so it can't be used with `buildSyn
 var doc = factory.buildSync('post', {title: 'Foo'});
 ```
 
+### Factory#cleanup
+
+Destroys all of the created models. This is done using the adapter's `destroy` method.
+
 ## Adapters
 
 Adapters provide [support for different databases and ORMs](https://www.npmjs.org/browse/keyword/factory-girl).
