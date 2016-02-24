@@ -72,6 +72,10 @@ var builder = factory.withOptions(options);
 
 Currently the supported options are:
 
+#### `afterBuild: function(instance, options, callback)`
+
+Provides a function that is called after the model is built.
+
 #### `afterCreate: function(instance, options, callback)`
 
 Provides a function that is called after a new model instance is saved.
@@ -212,5 +216,5 @@ It started out as a fork of [factory-lady](https://github.com/petejkim/factory-l
 
 ## License
 
-Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).  
-Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).  
+Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
+Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
