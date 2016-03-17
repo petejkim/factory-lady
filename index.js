@@ -179,9 +179,9 @@
           return callback(new Error("No factory defined for model '" + name + "'"));
         }
 
-        builder.build(name, attrs, function(err, doc) {
+        builder.build(name, attrs, function(err, doc, resultingAttrs) {
           if (err) return callback(err);
-          save(name, doc, callback);
+          save(name, doc, resultingAttrs, callback);
         });
       };
 
@@ -222,9 +222,9 @@
 
           if (factories[name].options.afterBuild) {
             factories[name].options.afterBuild.call(
-              this, doc, builder.options, callback);
+              builder, doc, attrs, callback);
           } else {
-            callback(null, doc);
+            callback(null, doc, attrs);
           }
         });
       };
@@ -258,29 +258,33 @@
         var args = parseBuildManyArgs.apply(null, arguments),
             results = [];
         callback = args.callback;
-        args.callback = function(err, docs) {
+        args.callback = function(err, docs, resultingAttrsArray) {
           if (err) return callback(err);
           asyncForEach(docs, function(doc, cb, index) {
-            save(name, doc, function(err) {
+            save(name, doc, resultingAttrsArray[index], function(err) {
               if (!err) results[index] = doc;
               cb(err);
             });
           }, function(err) {
-            callback(err, results);
+            callback(err, results, resultingAttrsArray);
           });
         };
         buildMany(args);
       };
 
       function buildMany(args) {
-        var results = [];
+        var results = [],
+            resultingAttrsArray = [];
         asyncForEach(args.attrsArray, function(attrs, cb, index) {
-          builder.build(args.name, attrs, function(err, doc) {
-            if (!err) results[index] = doc;
+          builder.build(args.name, attrs, function(err, doc, resultingAttrs) {
+            if (!err) {
+                results[index] = doc;
+                resultingAttrsArray[index] = resultingAttrs;
+            }
             cb(err);
           });
         }, function(err) {
-          args.callback(err, results);
+          args.callback(err, results, resultingAttrsArray);
         });
       }
 
@@ -315,16 +319,16 @@
         };
       }
 
-      function save(name, doc, callback) {
+      function save(name, doc, resultingAttrs, callback) {
         var model = factories[name].model;
         factory.adapterFor(name).save(doc, model, function (err) {
           if (err) return callback(err);
           created.push([name, doc]);
           if (factories[name].options.afterCreate) {
-            factories[name].options.afterCreate.call(this, doc, builder.options, callback);
+            factories[name].options.afterCreate.call(builder, doc, resultingAttrs, callback);
           }
           else {
-            callback(err, doc);
+            callback(err, doc, resultingAttrs);
           }
         });
       }
