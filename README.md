@@ -97,6 +97,8 @@ factory.define('user', User, {
 });
 ```
 
+Other builder options can be accessed, inside hooks, using `this.options`.
+
 ## Defining Associations
 
 ```javascript
