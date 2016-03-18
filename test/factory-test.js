@@ -548,7 +548,7 @@ describe('factory', function() {
     });
 
     it('promisifies #build', function(done) {
-      promisifiedFactory.build('job').spread(function(job, attrs) {
+      promisifiedFactory.build('job').then(function(job) {
         (job instanceof Job).should.be.true;
         job.title.should.eql('Engineer');
         job.company.should.eql('Foobar Inc.');
@@ -557,7 +557,7 @@ describe('factory', function() {
     });
 
     it('works with chained builders too', function(done) {
-      promisifiedFactory.withOptions({}).build('job').spread(function(job, attrs) {
+      promisifiedFactory.withOptions({}).build('job').then(function(job) {
         (job instanceof Job).should.be.true;
         job.title.should.eql('Engineer');
         job.company.should.eql('Foobar Inc.');

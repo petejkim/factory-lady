@@ -179,18 +179,33 @@
           return callback(new Error("No factory defined for model '" + name + "'"));
         }
 
-        builder.build(name, attrs, function(err, doc, resultingAttrs) {
+        builder._build(name, attrs, function(err, doc, resultingAttrs) {
           if (err) return callback(err);
           save(name, doc, resultingAttrs, callback);
         });
       };
+
+
+      // Shrink last parameter from callback
+      // for more comfortable work with promises
+      function wrapCallback(callback) {
+        if (callback) {
+          var oldCallback = callback;
+          return function(error, doc, attrs) {
+            return oldCallback(error, doc);
+          }
+        }
+      }
 
       builder.build = function(name, attrs, callback) {
         if (typeof attrs === 'function') {
           callback = attrs;
           attrs = {};
         }
+        return this._build(name, attrs, wrapCallback(callback));
+      };
 
+      builder._build = function(name, attrs, callback) {
         if (!factories[name]) {
           return callback(new Error("No factory defined for model '" + name + "'"));
         }
@@ -266,7 +281,7 @@
               cb(err);
             });
           }, function(err) {
-            callback(err, results, resultingAttrsArray);
+            callback(err, results);
           });
         };
         buildMany(args);
@@ -276,7 +291,7 @@
         var results = [],
             resultingAttrsArray = [];
         asyncForEach(args.attrsArray, function(attrs, cb, index) {
-          builder.build(args.name, attrs, function(err, doc, resultingAttrs) {
+          builder._build(args.name, attrs, function(err, doc, resultingAttrs) {
             if (!err) {
                 results[index] = doc;
                 resultingAttrsArray[index] = resultingAttrs;
@@ -315,7 +330,7 @@
           name: name,
           attrsArray: attrsArray,
           num: num,
-          callback: callback
+          callback: wrapCallback(callback)
         };
       }
 
@@ -328,7 +343,7 @@
             factories[name].options.afterCreate.call(builder, doc, resultingAttrs, callback);
           }
           else {
-            callback(err, doc, resultingAttrs);
+            callback(err, doc);
           }
         });
       }
