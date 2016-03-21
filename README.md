@@ -72,11 +72,11 @@ var builder = factory.withOptions(options);
 
 Currently the supported options are:
 
-#### `afterBuild: function(instance, options, callback)`
+#### `afterBuild: function(instance, attrs, callback)`
 
 Provides a function that is called after the model is built.
 
-#### `afterCreate: function(instance, options, callback)`
+#### `afterCreate: function(instance, attrs, callback)`
 
 Provides a function that is called after a new model instance is saved.
 
@@ -96,6 +96,8 @@ factory.define('user', User, {
   }
 });
 ```
+
+Other builder options can be accessed, inside hooks, using `this.options`.
 
 ## Defining Associations
 

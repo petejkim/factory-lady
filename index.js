@@ -179,18 +179,33 @@
           return callback(new Error("No factory defined for model '" + name + "'"));
         }
 
-        builder.build(name, attrs, function(err, doc) {
+        builder._build(name, attrs, function(err, doc, resultingAttrs) {
           if (err) return callback(err);
-          save(name, doc, callback);
+          save(name, doc, resultingAttrs, callback);
         });
       };
+
+
+      // Shrink last parameter from callback
+      // for more comfortable work with promises
+      function wrapCallback(callback) {
+        if (callback) {
+          var oldCallback = callback;
+          return function(error, doc, attrs) {
+            return oldCallback(error, doc);
+          }
+        }
+      }
 
       builder.build = function(name, attrs, callback) {
         if (typeof attrs === 'function') {
           callback = attrs;
           attrs = {};
         }
+        return this._build(name, attrs, wrapCallback(callback));
+      };
 
+      builder._build = function(name, attrs, callback) {
         if (!factories[name]) {
           return callback(new Error("No factory defined for model '" + name + "'"));
         }
@@ -222,9 +237,9 @@
 
           if (factories[name].options.afterBuild) {
             factories[name].options.afterBuild.call(
-              this, doc, builder.options, callback);
+              builder, doc, attrs, callback);
           } else {
-            callback(null, doc);
+            callback(null, doc, attrs);
           }
         });
       };
@@ -258,10 +273,10 @@
         var args = parseBuildManyArgs.apply(null, arguments),
             results = [];
         callback = args.callback;
-        args.callback = function(err, docs) {
+        args.callback = function(err, docs, resultingAttrsArray) {
           if (err) return callback(err);
           asyncForEach(docs, function(doc, cb, index) {
-            save(name, doc, function(err) {
+            save(name, doc, resultingAttrsArray[index], function(err) {
               if (!err) results[index] = doc;
               cb(err);
             });
@@ -273,14 +288,18 @@
       };
 
       function buildMany(args) {
-        var results = [];
+        var results = [],
+            resultingAttrsArray = [];
         asyncForEach(args.attrsArray, function(attrs, cb, index) {
-          builder.build(args.name, attrs, function(err, doc) {
-            if (!err) results[index] = doc;
+          builder._build(args.name, attrs, function(err, doc, resultingAttrs) {
+            if (!err) {
+                results[index] = doc;
+                resultingAttrsArray[index] = resultingAttrs;
+            }
             cb(err);
           });
         }, function(err) {
-          args.callback(err, results);
+          args.callback(err, results, resultingAttrsArray);
         });
       }
 
@@ -311,17 +330,17 @@
           name: name,
           attrsArray: attrsArray,
           num: num,
-          callback: callback
+          callback: wrapCallback(callback)
         };
       }
 
-      function save(name, doc, callback) {
+      function save(name, doc, resultingAttrs, callback) {
         var model = factories[name].model;
         factory.adapterFor(name).save(doc, model, function (err) {
           if (err) return callback(err);
           created.push([name, doc]);
           if (factories[name].options.afterCreate) {
-            factories[name].options.afterCreate.call(this, doc, builder.options, callback);
+            factories[name].options.afterCreate.call(builder, doc, resultingAttrs, callback);
           }
           else {
             callback(err, doc);
