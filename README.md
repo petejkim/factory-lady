@@ -80,6 +80,23 @@ Provides a function that is called after the model is built.
 
 Provides a function that is called after a new model instance is saved.
 
+```javascript
+factory.define('user', User, {
+  foo: 'bar'
+}, {
+  afterCreate: function(instance, options, callback) {
+    generateBazBasedOnID(instance.id, function(error, generatedBaz) {
+      if(error) {
+        callback(error, null);
+      } else {
+        instance.baz = generatedBaz;
+        callback(null, instance);
+      }
+    });
+  }
+});
+```
+
 ## Defining Associations
 
 ```javascript
