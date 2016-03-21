@@ -206,7 +206,21 @@ See the adapter docs for usage, but typical usage is:
 ```javascript
 // use the bookshelf adapter as the default adapter
 require('factory-girl-bookshelf')();
-// use the ObjectAdapter (that simply returns raw objects) for the `post` model
+```
+
+### `ObjectAdapter`
+
+You can use the included ObjectAdapter to work without model classes. This adapter simply returns
+the provided attribute objects.
+
+```
+factory.setAdapter(new factory.ObjectAdapter());
+```
+
+### Using Different Adapters Per-model
+
+```
+// use an ObjectAdapter for the `post` model only
 factory.setAdapter(new factory.ObjectAdapter(), 'post');
 ```
 
