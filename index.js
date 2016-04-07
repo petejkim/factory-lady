@@ -202,7 +202,7 @@
           callback = attrs;
           attrs = {};
         }
-        return this._build(name, attrs, wrapCallback(callback));
+        return builder._build(name, attrs, wrapCallback(callback));
       };
 
       builder._build = function(name, attrs, callback) {
