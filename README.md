@@ -84,7 +84,7 @@ Provides a function that is called after a new model instance is saved.
 factory.define('user', User, {
   foo: 'bar'
 }, {
-  afterCreate: function(instance, options, callback) {
+  afterCreate: function(instance, attrs, callback) {
     generateBazBasedOnID(instance.id, function(error, generatedBaz) {
       if(error) {
         callback(error, null);
