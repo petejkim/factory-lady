@@ -134,6 +134,22 @@ factory.define('post', Post, {
 
 ## Using Factories
 
+### Factory#attrs
+
+Generates and returns attrs.
+
+```javascript
+factory.attrs('post', function(err, postAttrs) {
+  // postAttrs is a post attributes
+  console.log(postAttrs);
+  // => {title: 'Hello', authorEmail: 'user1@demo.com'}
+});
+
+factory.attrs('post', {title: 'Foo', content: 'Bar'}, function(err, postAttrs) {
+  // build post attrs and override title and content
+});
+```
+
 ### Factory#build
 
 Creates a new (unsaved) instance.

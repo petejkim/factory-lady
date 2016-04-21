@@ -77,6 +77,45 @@ describe('factory', function() {
     });
   });
 
+  describe('#attrs', function() {
+      it('correctly generates attrs', function(done) {
+          factory.attrs('job', function(err, jobAttrs) {
+            jobAttrs.should.eql({
+              title: 'Engineer',
+              company: 'Foobar Inc.',
+              duties: {
+                cleaning: false,
+                writing: true,
+                computing: true
+              }
+            });
+            done();
+          });
+      });
+
+      it('correctly overrides attrs', function(done) {
+          var overrides = { title: 'Developer' };
+
+          factory.attrs('job', overrides, function(err, jobAttrs) {
+            jobAttrs.title.should.eql(overrides.title);
+            jobAttrs.company.should.eql('Foobar Inc.');
+            done();
+          });
+      });
+
+      it('correctly handles nested attributes', function(done) {
+          factory.attrs('company', function(err, companyAttrs) {
+            companyAttrs.employees.should.be.instanceof(Array);
+            companyAttrs.employees.length.should.eql(3);
+
+            companyAttrs.managers.should.be.instanceof(Array);
+            companyAttrs.managers.length.should.eql(2);
+
+            done();
+          });
+      });
+  });
+
   describe('#build', function() {
     it('builds, but does not save the object', function(done) {
       factory.build('job', function(err, job) {

@@ -40,6 +40,7 @@
     };
 
     factory.withOptions = builderProxy('withOptions');
+    factory.attrs = builderProxy('attrs');
     factory.build = builderProxy('build');
     factory.buildSync = builderProxy('buildSync');
     factory.buildMany = builderProxy('buildMany');
@@ -133,6 +134,7 @@
       };
 
       promisified.withOptions = promisifiedBuilderProxy('withOptions');
+      promisified.attrs = promisifiedBuilderProxy('attrs');
       promisified.build = promisifiedBuilderProxy('build');
       promisified.buildMany = promisifiedBuilderProxy('buildMany');
       promisified.create = promisifiedBuilderProxy('create');
@@ -159,6 +161,7 @@
       builder.options = {};
 
       builder.promisify = function(promisify) {
+        builder.attrs = promisify(builder.attrs);
         builder.build = promisify(builder.build);
         builder.create = promisify(builder.create);
         builder.buildMany = promisify(builder.buildMany);
@@ -197,19 +200,15 @@
         }
       }
 
-      builder.build = function(name, attrs, callback) {
+      builder.attrs = function(name, attrs, callback) {
         if (typeof attrs === 'function') {
           callback = attrs;
           attrs = {};
         }
-        return builder._build(name, attrs, wrapCallback(callback));
-      };
-
-      builder._build = function(name, attrs, callback) {
         if (!factories[name]) {
           return callback(new Error("No factory defined for model '" + name + "'"));
         }
-        var model = factories[name].model;
+
         attrs = merge(copy(factories[name].attributes), attrs);
 
         asyncForEach(keys(attrs), function(key, cb) {
@@ -232,14 +231,36 @@
           }
         }, function(err) {
           if (err) return callback(err);
+
+          callback(null, attrs);
+        });
+      };
+
+      builder.build = function(name, attrs, callback) {
+        if (typeof attrs === 'function') {
+          callback = attrs;
+          attrs = {};
+        }
+        return builder._build(name, attrs, wrapCallback(callback));
+      };
+
+      builder._build = function(name, attrs, callback) {
+        if (!factories[name]) {
+          return callback(new Error("No factory defined for model '" + name + "'"));
+        }
+
+        var model = factories[name].model;
+
+        builder.attrs(name, attrs, function(err, resultingAttrs) {
+          if (err) return callback(err);
           var adapter = factory.adapterFor(name),
-              doc = adapter.build(model, attrs);
+              doc = adapter.build(model, resultingAttrs);
 
           if (factories[name].options.afterBuild) {
             factories[name].options.afterBuild.call(
-              builder, doc, attrs, callback);
+              builder, doc, resultingAttrs, callback);
           } else {
-            callback(null, doc, attrs);
+            callback(null, doc, resultingAttrs);
           }
         });
       };
