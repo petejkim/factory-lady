@@ -2,7 +2,7 @@
  * Created by chetanv on 26/05/16.
  */
 
-var factory = require('..');
+var factory = require('../..');
 var models = require('./models');
 
 var Person = models.Person;

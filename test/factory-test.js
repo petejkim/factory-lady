@@ -3,9 +3,9 @@
 var factory = require('..');
 var should = require('chai').should();
 var context = describe;
-require('./factories');
-var adapters = require('./adapters');
-var models = require('./models');
+require('./utils/factories');
+var adapters = require('./utils/adapters');
+var models = require('./utils/models');
 
 var Person = models.Person;
 var Job = models.Job;
@@ -21,7 +21,6 @@ describe('factory', function () {
       it('correctly generates attrs', function (done) {
         factory.attrs('user', function (err, userAttrs) {
           if(err) done(err);
-          console.log(err, userAttrs);
           userAttrs.should.eql({
             username: 'username_1',
             password: 'dummy_password',
