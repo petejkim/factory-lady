@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "bluebird": "^2.9.25",
-    "chai": "^3.0.0",
+    "chai": "^3.5.0",
     "mocha": "^2.2.5",
     "should": "^6.0.3",
     "sinon": "^1.14.1"
