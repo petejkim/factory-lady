@@ -3,7 +3,6 @@
 var factory = require('..');
 var should = require('chai').should();
 var context = describe;
-var sinon = require('sinon');
 require('./factories');
 var adapters = require('./adapters');
 var models = require('./models');
@@ -13,9 +12,65 @@ var Job = models.Job;
 var Company = models.Company;
 var Post = models.Post;
 var BlogPost = models.BlogPost;
+var User = models.User;
 
 describe('factory', function () {
   describe('#attrs', function () {
+
+    context('attributes defined by function', function () {
+      it('correctly generates attrs', function (done) {
+        factory.attrs('user', function (err, userAttrs) {
+          if(err) done(err);
+          console.log(err, userAttrs);
+          userAttrs.should.eql({
+            username: 'username_1',
+            password: 'dummy_password',
+            facebook: {},
+            twitter: {}
+          });
+
+          done();
+        });
+      });
+
+      it('correctly overrides attrs', function (done) {
+        factory.attrs('user', {
+          username: 'john_wayne',
+          facebook: {id: 'john_wayne'}
+        }, function (err, userAttrs) {
+          if(err) done(err);
+          userAttrs.should.eql({
+            username: 'john_wayne',
+            password: 'dummy_password',
+            facebook: {id: 'john_wayne'},
+            twitter: {}
+          });
+
+          done();
+        });
+      });
+
+      it('correctly generates attrs for given buildOptions', function (done) {
+        factory.attrs('user', {}, { facebookUser: true }, function (err, userAttrs) {
+          if(err) done(err);
+          userAttrs.should.eql({
+            username: 'username_1',
+            password: 'dummy_password',
+            facebook: {
+              id: 'dummy_fb_id_1',
+              token: 'fb_token1234567',
+              email: 'fb_email_1@fb.com',
+              name: 'John Doe'
+            },
+            twitter: {}
+          });
+
+          done();
+        });
+      });
+
+    });
+
     it('correctly generates attrs', function (done) {
       factory.attrs('job', function (err, jobAttrs) {
         jobAttrs.should.eql({
@@ -57,13 +112,43 @@ describe('factory', function () {
   });
 
   describe('#build', function () {
+
+    context('attributes defined by function', function () {
+      it('builds the object correctly', function (done) {
+        factory.build('user', {}, { twitterUser: true }, function (err, user) {
+          if(err) done(err);
+
+          (user instanceof User).should.be.true;
+          user.username.should.eql('username_1');
+          user.twitter.id.should.eql('dummy_tw_id_1');
+          user.facebook.should.eql({});
+
+          done();
+        });
+      });
+
+      it('builds the object correctly with overrides', function (done) {
+        factory.build('user', { twitter: { id: 'twitter_id' } }, { twitterUser: true }, function (err, user) {
+          if(err) done(err);
+
+          (user instanceof User).should.be.true;
+          user.username.should.eql('username_1');
+          user.twitter.id.should.eql('twitter_id');
+          user.facebook.should.eql({});
+
+          done();
+        });
+      });
+
+    });
+
     it('builds, but does not save the object', function (done) {
       factory.build('job', function (err, job) {
         (job instanceof Job).should.be.true;
         job.title.should.eql('Engineer');
         job.company.should.eql('Foobar Inc.');
         job.should.not.have.property('saveCalled');
-        
+
         done();
       });
 
@@ -81,7 +166,7 @@ describe('factory', function () {
             job.duties.cleaning.should.be.true;
             job.duties.writing.should.be.false;
             job.duties.computing.should.be.true;
-            
+
             done();
           });
         });
@@ -169,6 +254,20 @@ describe('factory', function () {
   });
 
   describe('#create', function () {
+
+    it('creates objects with attributes defined by function', function (done) {
+      factory.create('user', {}, { facebookUser: true, twitterUser: true }, function (err, user) {
+        if(err) done(err);
+
+        (user instanceof User).should.be.true;
+        user.facebook.id.should.eql('dummy_fb_id_1');
+        user.twitter.id.should.eql('dummy_tw_id_2');
+        user.saveCalled.should.be.true;
+        
+        done();
+      });
+    });
+
     it('builds and saves the object', function (done) {
       factory.create('job', function (err, job) {
         (job instanceof Job).should.be.true;
@@ -231,7 +330,7 @@ describe('factory', function () {
         factory.createMany('job_with_after_create', num, function (err, jobs) {
           jobs.forEach(function (job) {
             job.title.should.eql('Astronaut');
-          })
+          });
 
           done();
         });

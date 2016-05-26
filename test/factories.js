@@ -10,14 +10,17 @@ var Job = models.Job;
 var Company = models.Company;
 var Post = models.Post;
 var BlogPost = models.BlogPost;
+var User = models.User;
 var Faulty = models.Faulty;
 
 var nameCounter = 1;
 var emailCounter = 1;
+var idCounter = 1;
 
 beforeEach(function () {
   nameCounter = 1;
   emailCounter = 1;
+  idCounter = 1;
 });
 
 factory.define('person', Person, {
@@ -60,12 +63,12 @@ factory.define('job_with_after_create', Job, {
 }, {
   afterCreate: function (doc, options, done) {
     doc.title = 'Astronaut';
-    if(options) {
-      if(options.key) {
+    if (options) {
+      if (options.key) {
         doc._key = options.key;
       }
 
-      if(options.anotherKey) {
+      if (options.anotherKey) {
         doc._anotherKey = options.anotherKey;
       }
     }
@@ -97,6 +100,46 @@ factory.define('blogpost', BlogPost, {
   title: function () {
     return this.heading;
   }
+});
+
+
+factory.define('user', User, function (buildOptions) {
+  var attrs = {
+    username: function () {
+      return 'username_' + nameCounter++;
+    },
+    password: 'dummy_password',
+    facebook: {},
+    twitter: {}
+  };
+
+  if (buildOptions.facebookUser) {
+    attrs.facebook = {
+      id: function () {
+        return 'dummy_fb_id_' + idCounter++;
+      },
+      token: 'fb_token1234567',
+      email: function () {
+        return 'fb_email_' + emailCounter++ + '@fb.com';
+      },
+      name: 'John Doe'
+    }
+  }
+
+  if(buildOptions.twitterUser) {
+    attrs.twitter = {
+      id: function () {
+        return 'dummy_tw_id_' + idCounter++;
+      },
+      token: 'tw_token1234567',
+      displayName: 'Jane Doe',
+      username: function () {
+        return 'dummy_tw_handle_' + emailCounter++;
+      }
+    }
+  }
+
+  return attrs;
 });
 
 factory.define('faulty', Faulty, {});

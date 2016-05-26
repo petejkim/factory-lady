@@ -36,6 +36,10 @@ var BlogPost = function () {
 };
 BlogPost.prototype = new Model();
 
+var User = function () {
+};
+User.prototype = new Model();
+
 var Faulty = function () {
 };
 Faulty.prototype.save = function (callback) {
@@ -48,5 +52,6 @@ module.exports = {
   Company: Company,
   Post: Post,
   Faulty: Faulty,
-  BlogPost: BlogPost
+  BlogPost: BlogPost,
+  User: User
 };
