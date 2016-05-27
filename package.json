@@ -3,7 +3,7 @@
   "description": "A factory library for Node.js and JavaScript inspired by factory_girl",
   "main": "./index",
   "author": "Simon Wade",
-  "version": "3.1.0",
+  "version": "4.0.0-beta",
   "keywords": [
     "factory",
     "test",
