@@ -108,11 +108,14 @@ factory.define('post', Post, {
   // create array of associations using factory.assocMany(model, key, num)
   comments: factory.assocMany('comment', 'text', 2)
 });
-factory.build('post', function(err, post) {
+factory.create('post', function(err, post) {
   console.log(post.attributes);
-  // => { user_id: 1, comments: [{ text: 'hello' }, { text: 'hello' }] }
+  // => { id: 1, user_id: 1, comments: [{ text: 'hello' }, { text: 'hello' }] }
 });
 ```
+
+Be aware that `assoc()` will always create associated records, even when `factory.build()` is called.
+You can use `assocBuild()`, which will always build associated records.
 
 ## Defining Sequences
 
@@ -173,9 +176,29 @@ factory.create('post', function(err, post) {
 });
 ```
 
-### Factory#assoc
+### Factory#assoc(model, key = null, attrs = null)
 
-You can optionally provide attributes to the associated factory by passing an object as third argument.
+Defines an attribute of a model that creates an associated instance of another model.
+
+Use the `key` argument to return an attribute of the associated instance.
+
+You can optionally provide attributes to the associated factory by passing an object as third
+argument.
+
+Be aware that `assoc()` will always _create_ associated records, even when `factory.build()` is
+called. You can use `assocBuild()`, which will always build associated records.
+
+### Factory#assocBuild(model, key = null, attrs = null)
+
+Same as `#assoc`, but builds the associated models rather than creating them.
+
+### Factory#assocMany(model, key, num, attrs = null)
+
+Creates multiple entries.
+
+### Factory#assocManyBuild
+
+Same as `#assocMany`, but builds the associated models rather than creating them.
 
 ### Factory#buildMany
 
