@@ -243,7 +243,7 @@ factory.create('user', {}, { confirmedUser: true }, function (err, userAttrs) {
 Note that in case you want to pass buildOptions, you have to pass attributes parameter as well. Otherwise, the buildOptions will be treated as attribute parameters.
 
 
-### Factory#assoc(model, key = null, attrs = null)
+### Factory#assoc(model, key = null, attrs = null, buildOptions = null)
 
 Defines an attribute of a model that creates an associated instance of another model.
 
@@ -255,11 +255,11 @@ argument.
 Be aware that `assoc()` will always _create_ associated records, even when `factory.build()` is
 called. You can use `assocBuild()`, which will always build associated records.
 
-### Factory#assocBuild(model, key = null, attrs = null)
+### Factory#assocBuild(model, key = null, attrs = null, buildOptions = null)
 
 Same as `#assoc`, but builds the associated models rather than creating them.
 
-### Factory#assocMany(model, key, num, attrs = null)
+### Factory#assocMany(model, key, num, attrs = null, buildOptions = null)
 
 Creates multiple entries.
 
@@ -275,15 +275,55 @@ Allow you to create a number of models at once.
 factory.buildMany('post', 10, function(err, posts) {
   // build 10 posts
 });
+
+factory.buildMany('post', 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
+  // build 10 posts, using build options for first two
+});
+
+factory.buildMany('post', 10, {withImage: true}, function(err, posts) {
+  // build 10 posts, using same build options for all of them
+});
+
 factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], function(err, posts) {
   // build 2 posts using the specified attributes
 });
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], [{withImage: true}], function(err, posts) {
+  // build 2 posts using the specified attributes
+  // build first post using the build option
+});
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], {withImage: true}, function(err, posts) {
+  // build first 2 posts using the specified attributes using same build options for all of them
+});
+
+
 factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, posts) {
   // build 10 posts using the specified attributes for the first and second
 });
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
+  // build 10 posts using the specified attributes and build options for the first and second
+});
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, {withImage: true}, function(err, posts) {
+  // build 10 posts using the specified attributes for the first and second
+  // uses same build options for all of them
+});
+
+
 factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
   // build 10 posts using the specified attributes for all of them
 });
+
+factory.buildMany('post', {title: 'Foo'}, 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
+  // build 10 posts using the specified attributes for all of them but using build options only for first two
+});
+
+factory.buildMany('post', {title: 'Foo'}, 10, {withImage: true}, function(err, posts) {
+  // build 10 posts using the specified attributes and build options for all of them
+});
+
 ```
 
 ### Factory#createMany

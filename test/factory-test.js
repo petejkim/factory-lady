@@ -353,6 +353,36 @@ describe('factory', function () {
       });
     });
 
+    it('builds a given set of objects with build options', function (done) {
+      var attrsArray = [{username: 'ironman'}, {username: 'hulk'}, {username: 'hawkeye'}];
+      var buildOptionsArray = [{facebookUser: true}, {twitterUser: true}];
+      factory.buildMany('user', attrsArray, buildOptionsArray, function (err, users) {
+        if (err) return done(err);
+        users.length.should.eql(3);
+        var ironman = users[0];
+        var hulk = users[1];
+        var hawkeye = users[2];
+
+        (ironman instanceof User).should.be.true;
+        ironman.username.should.eql('ironman');
+        should.exist(ironman.facebook.id);
+        should.not.exist(ironman.twitter.id);
+        ironman.should.not.have.property('saveCalled');
+
+        hulk.username.should.eql('hulk');
+        should.not.exist(hulk.facebook.id);
+        should.exist(hulk.twitter.id);
+        hulk.should.not.have.property('saveCalled');
+
+        hawkeye.username.should.eql('hawkeye');
+        should.not.exist(hawkeye.facebook.id);
+        should.not.exist(hawkeye.twitter.id);
+        hawkeye.should.not.have.property('saveCalled');
+
+        done();
+      });
+    });
+
     it('builds more than the given set of objects', function (done) {
       var attrsArray = [{title: 'Scientist'}, {}];
       factory.buildMany('job', attrsArray, 10, function (err, jobs) {
@@ -362,6 +392,24 @@ describe('factory', function () {
         (job instanceof Job).should.be.true;
         job.title.should.eql('Scientist');
         jobs[9].title.should.eql('Engineer');
+
+        done();
+      });
+    });
+
+    it('builds more than the given set of objects and build options', function (done) {
+      var attrsArray = [{username: 'ironman', password: 'd0n7-7ry'}, {username: 'hulk'}, {username: 'hawkeye'}];
+      var buildOptionsArray = [{facebookUser: true}, {twitterUser: true}];
+
+      factory.buildMany('user', attrsArray, 10, buildOptionsArray, function (err, users) {
+        if (err) return done(err);
+
+        users.length.should.eql(10);
+        var ironman = users[0];
+        (ironman instanceof User).should.be.true;
+        ironman.password.should.eql('d0n7-7ry');
+        users[9].password.should.eql('dummy_password');
+        should.not.exist(users[9].twitter.id);
 
         done();
       });
@@ -392,6 +440,22 @@ describe('factory', function () {
       });
     });
 
+    it('builds a number of objects with the same attrs and build options', function (done) {
+      factory.buildMany('user', {password: 'bad-idea'}, 10, {twitterUser: true}, function (err, users) {
+        if (err) return done(err);
+
+        users.length.should.eql(10);
+        var user = users[0];
+        (user instanceof User).should.be.true;
+        user.password.should.eql('bad-idea');
+        should.exist(user.twitter.id);
+        users[9].password.should.eql('bad-idea');
+        should.exist(users[9].twitter.id);
+
+        done();
+      });
+    });
+
     it('operates correctly with sequences', function (done) {
       factory.buildMany('post', 3, function (err, posts) {
         (posts[2].num - posts[1].num).should.eql(1);
@@ -417,6 +481,37 @@ describe('factory', function () {
         done();
       });
     });
+
+    it('creates a given set of objects with build options', function (done) {
+      var attrsArray = [{username: 'ironman'}, {username: 'hulk'}, {username: 'hawkeye'}];
+      var buildOptionsArray = [{facebookUser: true}, {twitterUser: true}];
+      factory.createMany('user', attrsArray, buildOptionsArray, function (err, users) {
+        if (err) return done(err);
+        users.length.should.eql(3);
+        var ironman = users[0];
+        var hulk = users[1];
+        var hawkeye = users[2];
+
+        (ironman instanceof User).should.be.true;
+        ironman.username.should.eql('ironman');
+        should.exist(ironman.facebook.id);
+        should.not.exist(ironman.twitter.id);
+        ironman.saveCalled.should.be.true;
+
+        hulk.username.should.eql('hulk');
+        should.not.exist(hulk.facebook.id);
+        should.exist(hulk.twitter.id);
+        hulk.saveCalled.should.be.true;
+
+        hawkeye.username.should.eql('hawkeye');
+        should.not.exist(hawkeye.facebook.id);
+        should.not.exist(hawkeye.twitter.id);
+        hawkeye.saveCalled.should.be.true;
+
+        done();
+      });
+    });
+
     it('creates more than the given set of objects', function (done) {
       var attrsArray = [{title: 'Scientist'}];
       factory.createMany('job', attrsArray, 10, function (err, jobs) {
@@ -431,6 +526,27 @@ describe('factory', function () {
         done();
       });
     });
+
+    it('creates more than the given set of objects and build options', function (done) {
+      var attrsArray = [{username: 'ironman', password: 'd0n7-7ry'}, {username: 'hulk'}, {username: 'hawkeye'}];
+      var buildOptionsArray = [{facebookUser: true}, {twitterUser: true}];
+
+      factory.createMany('user', attrsArray, 10, buildOptionsArray, function (err, users) {
+        if (err) return done(err);
+
+        users.length.should.eql(10);
+        var ironman = users[0];
+        (ironman instanceof User).should.be.true;
+        ironman.saveCalled.should.be.true;
+        ironman.password.should.eql('d0n7-7ry');
+        users[9].password.should.eql('dummy_password');
+        should.not.exist(users[9].twitter.id);
+        users[9].saveCalled.should.be.true;
+
+        done();
+      });
+    });
+
     it('creates a number of objects', function (done) {
       factory.createMany('job', 10, function (err, jobs) {
         if (err) return done(err);

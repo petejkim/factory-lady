@@ -47,36 +47,41 @@
     factory.create = builderProxy('create');
     factory.createMany = builderProxy('createMany');
 
-    factory.assoc = function (name, key, attrs) {
+    factory.assoc = function (name, key, attrs, buildOptions) {
       attrs = attrs || {};
+      buildOptions = buildOptions || {};
       return function (callback) {
-        factory.create(name, attrs, function (err, doc) {
+        factory.create(name, attrs, buildOptions, function (err, doc) {
           if (err) return callback(err);
           callback(null, key ? doc[key] : doc);
         });
       };
     };
 
-    factory.assocBuild = function(name, key, attrs) {
+    factory.assocBuild = function(name, key, attrs, buildOptions) {
       attrs = attrs || {};
+      buildOptions = buildOptions || {};
       return function(callback) {
-        factory.build(name, attrs, function(err, doc) {
+        factory.build(name, attrs, buildOptions, function(err, doc) {
           if (err) return callback(err);
           callback(null, key ? doc[key] : doc);
         });
       };
     };
 
-    factory.assocMany = function (name, key, num, attrsArray) {
-      if (arguments.length < 4) {
-        if (typeof key === 'number') {
-          attrsArray = num;
-          num = key;
-          key = null;
-        }
+    factory.assocMany = function (name, key, num, attrsArray, buildOptionsArray) {
+      if (typeof key === 'number') {
+        buildOptionsArray = attrsArray;
+        attrsArray = num;
+        num = key;
+        key = null;
       }
+
+      buildOptionsArray = buildOptionsArray || [];
+      attrsArray = attrsArray || [];
+
       return function (callback) {
-        factory.createMany(name, attrsArray, num, function (err, docs) {
+        factory.createMany(name, attrsArray, num, buildOptionsArray, function (err, docs) {
           if (err) return callback(err);
           if (key) {
             for (var i = 0; i < docs.length; ++i) {
@@ -88,16 +93,19 @@
       };
     };
 
-    factory.assocBuildMany = function(name, key, num, attrsArray) {
-      if (arguments.length < 4) {
-        if (typeof key === 'number') {
-          attrsArray = num;
-          num = key;
-          key = null;
-        }
+    factory.assocBuildMany = function(name, key, num, attrsArray, buildOptionsArray) {
+      if (typeof key === 'number') {
+        buildOptionsArray = attrsArray;
+        attrsArray = num;
+        num = key;
+        key = null;
       }
+
+      buildOptionsArray = buildOptionsArray || [];
+      attrsArray = attrsArray || [];
+
       return function(callback) {
-        factory.buildMany(name, attrsArray, num, function(err, docs) {
+        factory.buildMany(name, attrsArray, num, buildOptionsArray, function(err, docs) {
           if (err) return callback(err);
           if (key) {
             for (var i = 0; i < docs.length; ++i) {
@@ -348,7 +356,7 @@
         buildMany(args);
       };
 
-      builder.createMany = function (name, attrsArray, num, callback) {
+      builder.createMany = function (name, attrsArray, num, buildOptionsArray, callback) {
         var args = parseBuildManyArgs.apply(null, arguments),
           results = [];
         callback = args.callback;
@@ -367,10 +375,12 @@
       };
 
       function buildMany(args) {
-        var results = [],
-          resultingAttrsArray = [];
+        var results = [];
+        var resultingAttrsArray = [];
+        var buildOptions = args.buildOptionsArray;
+
         asyncForEach(args.attrsArray, function (attrs, cb, index) {
-          builder._build(args.name, attrs, {}, function (err, doc, resultingAttrs) {
+          builder._build(args.name, attrs, buildOptions[index] || {}, function (err, doc, resultingAttrs) {
             if (!err) {
               results[index] = doc;
               resultingAttrsArray[index] = resultingAttrs;
@@ -382,33 +392,98 @@
         });
       }
 
-      function parseBuildManyArgs(name, attrsArray, num, callback) {
-        if (typeof num == 'function') { // name, Array, callback
-          callback = num;
-          num = attrsArray.length;
+      function parseBuildManyArgs(name, attrsArray, num, buildOptionsArray, callback) {
+
+        function buildObjectArray(obj, count) {
+          var arr = [];
+          for(var i = 0; i < count; i++) {
+            arr[i] = obj;
+          }
+          return arr;
         }
-        if (typeof attrsArray == 'number') { // name, num, callback
-          num = attrsArray;
-          attrsArray = null;
-        }
-        if (!(attrsArray instanceof Array)) { // name, Object, num, callback
-          if (typeof num != 'number') throw new Error("num must be specified when attrsArray is not an array");
-          var attrs = attrsArray;
-          attrsArray = new Array(num);
-          for (var i = 0; i < num; i++) {
-            attrsArray[i] = attrs;
+
+        if(attrsArray instanceof Array) {
+          // name, attrsArray, callback
+          // name, attrsArray, buildOptionsArray, callback
+          // name, attrsArray, buildOptionsObject, callback
+          // name, attrsArray, num, callback
+          // name, attrsArray, num, buildOptionsArray, callback
+          // name, attrsArray, num, buildOptionsObject, callback
+          if(typeof num === 'function') {
+            callback = num;
+            num = attrsArray.length;
+            buildOptionsArray = new Array(num);
+          } else if(num instanceof Array) {
+            callback = buildOptionsArray;
+            buildOptionsArray = num;
+            num = Math.max(attrsArray.length, buildOptionsArray.length);
+            attrsArray.length = buildOptionsArray.length = num;
+          } else if(typeof num === 'object') {
+            callback = buildOptionsArray;
+            buildOptionsArray = buildObjectArray(num, attrsArray.length);
+            num = attrsArray.length;
+          } else if(typeof num === 'number') {
+            attrsArray.length = num;
+            if(typeof buildOptionsArray === 'function') {
+              callback = buildOptionsArray;
+              buildOptionsArray = new Array(num);
+            } else if(buildOptionsArray instanceof Array) {
+              buildOptionsArray.length = num;
+            } else if(typeof buildOptionsArray === 'object') {
+              buildOptionsArray = buildObjectArray(buildOptionsArray, num);
+            } else {
+              throw new Error('Invalid parameters type found');
+            }
+          } else {
+            throw new Error('Invalid parameters type found');
+          }
+        } else if(typeof attrsArray === 'number') {
+          // name, num, callback
+          // name, num, buildOptionsArray, callback
+          // name, num, buildOptionsObject, callback
+          if(typeof num === 'function') {
+            callback = num;
+            num = attrsArray;
+            attrsArray = new Array(num);
+            buildOptionsArray = new Array(num);
+          } else if(num instanceof Array) {
+            callback = buildOptionsArray;
+            buildOptionsArray = num;
+            num = attrsArray;
+            attrsArray = new Array(num);
+            buildOptionsArray.length = num;
+          } else if(typeof num === 'object') {
+            callback = buildOptionsArray;
+            var buildOption1 = num;
+            num = attrsArray;
+            buildOptionsArray = buildObjectArray(buildOption1, num);
+            attrsArray = new Array(num);
+          } else {
+            throw new Error('Invalid parameters type found');
+          }
+        } else if(typeof attrsArray === 'object') {
+          // name, Object, num, callback
+          // name, Object, num, buildOptionsArray, callback
+          // name, Object, num, buildOptionsObject, callback
+          attrsArray = buildObjectArray(attrsArray, num);
+
+          if(typeof buildOptionsArray === 'function') {
+            callback = buildOptionsArray;
+            buildOptionsArray = new Array(num);
+          } else if(buildOptionsArray instanceof Array) {
+            buildOptionsArray.length = num;
+          } else if(typeof buildOptionsArray === 'object') {
+            buildOptionsArray = buildObjectArray(buildOptionsArray, num);
+          } else {
+            throw new Error('Invalid parameters type found');
           }
         }
-        if (!attrsArray) {
-          attrsArray = new Array(num);
-        }
-        else if (attrsArray.length !== num) {
-          attrsArray.length = num;
-        }
+
         return {
           name: name,
           attrsArray: attrsArray,
           num: num,
+          buildOptionsArray: buildOptionsArray,
           callback: wrapCallback(callback)
         };
       }
@@ -472,6 +547,7 @@
     var rv = [], key;
     for (key in obj) {
       if (obj.hasOwnProperty(key)) {
+        rv.push(key);
         rv.push(key);
       }
     }
