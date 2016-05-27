@@ -56,6 +56,42 @@ factory.build('user', function(err, user) {
 });
 ```
 
+### Initializer function
+You can provide a function instead of an object to initialize models.
+You can pass the `buildOptions` object to the `factory.attrs`, `factory.build`, `factory.create` and the same object will be passed on to the initializer function.
+
+```javascript
+var factory = require('factory-girl');
+var User    = require('../models/user');
+
+factory.define('user', User, function (buildOptions) {
+  var attrs = {
+    email: factory.sequence(function(n) {
+      return 'user' + n + '@demo.com';
+    }),
+    // async functions can be used by accepting a callback as an argument
+    async: function(callback) {
+      somethingAsync(callback);
+    },
+    // you can refer to other attributes using `this`
+    username: function() {
+      return this.email;
+    },
+    confirmed: false,
+    confirmedAt: null
+  };
+  
+  if (buildOptions.confirmedUser) {
+    attrs.confirmed = true;
+    attrs.confirmedAt = new Date();
+  }
+});
+factory.build('user', function(err, user) {
+  console.log(user.attributes);
+  // => {state: 'active', email: 'user1@demo.com', async: 'foo', username: 'user1@demo.com'}
+});
+```
+
 ### Options
 
 Options can be provided when you define a model:
@@ -153,6 +189,16 @@ factory.attrs('post', {title: 'Foo', content: 'Bar'}, function(err, postAttrs) {
 });
 ```
 
+In case you have defined your factory with an [initializer function](#initializer-function), you can pass on `buildOptions` to be passed to the initializer function.
+
+```javascript
+factory.attrs('user', {}, { confirmedUser: true }, function (err, userAttrs) {
+  // userAttrs is a user attributes
+  console.log(userAttrs);
+}
+```
+Note that in case you want to pass buildOptions, you have to pass attributes parameter as well. Otherwise, the buildOptions will be treated as attribute parameters.
+
 ### Factory#build
 
 Creates a new (unsaved) instance.
@@ -166,6 +212,16 @@ factory.build('post', {title: 'Foo', content: 'Bar'}, function(err, post) {
 });
 ```
 
+In case you have defined your factory with an [initializer function](#initializer-function), you can pass on `buildOptions` to be passed to the initializer function.
+
+```javascript
+factory.build('user', {}, { confirmedUser: true }, function (err, userAttrs) {
+  // userAttrs is a user attributes
+  console.log(userAttrs);
+}
+```
+Note that in case you want to pass buildOptions, you have to pass attributes parameter as well. Otherwise, the buildOptions will be treated as attribute parameters.
+
 ### Factory#create
 
 Builds and saves a new instance.
@@ -176,7 +232,18 @@ factory.create('post', function(err, post) {
 });
 ```
 
-### Factory#assoc(model, key = null, attrs = null)
+In case you have defined your factory with an [initializer function](#initializer-function), you can pass on `buildOptions` to be passed to the initializer function.
+
+```javascript
+factory.create('user', {}, { confirmedUser: true }, function (err, userAttrs) {
+  // userAttrs is a user attributes
+  console.log(userAttrs);
+}
+```
+Note that in case you want to pass buildOptions, you have to pass attributes parameter as well. Otherwise, the buildOptions will be treated as attribute parameters.
+
+
+### Factory#assoc(model, key = null, attrs = null, buildOptions = null)
 
 Defines an attribute of a model that creates an associated instance of another model.
 
@@ -188,11 +255,11 @@ argument.
 Be aware that `assoc()` will always _create_ associated records, even when `factory.build()` is
 called. You can use `assocBuild()`, which will always build associated records.
 
-### Factory#assocBuild(model, key = null, attrs = null)
+### Factory#assocBuild(model, key = null, attrs = null, buildOptions = null)
 
 Same as `#assoc`, but builds the associated models rather than creating them.
 
-### Factory#assocMany(model, key, num, attrs = null)
+### Factory#assocMany(model, key, num, attrs = null, buildOptions = null)
 
 Creates multiple entries.
 
@@ -208,15 +275,55 @@ Allow you to create a number of models at once.
 factory.buildMany('post', 10, function(err, posts) {
   // build 10 posts
 });
+
+factory.buildMany('post', 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
+  // build 10 posts, using build options for first two
+});
+
+factory.buildMany('post', 10, {withImage: true}, function(err, posts) {
+  // build 10 posts, using same build options for all of them
+});
+
 factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], function(err, posts) {
   // build 2 posts using the specified attributes
 });
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], [{withImage: true}], function(err, posts) {
+  // build 2 posts using the specified attributes
+  // build first post using the build option
+});
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], {withImage: true}, function(err, posts) {
+  // build first 2 posts using the specified attributes using same build options for all of them
+});
+
+
 factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, posts) {
   // build 10 posts using the specified attributes for the first and second
 });
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
+  // build 10 posts using the specified attributes and build options for the first and second
+});
+
+factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, {withImage: true}, function(err, posts) {
+  // build 10 posts using the specified attributes for the first and second
+  // uses same build options for all of them
+});
+
+
 factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
   // build 10 posts using the specified attributes for all of them
 });
+
+factory.buildMany('post', {title: 'Foo'}, 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
+  // build 10 posts using the specified attributes for all of them but using build options only for first two
+});
+
+factory.buildMany('post', {title: 'Foo'}, 10, {withImage: true}, function(err, posts) {
+  // build 10 posts using the specified attributes and build options for all of them
+});
+
 ```
 
 ### Factory#createMany
