@@ -199,6 +199,7 @@ describe('factory', function () {
             person.should.not.have.property('saveCalled');
             person.name.should.eql('Person 1');
             person.age.should.eql(30);
+            person.title.should.eql('Engineer', "assoc(model, attr) works as expected");
             (person.job instanceof Job).should.be.true;
             person.job.title.should.eql('Engineer');
             person.job.company.should.eql('Bazqux Co.');
@@ -262,7 +263,7 @@ describe('factory', function () {
         user.facebook.id.should.eql('dummy_fb_id_1');
         user.twitter.id.should.eql('dummy_tw_id_2');
         user.saveCalled.should.be.true;
-        
+
         done();
       });
     });
