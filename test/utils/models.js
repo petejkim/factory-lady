@@ -3,45 +3,35 @@
  */
 
 
-var Model = function () {
-};
-
+var Model = function () {};
 Model.prototype.save = function (callback) {
   this.saveCalled = true;
   callback();
 };
-
 Model.prototype.destroy = function (callback) {
   this.destroyCalled = true;
   callback();
 };
 
-var Person = function () {
-};
+var Person = function () {};
 Person.prototype = new Model();
 
-var Job = function () {
-};
+var Job = function () {};
 Job.prototype = new Model();
 
-var Company = function () {
-};
+var Company = function () {};
 Company.prototype = new Model();
 
-var Post = function () {
-};
+var Post = function () {};
 Post.prototype = new Model();
 
-var BlogPost = function () {
-};
+var BlogPost = function () {};
 BlogPost.prototype = new Model();
 
-var User = function () {
-};
+var User = function () {};
 User.prototype = new Model();
 
-var Faulty = function () {
-};
+var Faulty = function () {};
 Faulty.prototype.save = function (callback) {
   callback(new Error('Save failed'));
 };
