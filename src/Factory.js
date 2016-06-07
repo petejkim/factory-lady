@@ -30,7 +30,7 @@ class Factory {
   async getFactoryAttrs(buildOptions = {}) {
     let attrs = {};
     if (typeof this.initializer === 'function') {
-      attrs = await Promise.resolve(this.initializer(buildOptions));
+      attrs = Promise.resolve(this.initializer(buildOptions));
     } else {
       attrs = {...this.initializer};
     }
@@ -64,7 +64,7 @@ class Factory {
     let attrObject = null;
     let buildOptionsObject = null;
 
-    if (!Array.isArray(attrsArray) && typeof attrsArray === 'object') {
+    if (typeof attrsArray === 'object' && !Array.isArray(attrsArray)) {
       attrObject = attrsArray;
       attrsArray = [];
     }

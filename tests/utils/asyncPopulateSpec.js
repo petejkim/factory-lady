@@ -3,19 +3,30 @@
  */
 
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import asyncPopulate from '../../src/utils/asyncPopulate';
 import {expect} from 'chai';
 import Debug from 'debug';
-import asyncFunction from '../../test-helper/asyncFunction';
+import asyncFunction from '../test-helper/asyncFunction';
 
 const debug = Debug('asyncPopulateSpec');
 
 describe('asyncPopulate', function () {
+
   it('returns a promise', function () {
     const asyncPopulateP = asyncPopulate({}, {});
     expect(asyncPopulateP.then).to.be.a('function');
     return expect(asyncPopulateP).to.be.eventually.fulfilled;
+  });
+
+  it('rejects if target or source is not an object', function () {
+    const targetP = asyncPopulate(undefined, {});
+    const sourceP = asyncPopulate({});
+
+    return Promise.all([
+      expect(targetP).to.be.eventually.rejected,
+      expect(sourceP).to.be.eventually.rejected
+    ]);
   });
 
   it('populates objects correctly', asyncFunction(async function () {

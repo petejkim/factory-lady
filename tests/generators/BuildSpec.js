@@ -2,12 +2,12 @@
  * Created by chetanv on 06/06/16.
  */
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import Build from '../../src/generators/Build'
 import {expect} from 'chai';
 import Debug from 'debug';
-import DummyFactoryGirl from '../../test-helper/DummyFactoryGirl';
-import asyncFunction from '../../test-helper/asyncFunction';
+import DummyFactoryGirl from '../test-helper/DummyFactoryGirl';
+import asyncFunction from '../test-helper/asyncFunction';
 import sinon from 'sinon';
 
 const debug = Debug('BuildSpec');

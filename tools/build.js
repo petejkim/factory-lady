@@ -35,7 +35,7 @@ for (const format of ['es6', 'cjs', 'umd']) {
     dest: `dist/${format === 'cjs' ? 'index' : `index.${format}`}.js`,
     format,
     sourceMap: true,
-    moduleName: format === 'umd' ? pkg.name : undefined,
+    moduleName: format === 'umd' ? 'Factory' : undefined,
   })));
 }
 

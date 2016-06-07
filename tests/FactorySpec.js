@@ -3,13 +3,13 @@
  */
 
 
-import '../test-helper/testUtils';
+import './test-helper/testUtils';
 import Factory from '../src/Factory'
 import {expect} from 'chai';
 import Debug from 'debug';
-import DummyModel from '../test-helper/DummyModel';
-import DummyAdapter from '../test-helper/DummyAdapter';
-import asyncFunction from '../test-helper/asyncFunction';
+import DummyModel from './test-helper/DummyModel';
+import DummyAdapter from './test-helper/DummyAdapter';
+import asyncFunction from './test-helper/asyncFunction';
 import sinon from 'sinon';
 
 const debug = Debug('FactorySpec');

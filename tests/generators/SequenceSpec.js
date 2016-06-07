@@ -3,11 +3,11 @@
  */
 
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import Sequence from '../../src/generators/Sequence'
 import {expect} from 'chai';
 import Debug from 'debug';
-import asyncFunction from '../../test-helper/asyncFunction';
+import asyncFunction from '../test-helper/asyncFunction';
 import sinon from 'sinon';
 
 const debug = Debug('SequenceSpec');

@@ -2,7 +2,7 @@
  * Created by chetanv on 06/06/16.
  */
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import Generator from '../../src/generators/Generator'
 import {expect} from 'chai';
 import Debug from 'debug';

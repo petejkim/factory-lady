@@ -3,6 +3,14 @@
  */
 
 async function asyncPopulate(target, source) {
+  if(typeof target !== 'object') {
+    throw new Error('Invalid target passed');
+  }
+
+  if(typeof source !== 'object') {
+    throw new Error('Invalid source passed');
+  }
+
   Object.keys(source).forEach(async(attr) => {
     if (Array.isArray(source[attr])) {
       target[attr] = [];

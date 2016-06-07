@@ -2,12 +2,12 @@
  * Created by chetanv on 06/06/16.
  */
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import ObjectAdapter from '../../src/adapters/ObjectAdapter';
 import {expect} from 'chai';
 import Debug from 'debug';
-import DummyModel from '../../test-helper/DummyModel';
-import asyncFunction from '../../test-helper/asyncFunction';
+import DummyModel from '../test-helper/DummyModel';
+import asyncFunction from '../test-helper/asyncFunction';
 
 const debug = Debug('ObjectAdapterSpec');
 

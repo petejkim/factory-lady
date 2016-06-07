@@ -3,12 +3,12 @@
  */
 
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import BuildMany from '../../src/generators/BuildMany'
 import {expect} from 'chai';
 import Debug from 'debug';
-import DummyFactoryGirl from '../../test-helper/DummyFactoryGirl';
-import asyncFunction from '../../test-helper/asyncFunction';
+import DummyFactoryGirl from '../test-helper/DummyFactoryGirl';
+import asyncFunction from '../test-helper/asyncFunction';
 import sinon from 'sinon';
 
 const debug = Debug('BuildManySpec');

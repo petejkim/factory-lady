@@ -2,12 +2,12 @@
  * Created by chetanv on 06/06/16.
  */
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import MongooseAdapter from '../../src/adapters/MongooseAdapter';
 import {expect} from 'chai';
 import Debug from 'debug';
-import DummyMongooseModel from '../../test-helper/DummyMongooseModel';
-import asyncFunction from '../../test-helper/asyncFunction';
+import DummyMongooseModel from '../test-helper/DummyMongooseModel';
+import asyncFunction from '../test-helper/asyncFunction';
 
 const debug = Debug('MongooseAdapterSpec');
 

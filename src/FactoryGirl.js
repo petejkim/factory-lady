@@ -10,6 +10,9 @@ import AssocMany from './generators/AssocMany';
 import BuildMany from './generators/BuildMany';
 import attrGenerator from './generators/attrGenerator';
 import DefaultAdapter from './adapters/DefaultAdapter';
+import Debug from 'debug';
+
+const debug = Debug('FactoryGirl');
 
 class FactoryGirl {
   factories = {};
@@ -21,49 +24,61 @@ class FactoryGirl {
     this.assocMany = attrGenerator(this, AssocMany);
     this.assocBuild = attrGenerator(this, Build);
     this.assocBuildMany = attrGenerator(this, BuildMany);
-    this.sequence = attrGenerator(this, Sequence);
+    this.seq = this.sequence = attrGenerator(this, Sequence);
 
-    this.defaultAdapter = options.defaultAdapter || new DefaultAdapter;
+    this.defaultAdapter = new DefaultAdapter;
+    this.options = options;
   }
 
   define(name, Model, initializer, options) {
-    if (this.getFactory(name)) {
+    if (this.factories[name]) {
       throw new Error(`factory ${name} already defined`)
     }
 
     this.factories[name] = new Factory(Model, initializer, options);
   }
 
-  async attrs(name, attrs, buildOptions) {
-    return await this.getFactory(name).attrs(attrs, buildOptions);
+  attrs(name, attrs, buildOptions) {
+    return this.getFactory(name).attrs(attrs, buildOptions);
   }
 
-  async build(name, attrs, buildOptions) {
-    const adapter = this.adapters[name] || this.defaultAdapter;
-    return await this.getFactory(name).build(adapter, attrs, buildOptions);
+  build(name, attrs, buildOptions) {
+    const adapter = this.getAdapter(name);
+    return this.getFactory(name).build(adapter, attrs, buildOptions);
   }
 
-  async create(name, attrs, buildOptions) {
-    const adapter = this.adapters[name] || this.defaultAdapter;
-    return await this.getFactory(name).create(adapter, attrs, buildOptions);
+  create(name, attrs, buildOptions) {
+    const adapter = this.getAdapter(name);
+    return this.getFactory(name).create(adapter, attrs, buildOptions);
   }
 
-  async buildMany(name, num, attrs, buildOptions) {
-    const adapter = this.adapters[name] || this.defaultAdapter;
-    return await this.getFactory(name).buildMany(adapter, num, attrs, buildOptions);
+  attrsMany(name, num, attrs, buildOptions) {
+    return this.getFactory(name).attrsMany(num, attrs, buildOptions);
   }
 
-  async createMany(name, num, attrs, buildOptions) {
-    const adapter = this.adapters[name] || this.defaultAdapter;
-    return await this.getFactory(name).createMany(adapter, num, attrs, buildOptions);
+  buildMany(name, num, attrs, buildOptions) {
+    const adapter = this.getAdapter(name);
+    return this.getFactory(name).buildMany(adapter, num, attrs, buildOptions);
+  }
+
+  createMany(name, num, attrs, buildOptions) {
+    const adapter = this.getAdapter(name);
+    return this.getFactory(name).createMany(adapter, num, attrs, buildOptions);
   }
 
   getFactory(name) {
+    if(!this.factories[name]) {
+      throw new Error('Invalid factory requested');
+    }
     return this.factories[name];
   }
 
   withOptions(options, merge = false) {
     this.options = merge ? {...this.options, ...options} : options;
+  }
+
+  getAdapter(factory) {
+    return this.adapters[factory] || this.defaultAdapter;
   }
 
   setAdapter(adapter, factory) {

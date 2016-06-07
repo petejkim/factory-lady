@@ -2,9 +2,9 @@
  * Created by chetanv on 06/06/16.
  */
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import ModelGenerator from '../../src/generators/ModelGenerator'
-import DummyFactoryGirl from '../../test-helper/DummyFactoryGirl';
+import DummyFactoryGirl from '../test-helper/DummyFactoryGirl';
 import {expect} from 'chai';
 import Debug from 'debug';
 

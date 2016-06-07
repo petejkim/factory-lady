@@ -3,13 +3,13 @@
  */
 
 
-import '../../test-helper/testUtils';
+import '../test-helper/testUtils';
 import attrGenerator from '../../src/generators/attrGenerator';
 import {expect} from 'chai';
 import Debug from 'debug';
-import DummyFactoryGirl from '../../test-helper/DummyFactoryGirl';
-import DummyGenerator from '../../test-helper/DummyGenerator';
-import asyncFunction from '../../test-helper/asyncFunction';
+import DummyFactoryGirl from '../test-helper/DummyFactoryGirl';
+import DummyGenerator from '../test-helper/DummyGenerator';
+import asyncFunction from '../test-helper/asyncFunction';
 import sinon from 'sinon';
 
 const debug = Debug('attrGeneratorSpec');
