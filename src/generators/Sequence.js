@@ -5,15 +5,25 @@
 import Generator from './Generator';
 
 class Sequence extends Generator {
-  count = 0;
+  static sequences = {};
+  id = '';
 
-  constructor(callback = null) {
+  constructor(factoryGirl, id, callback = null) {
+    super(factoryGirl);
+
+    if(typeof id !== 'string') {
+      throw new Error('Invalid sequence key passed');
+    }
+
+    this.id = id;
+
+    Sequence.sequences[id] = Sequence.sequences[id] || 1;
     this.callback = callback;
   }
 
-  generate() {
-    this.count++;
-    return this.callback ? this.callback(this.count) : this.count;
+  async generate() {
+    const count = Sequence.sequences[this.id]++;
+    return this.callback ? this.callback(count) : count;
   }
 }
 

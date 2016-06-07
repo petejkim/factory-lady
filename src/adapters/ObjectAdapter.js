@@ -3,16 +3,22 @@
  */
 
 class ObjectAdapter {
-  build(Model, props) {
-
+  async build(Model, props) {
+    const model = new Model;
+    for(let key in props) {
+      if(props.hasOwnProperty(key)) {
+        model[key] = props[key];
+      }
+    }
+    return model;
   }
 
-  save(Model, doc) {
-
+  async save(Model, model) {
+    return model;
   }
 
-  destroy(Model, doc) {
-
+  async destroy(Model, model) {
+    return model;
   }
 }
 

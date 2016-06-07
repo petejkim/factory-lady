@@ -2,8 +2,11 @@
  * Created by chetanv on 01/06/16.
  */
 
-export default function (Generator) {
+export default function (factoryGirl, SomeGenerator) {
   return function () {
-    return new Generator(...arguments);
+    const generator = new SomeGenerator(factoryGirl, ...arguments);
+    return async function () {
+      return generator.generate();
+    }
   }
 }

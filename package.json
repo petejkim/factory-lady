@@ -48,11 +48,14 @@
     "babel-register": "^6.9.0",
     "bluebird": "^2.9.25",
     "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
     "mocha": "^2.2.5",
-    "should": "^6.0.3"
+    "should": "^6.0.3",
+    "sinon": "^2.0.0-pre",
+    "sinon-chai": "https://github.com/sjmulder/sinon-chai.git#pr/sinon-2.0.0-pre"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register"
+    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register tests"
   },
   "files": [
     "lib",

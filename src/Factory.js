@@ -2,6 +2,7 @@
  * Created by chetanv on 01/06/16.
  */
 
+import asyncPopulate from './utils/asyncPopulate';
 
 class Factory {
   name = null;
@@ -10,61 +11,90 @@ class Factory {
   options = null;
 
   constructor(Model, initializer, options = {}) {
+    if(!Model || typeof Model !== 'function') {
+      throw new Error('Invalid Model passed to the factory');
+    }
+
+    if(!initializer || (typeof initializer !== 'object' && typeof initializer !== 'function')) {
+      throw new Error('Invalid initializer passed to the factory');
+    }
+
     this.Model = Model;
     this.initializer = initializer;
     this.options = options;
   }
 
-  attrs(attrs = {}, buildOptions = {}) {
+  async getFactoryAttrs(buildOptions = {}) {
+    let attrs = {};
     if(typeof this.initializer === 'function') {
-      attrs = this.initializer(buildOptions);
+      attrs = await Promise.resolve(this.initializer(buildOptions));
     } else {
       attrs = {...this.initializer};
     }
 
-    function buildAttr(a) {
-      if (a instanceof Generator) {
-        return a.generate();
-      }
+    return attrs;
+  }
 
-      if (typeof a === 'function') {
-        return a();
-      }
-
-      return attr;
-    }
-
+  async attrs(attrs = {}, buildOptions = {}) {
+    const factoryAttrs = await this.getFactoryAttrs(buildOptions);
     const modelAttrs = {};
 
-    Object.keys(attrs).forEach((attr) => {
-      modelAttrs[attr] = buildAttr(attr);
-    });
+    await asyncPopulate(modelAttrs, factoryAttrs);
+    await asyncPopulate(modelAttrs, attrs);
 
     return modelAttrs;
   }
 
-  build(attrs = {}, buildOptions = {}) {
-
+  async build(adapter, attrs = {}, buildOptions = {}) {
+    const modelAttrs = await this.attrs(attrs, buildOptions);
+    return adapter.build(this.Model, modelAttrs);
   }
 
-  buildSync(attrs = {}, buildOptions = {}) {
-
+  async create(adapter, attrs = {}, buildOptions = {}) {
+    const model = await this.build(adapter, attrs, buildOptions);
+    return adapter.save(this.Model, model);
   }
 
-  create(attrs = {}, buildOptions = {}) {
+  async attrsMany(num, attrsArray = [], buildOptionsArray = []) {
+    const models = [];
+    let attrObject = null;
+    let buildOptionsObject = null;
 
+    if(!Array.isArray(attrsArray) && typeof attrsArray === 'object') {
+      attrObject = attrsArray;
+      attrsArray = [];
+    }
+
+    if(typeof buildOptionsArray === 'object') {
+      buildOptionsObject = buildOptionsArray;
+      buildOptionsArray = [];
+    }
+
+    if(typeof num !== 'number' || num < 1) {
+      throw new Error('Invalid number of objects requested');
+    }
+
+    attrsArray.length = buildOptionsArray.length = num;
+    for(let i = 0; i < num; i++) {
+      models[i] = await this.attrs(
+        attrObject || attrsArray[i] || {},
+        buildOptionsObject || buildOptionsArray[i] || {}
+      );
+    }
+
+    return models;
   }
 
-  attrsMany(num, attrsArray = [], buildOptionsArray = []) {
-
+  async buildMany(adapter, num, attrsArray = [], buildOptionsArray = []) {
+    const attrs = await this.attrsMany(num, attrsArray, buildOptionsArray);
+    const models = attrs.map((attr) => adapter.build(this.Model, attr));
+    return Promise.all(models);
   }
 
-  buildMany(num, attrsArray = [], buildOptionsArray = []) {
-
-  }
-
-  createMany(num, attrsArray = [], buildOptionsArray = []) {
-
+  async createMany(adapter, num, attrsArray = [], buildOptionsArray = []) {
+    const models = await this.buildMany(adapter, num, attrsArray, buildOptionsArray);
+    const savedModels = models.map((model) => adapter.save(this.Model, model));
+    return Promise.all(savedModels);
   }
 }
 

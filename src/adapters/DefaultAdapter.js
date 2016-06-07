@@ -4,16 +4,18 @@
 
 
 class DefaultAdapter {
-  build(Model, props) {
-    
+  async build(Model, props) {
+    return new Model(props);
   }
   
-  save(Model, doc) {
-    
+  async save(Model, model) {
+    model.save();
+    return model;
   }
   
-  destroy(Model, doc) {
-    
+  async destroy(Model, model) {
+    model.destroy();
+    return model;
   }
 }
 
