@@ -288,7 +288,7 @@ describe('Factory', function () {
     }));
   });
 
-  describe.only('#attrsMany', function () {
+  describe('#attrsMany', function () {
     it('validates number of objects', function () {
       const noNumP = objFactory.attrsMany();
       const invalidNumP = objFactory.attrsMany('alpha');

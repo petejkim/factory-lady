@@ -17,7 +17,6 @@ class FactoryGirl {
   adapters = {};
 
   constructor(options) {
-    super();
     this.assoc = attrGenerator(this, Assoc);
     this.assocMany = attrGenerator(this, AssocMany);
     this.assocBuild = attrGenerator(this, Build);
