@@ -16,9 +16,9 @@ describe('MongooseAdapter', function () {
     const adapter = new MongooseAdapter;
     expect(adapter).to.be.an.instanceof(MongooseAdapter);
   });
-  
+
   const adapter = new MongooseAdapter;
-  
+
   describe('#build', function () {
     it('builds the model', asyncFunction(async function () {
       const model = await adapter.build(DummyMongooseModel, {});

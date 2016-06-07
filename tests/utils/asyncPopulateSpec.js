@@ -17,22 +17,34 @@ describe('asyncPopulate', function () {
     expect(asyncPopulateP.then).to.be.a('function');
     return expect(asyncPopulateP).to.be.eventually.fulfilled;
   });
-  
+
   it('populates objects correctly', asyncFunction(async function () {
     const source = {
       num: 1,
       str: 'hello',
       funcs: {
-        sync: function() { return 'shouldHaveThisValue' },
-        async: async function () { return 'shouldHaveResolvedValue'; },
-        promise: function () { return Promise.resolve('shouldWorkWithPromises'); }
+        sync: function () {
+          return 'shouldHaveThisValue'
+        },
+        async: async function () {
+          return 'shouldHaveResolvedValue';
+        },
+        promise: function () {
+          return Promise.resolve('shouldWorkWithPromises');
+        }
       },
       arrays: {
         simple: [1, 2, 3],
         funcs: [
-          function() { return 1; },
-          async function () { return 2; },
-          function () { return Promise.resolve(3); }
+          function () {
+            return 1;
+          },
+          async function () {
+            return 2;
+          },
+          function () {
+            return Promise.resolve(3);
+          }
         ],
         nested: [
           1, [
@@ -40,7 +52,9 @@ describe('asyncPopulate', function () {
             {c: 3, d: 4},
             [
               {
-                p: function () { return 20 },
+                p: function () {
+                  return 20
+                },
                 q: [6, 7]
               }
             ]
@@ -89,7 +103,9 @@ describe('asyncPopulate', function () {
     };
     const source = {
       x: {
-        y: function () { return 'yo'; }
+        y: function () {
+          return 'yo';
+        }
       },
       p: [4]
     };

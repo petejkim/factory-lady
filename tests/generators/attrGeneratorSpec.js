@@ -39,7 +39,7 @@ describe('attrGenerator', function () {
       const valueFunction = generatorFunc(1);
       expect(valueFunction).to.be.a('function');
     });
-    
+
     describe('[value function]', function () {
       const valueFunction = generatorFunc(1);
 

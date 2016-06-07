@@ -3,6 +3,9 @@
  */
 
 import asyncPopulate from './utils/asyncPopulate';
+import Debug from 'debug';
+
+const debug = Debug('Factory');
 
 class Factory {
   name = null;
@@ -11,11 +14,11 @@ class Factory {
   options = null;
 
   constructor(Model, initializer, options = {}) {
-    if(!Model || typeof Model !== 'function') {
+    if (!Model || typeof Model !== 'function') {
       throw new Error('Invalid Model passed to the factory');
     }
 
-    if(!initializer || (typeof initializer !== 'object' && typeof initializer !== 'function')) {
+    if (!initializer || (typeof initializer !== 'object' && typeof initializer !== 'function')) {
       throw new Error('Invalid initializer passed to the factory');
     }
 
@@ -26,7 +29,7 @@ class Factory {
 
   async getFactoryAttrs(buildOptions = {}) {
     let attrs = {};
-    if(typeof this.initializer === 'function') {
+    if (typeof this.initializer === 'function') {
       attrs = await Promise.resolve(this.initializer(buildOptions));
     } else {
       attrs = {...this.initializer};
@@ -56,33 +59,42 @@ class Factory {
   }
 
   async attrsMany(num, attrsArray = [], buildOptionsArray = []) {
+
     const models = [];
     let attrObject = null;
     let buildOptionsObject = null;
 
-    if(!Array.isArray(attrsArray) && typeof attrsArray === 'object') {
+    if (!Array.isArray(attrsArray) && typeof attrsArray === 'object') {
       attrObject = attrsArray;
       attrsArray = [];
     }
 
-    if(typeof buildOptionsArray === 'object') {
+    if (!Array.isArray(buildOptionsArray) && typeof buildOptionsArray === 'object') {
       buildOptionsObject = buildOptionsArray;
       buildOptionsArray = [];
     }
 
-    if(typeof num !== 'number' || num < 1) {
+    if (typeof num !== 'number' || num < 1) {
       throw new Error('Invalid number of objects requested');
     }
 
+    if (!Array.isArray(attrsArray)) {
+      throw new Error('Invalid attrsArray passed');
+    }
+
+    if (!Array.isArray(buildOptionsArray)) {
+      throw new Error('Invalid buildOptionsArray passed');
+    }
+
     attrsArray.length = buildOptionsArray.length = num;
-    for(let i = 0; i < num; i++) {
-      models[i] = await this.attrs(
+    for (let i = 0; i < num; i++) {
+      models[i] = this.attrs(
         attrObject || attrsArray[i] || {},
         buildOptionsObject || buildOptionsArray[i] || {}
       );
     }
 
-    return models;
+    return Promise.all(models);
   }
 
   async buildMany(adapter, num, attrsArray = [], buildOptionsArray = []) {

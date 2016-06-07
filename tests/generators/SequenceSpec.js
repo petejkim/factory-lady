@@ -7,7 +7,6 @@ import '../../test-helper/testUtils';
 import Sequence from '../../src/generators/Sequence'
 import {expect} from 'chai';
 import Debug from 'debug';
-import DummyFactoryGirl from '../../test-helper/DummyFactoryGirl';
 import asyncFunction from '../../test-helper/asyncFunction';
 import sinon from 'sinon';
 
@@ -54,7 +53,8 @@ describe('Sequence', function () {
     });
 
     it('saves the passed callback', function () {
-      const cb = function () {};
+      const cb = function () {
+      };
       const sequence = new Sequence({}, 'some.id.2', cb);
       expect(sequence.callback).to.be.equal(cb);
     });
@@ -78,7 +78,7 @@ describe('Sequence', function () {
     }));
 
     it('generates numbers sequentially and calls callback', asyncFunction(async function () {
-      const callback = sinon.spy(function(n) {
+      const callback = sinon.spy(function (n) {
         return 'value' + n;
       });
       const sequence = new Sequence({}, 'some.id.4', callback);

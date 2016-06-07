@@ -5,8 +5,8 @@
 class ObjectAdapter {
   async build(Model, props) {
     const model = new Model;
-    for(let key in props) {
-      if(props.hasOwnProperty(key)) {
+    for (let key in props) {
+      if (props.hasOwnProperty(key)) {
         model[key] = props[key];
       }
     }

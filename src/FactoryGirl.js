@@ -1,7 +1,7 @@
 /**
  * Created by chetanv on 01/06/16.
  */
-  
+
 import Factory from './Factory';
 import Sequence from './generators/Sequence';
 import Assoc from './generators/Assoc';
@@ -10,7 +10,7 @@ import AssocMany from './generators/AssocMany';
 import BuildMany from './generators/BuildMany';
 import attrGenerator from './generators/attrGenerator';
 import DefaultAdapter from './adapters/DefaultAdapter';
-  
+
 class FactoryGirl {
   factories = {};
   options = {};
@@ -26,9 +26,9 @@ class FactoryGirl {
 
     this.defaultAdapter = options.defaultAdapter || new DefaultAdapter;
   }
-  
+
   define(name, Model, initializer, options) {
-    if(this.getFactory(name)) {
+    if (this.getFactory(name)) {
       throw new Error(`factory ${name} already defined`)
     }
 
@@ -58,7 +58,7 @@ class FactoryGirl {
     const adapter = this.adapters[name] || this.defaultAdapter;
     return await this.getFactory(name).createMany(adapter, num, attrs, buildOptions);
   }
-  
+
   getFactory(name) {
     return this.factories[name];
   }
@@ -68,7 +68,7 @@ class FactoryGirl {
   }
 
   setAdapter(adapter, factory) {
-    if(!factory) {
+    if (!factory) {
       this.defaultAdapter = adapter;
     } else {
       this.adapters[factory] = adapter;

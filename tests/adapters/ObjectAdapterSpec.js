@@ -16,9 +16,9 @@ describe('ObjectAdapter', function () {
     const adapter = new ObjectAdapter;
     expect(adapter).to.be.an.instanceof(ObjectAdapter);
   });
-  
+
   const adapter = new ObjectAdapter;
-  
+
   describe('#build', function () {
     it('builds the model', asyncFunction(async function () {
       const model = await adapter.build(DummyModel, {a: 1, b: 2});
@@ -56,7 +56,7 @@ describe('ObjectAdapter', function () {
       expect(destroyedModelP.then).to.be.a('function');
       return expect(destroyedModelP).to.be.eventually.fulfilled;
     });
-    
+
     it('resolves to the object itself', asyncFunction(async function () {
       const model = new DummyModel;
       const destroyedModel = await adapter.destroy(DummyModel, model);

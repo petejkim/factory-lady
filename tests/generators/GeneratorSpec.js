@@ -28,9 +28,11 @@ describe('Generator', function () {
   describe('#generate', function () {
     it('throws an error', function () {
       const generator = new Generator({});
+
       function notImplemented() {
         generator.generate();
       }
+
       expect(notImplemented).to.throw(Error);
     })
   });

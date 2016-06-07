@@ -7,7 +7,7 @@ class DefaultAdapter {
   async build(Model, props) {
     return new Model(props);
   }
-  
+
   async save(Model, model) {
     model.save();
     return model;

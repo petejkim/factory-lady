@@ -64,7 +64,8 @@ describe('Factory', function () {
       }
 
       function functionInitializer() {
-        new Factory(DummyModel, function () {});
+        new Factory(DummyModel, function () {
+        });
       }
 
       expect(noInitializer).to.throw(Error);
@@ -97,7 +98,7 @@ describe('Factory', function () {
       expect(factoryAttrsP.then).to.be.a('function');
       return expect(factoryAttrsP).to.be.eventually.fulfilled;
     });
-    
+
     it('resolves to a copy of factoryAttrs', asyncFunction(async function () {
       const factory = new Factory(DummyModel, simpleObjInit);
       const attrs = await factory.getFactoryAttrs();
@@ -287,7 +288,99 @@ describe('Factory', function () {
     }));
   });
 
-  describe('#attrsMany', function () {
-    
+  describe.only('#attrsMany', function () {
+    it('validates number of objects', function () {
+      const noNumP = objFactory.attrsMany();
+      const invalidNumP = objFactory.attrsMany('alpha');
+      const lessThanOneNumP = objFactory.attrsMany(0);
+      const validNumP = objFactory.attrsMany(10);
+
+      return Promise.all([
+        expect(noNumP).to.be.eventually.rejected,
+        expect(invalidNumP).to.be.eventually.rejected,
+        expect(lessThanOneNumP).to.be.eventually.rejected,
+        expect(validNumP).to.be.eventually.fulfilled
+      ]);
+    });
+
+    it('validates attrsArray', function () {
+      const noAttrsArrayP = objFactory.attrsMany(10);
+      const arrayAttrsArrayP = objFactory.attrsMany(10, [{a: 1}]);
+      const objectAttrsArrayP = objFactory.attrsMany(10, {b: 2});
+      const invalidAttrsArrayP = objFactory.attrsMany(10, 'woops');
+
+      return Promise.all([
+        expect(noAttrsArrayP).to.be.eventually.fulfilled,
+        expect(arrayAttrsArrayP).to.be.eventually.fulfilled,
+        expect(objectAttrsArrayP).to.be.eventually.fulfilled,
+        expect(invalidAttrsArrayP).to.be.eventually.rejected
+      ])
+    });
+
+    it('validates buildOptionsArray', function () {
+      const noBuildOptionsArrayP = objFactory.attrsMany(10, []);
+      const arrayBuildOptionsArrayP = objFactory.attrsMany(10, [], [{a: 1}]);
+      const objectBuildOptionsArrayP = objFactory.attrsMany(10, [], {b: 2});
+      const invalidBuildOptionsArrayP = objFactory.attrsMany(10, [], 'woops');
+
+      return Promise.all([
+        expect(noBuildOptionsArrayP).to.be.eventually.fulfilled,
+        expect(arrayBuildOptionsArrayP).to.be.eventually.fulfilled,
+        expect(objectBuildOptionsArrayP).to.be.eventually.fulfilled,
+        expect(invalidBuildOptionsArrayP).to.be.eventually.rejected
+      ])
+    });
+
+    it('calls attrs for each model attr', asyncFunction(async function () {
+      const spy = sinon.spy(objFactory, 'attrs');
+      await objFactory.attrsMany(10);
+      expect(spy).to.have.callCount(10);
+      objFactory.attrs.restore();
+    }));
+
+    it('passes same attrObject and buildOptionsObject for each model attr', asyncFunction(async function () {
+      const spy = sinon.spy(objFactory, 'attrs');
+
+      const dummyAttrObject = {};
+      const dummyBuildOptionsObject = {};
+
+      await objFactory.attrsMany(10, dummyAttrObject, dummyBuildOptionsObject);
+
+      expect(spy).to.have.callCount(10);
+
+      spy.args.forEach(function (argsArray) {
+        expect(argsArray[0]).to.be.equal(dummyAttrObject);
+        expect(argsArray[1]).to.be.equal(dummyBuildOptionsObject);
+      });
+
+      objFactory.attrs.restore();
+    }));
+
+    it('passes attrObject and buildOptions object from arrays to attrs', asyncFunction(async function () {
+      const spy = sinon.spy(objFactory, 'attrs');
+
+      const dummyAttrArray = [];
+      const dummyBuildOptionsArray = [];
+
+      for (let i = 0; i < 10; i++) {
+        dummyAttrArray[i] = {a: i};
+        dummyBuildOptionsArray[i] = {b: i};
+      }
+
+      await objFactory.attrsMany(10, dummyAttrArray, dummyBuildOptionsArray);
+
+      expect(spy).to.have.callCount(10);
+      spy.args.forEach(function (argsArray, i) {
+        expect(argsArray[0]).to.be.eql({a: i});
+        expect(argsArray[1]).to.be.eql({b: i});
+      });
+      objFactory.attrs.restore();
+    }));
+
+    it('returns a promise', function () {
+      const modelsP = objFactory.attrsMany(10);
+      expect(modelsP.then).to.be.a('function');
+      return expect(modelsP).to.be.eventually.fulfilled;
+    });
   });
 });

@@ -11,7 +11,7 @@ class Sequence extends Generator {
   constructor(factoryGirl, id, callback = null) {
     super(factoryGirl);
 
-    if(typeof id !== 'string') {
+    if (typeof id !== 'string') {
       throw new Error('Invalid sequence key passed');
     }
 

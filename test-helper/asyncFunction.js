@@ -3,11 +3,11 @@
  */
 
 const asyncFunction = function (func) {
-  return async function(done) {
+  return async function (done) {
     try {
       await func();
       done();
-    } catch(e) {
+    } catch (e) {
       done(e);
     }
   }

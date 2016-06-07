@@ -4,7 +4,7 @@
 
 class Generator {
   constructor(factoryGirl) {
-    if(!factoryGirl) {
+    if (!factoryGirl) {
       throw new Error('No FactoryGirl instance passed.');
     }
     this.factoryGirl = factoryGirl;

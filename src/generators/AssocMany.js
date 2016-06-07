@@ -8,7 +8,7 @@ class AssocMany extends ModelGenerator {
   constructor(factoryGirl, name, num, key = null, attrs = {}, buildOptions = {}) {
     super(factoryGirl, name, key, attrs, buildOptions);
 
-    if(typeof num !== 'number' || num < 1) {
+    if (typeof num !== 'number' || num < 1) {
       throw new Error('Invalid number of items requested.');
     }
 

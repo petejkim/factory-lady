@@ -16,9 +16,9 @@ describe('DefaultAdapter', function () {
     const adapter = new DefaultAdapter;
     expect(adapter).to.be.an.instanceof(DefaultAdapter);
   });
-  
+
   const adapter = new DefaultAdapter;
-  
+
   describe('#build', function () {
     it('builds the model', asyncFunction(async function () {
       const model = await adapter.build(DummyModel, {name: 'Bruce', age: 204});
