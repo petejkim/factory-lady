@@ -16,36 +16,6 @@ const debug = Debug('BuildManySpec');
 describe('BuildMany', function () {
   const factoryGirl = new DummyFactoryGirl;
 
-  describe('#constructor', function () {
-    const buildMany = new BuildMany(factoryGirl, 'model', 10);
-
-    it('can be created', function () {
-      expect(buildMany).to.be.instanceof(BuildMany);
-    });
-
-    it('stores the number of instances to be buildiated', function () {
-      expect(buildMany.num).to.be.equal(10);
-    });
-
-    it('throws error if num is not valid', function () {
-      function noNum() {
-        new BuildMany(factoryGirl, 'model');
-      }
-
-      function invalidNum() {
-        new BuildMany(factoryGirl, 'model', 'not-a-num');
-      }
-
-      function lessThanOne() {
-        new BuildMany(factoryGirl, 'model', -1);
-      }
-
-      expect(noNum).to.throw(Error);
-      expect(invalidNum).to.throw(Error);
-      expect(lessThanOne).to.throw(Error);
-    });
-  });
-
   describe('#generate', function () {
     it('calls buildMany on factoryGirl', asyncFunction(async function () {
       sinon.spy(factoryGirl, 'buildMany');

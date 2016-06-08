@@ -5,8 +5,10 @@
 import Factory from './Factory';
 import Sequence from './generators/Sequence';
 import Assoc from './generators/Assoc';
+import AssocAttrs from './generators/AssocAttrs';
 import Build from './generators/Build';
 import AssocMany from './generators/AssocMany';
+import AssocAttrsMany from './generators/AssocAttrsMany';
 import BuildMany from './generators/BuildMany';
 import attrGenerator from './generators/attrGenerator';
 import DefaultAdapter from './adapters/DefaultAdapter';
@@ -25,6 +27,8 @@ class FactoryGirl {
     this.assocMany = attrGenerator(this, AssocMany);
     this.assocBuild = attrGenerator(this, Build);
     this.assocBuildMany = attrGenerator(this, BuildMany);
+    this.assocAttrs = attrGenerator(this, AssocAttrs);
+    this.assocAttrsMany = attrGenerator(this, AssocAttrsMany);
     this.seq = this.sequence = attrGenerator(this, Sequence);
 
     this.defaultAdapter = new DefaultAdapter;
@@ -101,10 +105,12 @@ class FactoryGirl {
   }
 
   cleanUp() {
+    const promises = [];
     for(let [adapter, model] of this.created) {
-      adapter.destroy(model.constructor, model);
+      promises.push(adapter.destroy(model.constructor, model));
     }
     this.created.clear();
+    return Promise.all(promises);
   }
 
   setAdapter(adapter, factory) {

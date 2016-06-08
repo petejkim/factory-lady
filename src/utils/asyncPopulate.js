@@ -2,7 +2,11 @@
  * Created by chetanv on 07/06/16.
  */
 
-async function asyncPopulate(target, source) {
+import Debug from 'debug';
+
+const debug = Debug('asyncPopulate');
+
+function asyncPopulate(target, source) {
   if(typeof target !== 'object') {
     throw new Error('Invalid target passed');
   }
@@ -11,21 +15,22 @@ async function asyncPopulate(target, source) {
     throw new Error('Invalid source passed');
   }
 
+  const promises = [];
   Object.keys(source).forEach(async(attr) => {
     if (Array.isArray(source[attr])) {
       target[attr] = [];
-      await asyncPopulate(target[attr], source[attr]);
+      promises.push(asyncPopulate(target[attr], source[attr]));
     } else if (typeof source[attr] === 'object') {
       target[attr] = target[attr] || {};
-      await asyncPopulate(target[attr], source[attr]);
+      promises.push(asyncPopulate(target[attr], source[attr]));
     } else if (typeof source[attr] === 'function') {
-      target[attr] = await Promise.resolve(source[attr]());
+      promises.push(Promise.resolve(source[attr]()).then(function(v) { target[attr] = v; }));
     } else {
-      target[attr] = await Promise.resolve(source[attr]);
+      promises.push(Promise.resolve(source[attr]).then(function(v) { target[attr] = v; }));
     }
   });
 
-  return target;
+  return Promise.all(promises)
 }
 
 export default asyncPopulate;

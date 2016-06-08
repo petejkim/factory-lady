@@ -16,36 +16,6 @@ const debug = Debug('AssocManySpec');
 describe('AssocMany', function () {
   const factoryGirl = new DummyFactoryGirl;
 
-  describe('#constructor', function () {
-    const assocMany = new AssocMany(factoryGirl, 'model', 10);
-
-    it('can be created', function () {
-      expect(assocMany).to.be.instanceof(AssocMany);
-    });
-
-    it('stores the number of instances to be associated', function () {
-      expect(assocMany.num).to.be.equal(10);
-    });
-
-    it('throws error if num is not valid', function () {
-      function noNum() {
-        new AssocMany(factoryGirl, 'model');
-      }
-
-      function invalidNum() {
-        new AssocMany(factoryGirl, 'model', 'not-a-num');
-      }
-
-      function lessThanOne() {
-        new AssocMany(factoryGirl, 'model', -1);
-      }
-
-      expect(noNum).to.throw(Error);
-      expect(invalidNum).to.throw(Error);
-      expect(lessThanOne).to.throw(Error);
-    });
-  });
-
   describe('#generate', function () {
     it('calls createMany on factoryGirl', asyncFunction(async function () {
       sinon.spy(factoryGirl, 'createMany');

@@ -20,6 +20,13 @@ class DummyFactoryGirl {
     });
   }
 
+  async attrs(name, attrs, buildOptions) {
+    return new DummyModel({
+      name: 'Bill',
+      age: 32
+    });
+  }
+
   async createMany(name, num, attrs, buildOptions) {
     return [
       new DummyModel({
@@ -29,6 +36,19 @@ class DummyFactoryGirl {
       new DummyModel({
         name: 'Jane',
         age: 21
+      })
+    ];
+  }
+
+  async attrsMany(name, num, attrs, buildOptions) {
+    return [
+      new DummyModel({
+        name: 'Andrew',
+        age: 21
+      }),
+      new DummyModel({
+        name: 'Isaac',
+        age: 25
       })
     ];
   }
