@@ -48,5 +48,10 @@ describe('index', function () {
       expect(attrs).to.be.an('array');
       expect(attrs).to.have.lengthOf(3);
     }));
+
+    it('can use chance generator', asyncFunction(async function () {
+      const attrs = await Factory.attrs('User');
+      expect(attrs.bio).to.exist;
+    }))
   })
 });
