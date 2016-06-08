@@ -5,9 +5,7 @@
 class ObjectAdapter {
   async build(Model, props) {
     const model = new Model;
-    for (let key in props) {
-      model[key] = props[key];
-    }
+    Object.keys(props).forEach((key) => { model[key] = props[key]; });
     return model;
   }
 

@@ -13,9 +13,9 @@ import BuildMany from './generators/BuildMany';
 import ChanceGenerator from './generators/ChanceGenerator';
 import attrGenerator from './generators/attrGenerator';
 import DefaultAdapter from './adapters/DefaultAdapter';
-import Debug from 'debug';
+import _debug from 'debug';
 
-const debug = Debug('FactoryGirl');
+const debug = _debug('FactoryGirl');
 
 class FactoryGirl {
   factories = {};
@@ -35,11 +35,13 @@ class FactoryGirl {
 
     this.defaultAdapter = new DefaultAdapter;
     this.options = options;
+
+    debug('FactoryGirl created');
   }
 
   define(name, Model, initializer, options) {
     if (this.getFactory(name, false)) {
-      throw new Error(`factory ${name} already defined`)
+      throw new Error(`factory ${name} already defined`);
     }
 
     this.factories[name] = new Factory(Model, initializer, options);
@@ -56,10 +58,12 @@ class FactoryGirl {
 
   create(name, attrs, buildOptions) {
     const adapter = this.getAdapter(name);
-    return this.getFactory(name).create(adapter, attrs, buildOptions).then((createdModel) => {
-      this.addToCreatedList(adapter, createdModel);
-      return createdModel;
-    });
+    return this.getFactory(name)
+      .create(adapter, attrs, buildOptions)
+      .then((createdModel) => {
+        this.addToCreatedList(adapter, createdModel);
+        return createdModel;
+      });
   }
 
   attrsMany(name, num, attrs, buildOptions) {
@@ -73,15 +77,16 @@ class FactoryGirl {
 
   createMany(name, num, attrs, buildOptions) {
     const adapter = this.getAdapter(name);
-    return this.getFactory(name).createMany(adapter, num, attrs, buildOptions).then((createdModels) => {
-      this.addToCreatedList(adapter, createdModels);
-      return createdModels;
-    });
+    return this.getFactory(name)
+      .createMany(adapter, num, attrs, buildOptions).then((createdModels) => {
+        this.addToCreatedList(adapter, createdModels);
+        return createdModels;
+      });
   }
 
   getFactory(name, throwError = true) {
-    if(!this.factories[name]) {
-      if(throwError) {
+    if (!this.factories[name]) {
+      if (throwError) {
         throw new Error('Invalid factory requested');
       }
     }
@@ -89,7 +94,7 @@ class FactoryGirl {
   }
 
   withOptions(options, merge = false) {
-    this.options = merge ? {...this.options, ...options} : options;
+    this.options = merge ? { ...this.options, ...options } : options;
   }
 
   getAdapter(factory) {
@@ -97,18 +102,18 @@ class FactoryGirl {
   }
 
   addToCreatedList(adapter, models) {
-    if(!Array.isArray(models)) {
-      models = [models];
-    }
-
-    for(let model of models) {
-      this.created.add([adapter, model]);
+    if (!Array.isArray(models)) {
+      this.created.add([adapter, models]);
+    } else {
+      for (const model of models) {
+        this.created.add([adapter, model]);
+      }
     }
   }
 
   cleanUp() {
     const promises = [];
-    for(let [adapter, model] of this.created) {
+    for (const [adapter, model] of this.created) {
       promises.push(adapter.destroy(model.constructor, model));
     }
     this.created.clear();

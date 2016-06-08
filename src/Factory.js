@@ -3,9 +3,9 @@
  */
 
 import asyncPopulate from './utils/asyncPopulate';
-import Debug from 'debug';
+import _debug from 'debug';
 
-const debug = Debug('Factory');
+const debug = _debug('Factory');
 
 class Factory {
   name = null;
@@ -25,6 +25,8 @@ class Factory {
     this.Model = Model;
     this.initializer = initializer;
     this.options = options;
+
+    debug(`Factory created for model: ${Model.name}`);
   }
 
   getFactoryAttrs(buildOptions = {}) {
@@ -32,7 +34,7 @@ class Factory {
     if (typeof this.initializer === 'function') {
       attrs = this.initializer(buildOptions);
     } else {
-      attrs = {...this.initializer};
+      attrs = { ...this.initializer };
     }
 
     return Promise.resolve(attrs);
@@ -58,10 +60,12 @@ class Factory {
     return adapter.save(this.Model, model);
   }
 
-  attrsMany(num, attrsArray = [], buildOptionsArray = []) {
+  attrsMany(num, _attrsArray = [], _buildOptionsArray = []) {
     const models = [];
     let attrObject = null;
     let buildOptionsObject = null;
+    let attrsArray = _attrsArray;
+    let buildOptionsArray = _buildOptionsArray;
 
     if (typeof attrsArray === 'object' && !Array.isArray(attrsArray)) {
       attrObject = attrsArray;

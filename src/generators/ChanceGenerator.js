@@ -4,9 +4,9 @@
 
 import Generator from './Generator';
 import Chance from 'chance';
-import Debug from 'debug';
+// import _debug from 'debug';
 
-const debug = Debug('Chance');
+// const debug = _debug('Chance');
 const chance = new Chance();
 
 class ChanceGenerator extends Generator {
@@ -16,7 +16,7 @@ class ChanceGenerator extends Generator {
   constructor(factoryGirl, chanceMethod, options) {
     super(factoryGirl);
 
-    if(typeof chance[chanceMethod] !== 'function') {
+    if (typeof chance[chanceMethod] !== 'function') {
       throw new Error('Invalid chance method requested');
     }
 

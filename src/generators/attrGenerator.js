@@ -3,10 +3,8 @@
  */
 
 export default function (factoryGirl, SomeGenerator) {
-  return function () {
-    const generator = new SomeGenerator(factoryGirl, ...arguments);
-    return function () {
-      return generator.generate();
-    }
-  }
+  return (...args) => {
+    const generator = new SomeGenerator(factoryGirl, ...args);
+    return () => generator.generate();
+  };
 }

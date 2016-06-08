@@ -9,15 +9,11 @@ class DefaultAdapter {
   }
 
   save(Model, model) {
-    return Promise.resolve(model.save()).then(function () {
-      return model;
-    });
+    return Promise.resolve(model.save()).then(() => model);
   }
-  
+
   destroy(Model, model) {
-    return Promise.resolve(model.destroy()).then(function () {
-      return model;
-    });
+    return Promise.resolve(model.destroy()).then(() => model);
   }
 }
 
