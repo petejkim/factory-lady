@@ -18,6 +18,7 @@ class FactoryGirl {
   factories = {};
   options = {};
   adapters = {};
+  created = new Set();
 
   constructor(options) {
     this.assoc = attrGenerator(this, Assoc);
@@ -31,7 +32,7 @@ class FactoryGirl {
   }
 
   define(name, Model, initializer, options) {
-    if (this.factories[name]) {
+    if (this.getFactory(name, false)) {
       throw new Error(`factory ${name} already defined`)
     }
 
@@ -49,7 +50,10 @@ class FactoryGirl {
 
   create(name, attrs, buildOptions) {
     const adapter = this.getAdapter(name);
-    return this.getFactory(name).create(adapter, attrs, buildOptions);
+    return this.getFactory(name).create(adapter, attrs, buildOptions).then((createdModel) => {
+      this.addToCreatedList(adapter, createdModel);
+      return createdModel;
+    });
   }
 
   attrsMany(name, num, attrs, buildOptions) {
@@ -63,12 +67,17 @@ class FactoryGirl {
 
   createMany(name, num, attrs, buildOptions) {
     const adapter = this.getAdapter(name);
-    return this.getFactory(name).createMany(adapter, num, attrs, buildOptions);
+    return this.getFactory(name).createMany(adapter, num, attrs, buildOptions).then((createdModels) => {
+      this.addToCreatedList(adapter, createdModels);
+      return createdModels;
+    });
   }
 
-  getFactory(name) {
+  getFactory(name, throwError = true) {
     if(!this.factories[name]) {
-      throw new Error('Invalid factory requested');
+      if(throwError) {
+        throw new Error('Invalid factory requested');
+      }
     }
     return this.factories[name];
   }
@@ -78,7 +87,24 @@ class FactoryGirl {
   }
 
   getAdapter(factory) {
-    return this.adapters[factory] || this.defaultAdapter;
+    return factory ? (this.adapters[factory] || this.defaultAdapter) : this.defaultAdapter;
+  }
+
+  addToCreatedList(adapter, models) {
+    if(!Array.isArray(models)) {
+      models = [models];
+    }
+
+    for(let model of models) {
+      this.created.add([adapter, model]);
+    }
+  }
+
+  cleanUp() {
+    for(let [adapter, model] of this.created) {
+      adapter.destroy(model.constructor, model);
+    }
+    this.created.clear();
   }
 
   setAdapter(adapter, factory) {

@@ -33,7 +33,7 @@ describe('FactoryGirl', function () {
     });
 
     it('defines default adapter', function () {
-      expect(factoryGirl.defaultAdapter).to.be.an.instanceof(DefaultAdapter);
+      expect(factoryGirl.getAdapter()).to.be.an.instanceof(DefaultAdapter);
     });
   });
   
@@ -41,8 +41,8 @@ describe('FactoryGirl', function () {
     const factoryGirl = new FactoryGirl();
     it('can define factory', function () {
       factoryGirl.define('factory1', DummyModel, {});
-      expect(factoryGirl.factories['factory1']).to.exist;
-      expect(factoryGirl.factories['factory1']).to.be.an.instanceof(Factory);
+      expect(factoryGirl.getFactory('factory1', false)).to.exist;
+      expect(factoryGirl.getFactory('factory1', false)).to.be.an.instanceof(Factory);
     });
 
     it('can not define factory with same name', function () {
@@ -75,23 +75,23 @@ describe('FactoryGirl', function () {
   describe('#setAdapter', function () {
     it('sets the default adapter', function () {
       const factoryGirl = new FactoryGirl();
-      expect(factoryGirl.defaultAdapter).to.be.an.instanceof(DefaultAdapter);
+      expect(factoryGirl.getAdapter()).to.be.an.instanceof(DefaultAdapter);
       const dummyAdapter = new DummyAdapter;
       factoryGirl.setAdapter(dummyAdapter);
-      expect(factoryGirl.defaultAdapter).to.be.an.instanceof(DummyAdapter);
+      expect(factoryGirl.getAdapter()).to.be.an.instanceof(DummyAdapter);
     });
 
     it('sets adapter for factories correctly', function () {
       const factoryGirl = new FactoryGirl();
       factoryGirl.define('factory1', DummyModel, {});
       factoryGirl.define('factory2', DummyModel, {});
-      expect(factoryGirl.adapters['factory1']).to.not.exist;
-      expect(factoryGirl.adapters['factory2']).to.not.exist;
+      expect(factoryGirl.getAdapter('factory1')).to.be.an.instanceof(DefaultAdapter);
+      expect(factoryGirl.getAdapter('factory2')).to.be.an.instanceof(DefaultAdapter);
       const dummyAdapter = new DummyAdapter;
       factoryGirl.setAdapter(dummyAdapter, 'factory1');
-      expect(factoryGirl.adapters['factory1']).to.be.an.instanceof(DummyAdapter);
-      expect(factoryGirl.adapters['factory2']).to.not.exist;
-      expect(factoryGirl.defaultAdapter).to.be.an.instanceof(DefaultAdapter);
+      expect(factoryGirl.getAdapter('factory1')).to.be.an.instanceof(DummyAdapter);
+      expect(factoryGirl.getAdapter('factory2')).to.be.an.instanceof(DefaultAdapter);
+      expect(factoryGirl.getAdapter()).to.be.an.instanceof(DefaultAdapter);
     })
   });
 
@@ -104,7 +104,7 @@ describe('FactoryGirl', function () {
 
     it('gets adapter correctly', function () {
       const adapter1 = factoryGirl.getAdapter('factory2');
-      expect(adapter1).to.be.equal(factoryGirl.defaultAdapter);
+      expect(adapter1).to.be.equal(factoryGirl.getAdapter());
       const adapter2 = factoryGirl.getAdapter('factory1');
       expect(adapter2).to.be.equal(dummyAdapter);
     });
@@ -364,6 +364,57 @@ describe('FactoryGirl', function () {
       const newOptions = {hello: 'world'};
       factoryGirl.withOptions(newOptions, true);
       expect(factoryGirl.options).to.be.eql({...originalOptions, ...newOptions});
+    });
+  });
+
+  describe('#addToCreatedList', function () {
+    const factoryGirl = new FactoryGirl;
+    const dummyAdapter = new DummyAdapter;
+
+    it('adds one model to the list', function () {
+      const spy = sinon.spy(factoryGirl.created, 'add');
+      const dummyModel = new DummyModel();
+      factoryGirl.addToCreatedList(dummyAdapter, dummyModel);
+      expect(spy).to.have.been.calledWith([dummyAdapter, dummyModel]);
+      factoryGirl.created.add.restore();
+    });
+
+    it('adds multiple models to the list', function () {
+      const spy = sinon.spy(factoryGirl.created, 'add');
+      const dummyModels = [new DummyModel(), new DummyModel(), new DummyModel()];
+      factoryGirl.addToCreatedList(dummyAdapter, dummyModels);
+      expect(spy).to.have.callCount(3);
+      spy.args.forEach(function (arg, index) {
+        expect(arg[0]).to.be.eql([dummyAdapter, dummyModels[index]]);
+      });
+      factoryGirl.created.add.restore();
+    });
+  });
+
+  describe('#cleanup', function () {
+    it('cleans up the factory', function () {
+      const factoryGirl = new FactoryGirl;
+      const dummyAdapter = new DummyAdapter;
+      const dummyAdapter2 = new DummyAdapter;
+      const dummyModels = [new DummyModel(), new DummyModel(), new DummyModel()];
+      const dummyModel1 = new DummyModel();
+      const dummyModel2 = new DummyModel();
+      const spy1 = sinon.spy(dummyAdapter, 'destroy');
+      const spy2 = sinon.spy(dummyAdapter2, 'destroy');
+      const spy3 = sinon.spy(factoryGirl.created, 'clear');
+
+      expect(factoryGirl.created.size).to.be.equal(0);
+      factoryGirl.addToCreatedList(dummyAdapter, dummyModels);
+      factoryGirl.addToCreatedList(dummyAdapter, dummyModel1);
+      factoryGirl.addToCreatedList(dummyAdapter2, dummyModel2);
+      expect(factoryGirl.created.size).to.be.equal(5);
+
+      factoryGirl.cleanUp();
+      expect(spy1).to.have.callCount(4);
+      expect(spy2).to.have.callCount(1);
+      expect(spy3).to.have.callCount(1);
+
+      expect(factoryGirl.created.size).to.be.equal(0);
     });
   });
 });
