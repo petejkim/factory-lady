@@ -5,7 +5,7 @@
 export default function (factoryGirl, SomeGenerator) {
   return function () {
     const generator = new SomeGenerator(factoryGirl, ...arguments);
-    return async function () {
+    return function () {
       return generator.generate();
     }
   }

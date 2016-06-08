@@ -8,15 +8,15 @@ const debug = Debug('asyncPopulate');
 
 function asyncPopulate(target, source) {
   if(typeof target !== 'object') {
-    throw new Error('Invalid target passed');
+    return Promise.reject(new Error('Invalid target passed'));
   }
 
   if(typeof source !== 'object') {
-    throw new Error('Invalid source passed');
+    return Promise.reject(new Error('Invalid source passed'));
   }
 
   const promises = [];
-  Object.keys(source).forEach(async(attr) => {
+  Object.keys(source).forEach((attr) => {
     if (Array.isArray(source[attr])) {
       target[attr] = [];
       promises.push(asyncPopulate(target[attr], source[attr]));

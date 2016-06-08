@@ -20,17 +20,13 @@ describe('asyncPopulate', function () {
   });
 
   it('throws error if target or source is not an object', function () {
+    const targetP = asyncPopulate(undefined, {});
+    const sourceP = asyncPopulate({});
 
-    function invalidTarget() {
-      asyncPopulate(undefined, {});
-    }
-
-    function invalidSource() {
-      asyncPopulate({});
-    }
-
-    expect(invalidTarget).to.throw(Error);
-    expect(invalidSource).to.throw(Error);
+    return Promise.all([
+      expect(targetP).to.be.eventually.rejected,
+      expect(sourceP).to.be.eventually.rejected
+    ]);
   });
 
   it('populates objects correctly', asyncFunction(async function () {

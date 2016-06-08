@@ -27,15 +27,15 @@ class Factory {
     this.options = options;
   }
 
-  async getFactoryAttrs(buildOptions = {}) {
+  getFactoryAttrs(buildOptions = {}) {
     let attrs = {};
     if (typeof this.initializer === 'function') {
-      attrs = Promise.resolve(this.initializer(buildOptions));
+      attrs = this.initializer(buildOptions);
     } else {
       attrs = {...this.initializer};
     }
 
-    return attrs;
+    return Promise.resolve(attrs);
   }
 
   async attrs(attrs = {}, buildOptions = {}) {
@@ -58,8 +58,7 @@ class Factory {
     return adapter.save(this.Model, model);
   }
 
-  async attrsMany(num, attrsArray = [], buildOptionsArray = []) {
-
+  attrsMany(num, attrsArray = [], buildOptionsArray = []) {
     const models = [];
     let attrObject = null;
     let buildOptionsObject = null;
@@ -75,15 +74,15 @@ class Factory {
     }
 
     if (typeof num !== 'number' || num < 1) {
-      throw new Error('Invalid number of objects requested');
+      return Promise.reject(new Error('Invalid number of objects requested'));
     }
 
     if (!Array.isArray(attrsArray)) {
-      throw new Error('Invalid attrsArray passed');
+      return Promise.reject(new Error('Invalid attrsArray passed'));
     }
 
     if (!Array.isArray(buildOptionsArray)) {
-      throw new Error('Invalid buildOptionsArray passed');
+      return Promise.reject(new Error('Invalid buildOptionsArray passed'));
     }
 
     attrsArray.length = buildOptionsArray.length = num;

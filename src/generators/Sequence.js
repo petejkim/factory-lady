@@ -21,9 +21,9 @@ class Sequence extends Generator {
     this.callback = callback;
   }
 
-  async generate() {
+  generate() {
     const count = Sequence.sequences[this.id]++;
-    return this.callback ? this.callback(count) : count;
+    return Promise.resolve(this.callback ? this.callback(count) : count);
   }
 }
 

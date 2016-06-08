@@ -4,18 +4,20 @@
 
 
 class DefaultAdapter {
-  async build(Model, props) {
-    return new Model(props);
+  build(Model, props) {
+    return Promise.resolve(new Model(props));
   }
 
-  async save(Model, model) {
-    model.save();
-    return model;
+  save(Model, model) {
+    return Promise.resolve(model.save()).then(function () {
+      return model;
+    });
   }
   
-  async destroy(Model, model) {
-    model.destroy();
-    return model;
+  destroy(Model, model) {
+    return Promise.resolve(model.destroy()).then(function () {
+      return model;
+    });
   }
 }
 
