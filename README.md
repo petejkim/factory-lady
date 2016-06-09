@@ -38,7 +38,6 @@ factory.build('user').then(function(user) {
 Refer [API docs](docs/api.md) for complete API documentation.
 
 Define factories using the `factory.define` API
-### factory.define(<factory-name>, <model-constructor>, <initializer>);
 
 For example:
 
@@ -75,7 +74,7 @@ factory.define('user', User, function (buildOptions) {
     // use assocBuild or assocBuildMany to embed models that are not persisted
     creditCard: factory.assocBuild('credit_card', {}, {type: 'masterCard'}),
     
-    // use use assocAttrs or assocAttrsMany to embed POJOs
+    // use assocAttrs or assocAttrsMany to embed plain json objects
     twitterDetails: factory.assocAttr('twitter_details'),
     
     confirmed: false,
@@ -142,7 +141,7 @@ factory.define('user', User, {foo: 'bar'}, {
 
 ### Factory#attrs
 
-Generates and returns model attributes as a json object instead of the model instance. This may be useful where you needs a json representation of the model e.g. mocking API response
+Generates and returns model attributes as a json object instead of the model instance. This may be useful where you need a json representation of the model e.g. mocking API response
 
 ```javascript
 factory.attrs('post').then((postAttrs) => {
@@ -151,11 +150,12 @@ factory.attrs('post').then((postAttrs) => {
 });
 
 factory.attrs('post', {title: 'Foo', content: 'Bar'}).then((postAttrs) => {
-  // build post attrs and override title and content
+  // builds post json object and overrides title and content
+  debug(postAttrs);
 });
 
 factory.attrs('post', {title: 'Foo'}, {hasComments: true}).then((postAttrs) => {
-  // build post attrs
+  // builds post json object
   // overrides title 
   // invokes the initializer function with buildOptions as {hasComments: true}
   debug(postAttrs);
@@ -163,7 +163,7 @@ factory.attrs('post', {title: 'Foo'}, {hasComments: true}).then((postAttrs) => {
 
 ```
 
-You can use Factory#attrsMany to generate a set of model attributes
+You can use `Factory#attrsMany` to generate a set of model attributes
 
 ```javascript
 factory.attrsMany('post', 5, [{title: 'foo1'}, {title: 'foo2'}]).then((postAttrsArray) => {
@@ -181,6 +181,7 @@ Builds a new model instance that is not persisted.
 ```javascript
 factory.build('post').then((post) => {
   // post is a Post instance that is not persisted
+  debug(post);
 });
 ```
 
@@ -204,6 +205,7 @@ Builds a new model instance that is persisted
 ```
 factory.create('post').then((post) => {
   // post is a saved Post instance
+  debug(post);
 });
 ```
 
@@ -256,6 +258,11 @@ It started out as a fork of [factory-lady](https://github.com/petejkim/factory-l
 
 ## License
 
-Copyright (c) 2016 Chetan Verma. This software is licensed under the [MIT License](http://github.com/aexmachina/factory-girl/raw/master/LICENSE.txt).
-Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/aexmachina/factory-girl/raw/master/LICENSE.txt).
-Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/aexmachina/factory-girl/raw/master/LICENSE.txt).
+Copyright (c) 2016 Chetan Verma.
+
+Copyright (c) 2014 Simon Wade.
+
+Copyright (c) 2011 Peter Jihoon Kim.
+
+ 
+This software is licensed under the [MIT License](http://github.com/aexmachina/factory-girl/raw/master/LICENSE.txt).
