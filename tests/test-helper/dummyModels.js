@@ -15,7 +15,7 @@ export class PhoneNumber {
 }
 
 export default {
-  User: User,
-  Address: Address,
-  PhoneNumber: PhoneNumber
+  User,
+  Address,
+  PhoneNumber,
 };

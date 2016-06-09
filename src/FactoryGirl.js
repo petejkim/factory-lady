@@ -98,7 +98,9 @@ class FactoryGirl {
   }
 
   getAdapter(factory) {
-    return factory ? (this.adapters[factory] || this.defaultAdapter) : this.defaultAdapter;
+    return factory ?
+      (this.adapters[factory] || this.defaultAdapter) :
+      this.defaultAdapter;
   }
 
   addToCreatedList(adapter, models) {

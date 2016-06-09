@@ -29,7 +29,8 @@ for (const format of ['es6', 'cjs', 'umd']) {
       babelrc: false,
       exclude: 'node_modules/**',
       runtimeHelpers: true,
-      presets: pkg.babel.presets.map(x => (x === 'es2015' ? 'es2015-rollup' : x)),
+      presets: pkg.babel.presets.map(
+        x => (x === 'es2015' ? 'es2015-rollup' : x)),
     }))],
   }).then(bundle => bundle.write({
     dest: `dist/${format === 'cjs' ? 'index' : `index.${format}`}.js`,
@@ -46,8 +47,17 @@ promise = promise.then(() => {
   delete pkg.scripts;
   delete pkg.eslintConfig;
   delete pkg.babel;
-  fs.writeFileSync('dist/package.json', JSON.stringify(pkg, null, '  '), 'utf-8');
-  fs.writeFileSync('dist/LICENSE.txt', fs.readFileSync('LICENSE.txt', 'utf-8'), 'utf-8');
+  fs.writeFileSync(
+    'dist/package.json',
+    JSON.stringify(pkg, null, '  '),
+    'utf-8'
+  );
+  fs.writeFileSync(
+    'dist/LICENSE.txt',
+    fs.readFileSync('LICENSE.txt', 'utf-8'),
+    'utf-8'
+  );
 });
 
-promise.catch(err => console.error(err.stack)); // eslint-disable-line no-console
+// eslint-disable-next-line no-console
+promise.catch(err => console.error(err.stack));

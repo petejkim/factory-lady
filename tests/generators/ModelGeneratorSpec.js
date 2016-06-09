@@ -3,12 +3,12 @@
  */
 
 import '../test-helper/testUtils';
-import ModelGenerator from '../../src/generators/ModelGenerator'
+import ModelGenerator from '../../src/generators/ModelGenerator';
 import DummyFactoryGirl from '../test-helper/DummyFactoryGirl';
-import {expect} from 'chai';
-import Debug from 'debug';
+import { expect } from 'chai';
+// import _debug from 'debug';
 
-const debug = Debug('ModelGeneratorSpec');
+// const debug = _debug('ModelGeneratorSpec');
 
 describe('ModelGenerator', function () {
   describe('#constructor', function () {
@@ -39,7 +39,7 @@ describe('ModelGenerator', function () {
     });
 
     it('validates model name', function () {
-
+      /* eslint-disable no-new */
       function undefinedModelName() {
         new ModelGenerator(factoryGirl);
       }
@@ -51,6 +51,7 @@ describe('ModelGenerator', function () {
       function nonStringModelName() {
         new ModelGenerator(factoryGirl, 3);
       }
+      /* eslint-enable no-new */
 
       expect(undefinedModelName).to.throw(Error);
       expect(emptyModelName).to.throw(Error);

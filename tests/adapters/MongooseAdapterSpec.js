@@ -4,12 +4,12 @@
 
 import '../test-helper/testUtils';
 import MongooseAdapter from '../../src/adapters/MongooseAdapter';
-import {expect} from 'chai';
-import Debug from 'debug';
+import { expect } from 'chai';
 import DummyMongooseModel from '../test-helper/DummyMongooseModel';
 import asyncFunction from '../test-helper/asyncFunction';
+// import _debug from 'debug';
 
-const debug = Debug('MongooseAdapterSpec');
+// const debug = _debug('MongooseAdapterSpec');
 
 describe('MongooseAdapter', function () {
   it('can be created', function () {

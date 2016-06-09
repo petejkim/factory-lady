@@ -3,11 +3,11 @@
  */
 
 import '../test-helper/testUtils';
-import Generator from '../../src/generators/Generator'
-import {expect} from 'chai';
-import Debug from 'debug';
+import Generator from '../../src/generators/Generator';
+import { expect } from 'chai';
+// import _debug from 'debug';
 
-const debug = Debug('GeneratorSpec');
+// const debug = _debug('GeneratorSpec');
 
 describe('Generator', function () {
   describe('#constructor', function () {
@@ -18,6 +18,7 @@ describe('Generator', function () {
 
     it('throws an error if factoryGirl is not passed', function () {
       function noFactoryGirl() {
+        // eslint-disable-next-line no-new
         new Generator();
       }
 
@@ -34,6 +35,6 @@ describe('Generator', function () {
       }
 
       expect(notImplemented).to.throw(Error);
-    })
+    });
   });
 });

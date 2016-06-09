@@ -6,7 +6,9 @@ import ModelGenerator from './ModelGenerator';
 
 class Build extends ModelGenerator {
   async generate() {
-    const model = await this.factoryGirl.build(this.name, this.attrs, this.buildOptions);
+    const model = await this.factoryGirl.build(
+      this.name, this.attrs, this.buildOptions
+    );
     return this.key ? model[this.key] : model;
   }
 }

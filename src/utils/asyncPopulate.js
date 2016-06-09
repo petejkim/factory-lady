@@ -25,9 +25,13 @@ function asyncPopulate(target, source) {
       target[attr] = target[attr] || {};
       promises.push(asyncPopulate(target[attr], source[attr]));
     } else if (typeof source[attr] === 'function') {
-      promises.push(Promise.resolve(source[attr]()).then((v) => { target[attr] = v; }));
+      promises.push(
+        Promise.resolve(source[attr]()).then((v) => { target[attr] = v; })
+      );
     } else {
-      promises.push(Promise.resolve(source[attr]).then((v) => { target[attr] = v; }));
+      promises.push(
+        Promise.resolve(source[attr]).then((v) => { target[attr] = v; })
+      );
     }
   });
 

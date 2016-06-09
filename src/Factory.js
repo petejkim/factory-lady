@@ -18,7 +18,10 @@ class Factory {
       throw new Error('Invalid Model passed to the factory');
     }
 
-    if (!initializer || (typeof initializer !== 'object' && typeof initializer !== 'function')) {
+    if (
+      !initializer ||
+      (typeof initializer !== 'object' && typeof initializer !== 'function')
+    ) {
       throw new Error('Invalid initializer passed to the factory');
     }
 
@@ -72,7 +75,10 @@ class Factory {
       attrsArray = [];
     }
 
-    if (!Array.isArray(buildOptionsArray) && typeof buildOptionsArray === 'object') {
+    if (
+      !Array.isArray(buildOptionsArray) &&
+      typeof buildOptionsArray === 'object'
+    ) {
       buildOptionsObject = buildOptionsArray;
       buildOptionsArray = [];
     }
@@ -107,7 +113,9 @@ class Factory {
   }
 
   async createMany(adapter, num, attrsArray = [], buildOptionsArray = []) {
-    const models = await this.buildMany(adapter, num, attrsArray, buildOptionsArray);
+    const models = await this.buildMany(
+      adapter, num, attrsArray, buildOptionsArray
+    );
     const savedModels = models.map((model) => adapter.save(this.Model, model));
     return Promise.all(savedModels);
   }

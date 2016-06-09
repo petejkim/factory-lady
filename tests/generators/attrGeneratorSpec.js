@@ -5,14 +5,14 @@
 
 import '../test-helper/testUtils';
 import attrGenerator from '../../src/generators/attrGenerator';
-import {expect} from 'chai';
-import Debug from 'debug';
+import { expect } from 'chai';
 import DummyFactoryGirl from '../test-helper/DummyFactoryGirl';
 import DummyGenerator from '../test-helper/DummyGenerator';
 import asyncFunction from '../test-helper/asyncFunction';
 import sinon from 'sinon';
+// import _debug from 'debug';
 
-const debug = Debug('attrGeneratorSpec');
+// const debug = _debug('attrGeneratorSpec');
 
 describe('attrGenerator', function () {
   it('returns a function', function () {
@@ -49,10 +49,12 @@ describe('attrGenerator', function () {
         return expect(valueP).to.be.eventually.fulfilled;
       });
 
-      it('resolves to generator#generate value', asyncFunction(async function () {
-        const value = await valueFunction();
-        expect(value).to.be.equal('hello');
-      }));
+      it('resolves to generator#generate value',
+        asyncFunction(async function () {
+          const value = await valueFunction();
+          expect(value).to.be.equal('hello');
+        })
+      );
     });
   });
 });

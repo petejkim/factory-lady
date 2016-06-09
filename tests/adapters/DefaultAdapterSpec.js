@@ -4,12 +4,12 @@
 
 import '../test-helper/testUtils';
 import DefaultAdapter from '../../src/adapters/DefaultAdapter';
-import {expect} from 'chai';
-import Debug from 'debug';
+import { expect } from 'chai';
 import DummyModel from '../test-helper/DummyModel';
 import asyncFunction from '../test-helper/asyncFunction';
+// import _debug from 'debug';
 
-const debug = Debug('DefaultAdapterSpec');
+// const debug = _debug('DefaultAdapterSpec');
 
 describe('DefaultAdapter', function () {
   it('can be created', function () {
@@ -21,7 +21,10 @@ describe('DefaultAdapter', function () {
 
   describe('#build', function () {
     it('builds the model', asyncFunction(async function () {
-      const model = await adapter.build(DummyModel, {name: 'Bruce', age: 204});
+      const model = await adapter.build(DummyModel, {
+        name: 'Bruce',
+        age: 204,
+      });
       expect(model).to.be.an.instanceof(DummyModel);
       expect(model.name).to.be.equal('Bruce');
       expect(model.age).to.be.equal(204);

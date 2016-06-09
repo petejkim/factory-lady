@@ -5,7 +5,9 @@
 import ModelGenerator from './ModelGenerator';
 
 class ManyModelGenerator extends ModelGenerator {
-  constructor(factoryGirl, name, num, key = null, attrs = {}, buildOptions = {}) {
+  constructor(
+    factoryGirl, name, num, key = null, attrs = {}, buildOptions = {}
+  ) {
     super(factoryGirl, name, key, attrs, buildOptions);
 
     if (typeof num !== 'number' || num < 1) {

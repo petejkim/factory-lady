@@ -5,11 +5,11 @@
 
 import '../test-helper/testUtils';
 import asyncPopulate from '../../src/utils/asyncPopulate';
-import {expect} from 'chai';
-import Debug from 'debug';
+import { expect } from 'chai';
+// import _debug from 'debug';
 import asyncFunction from '../test-helper/asyncFunction';
 
-const debug = Debug('asyncPopulateSpec');
+// const debug = _debug('asyncPopulateSpec');
 
 describe('asyncPopulate', function () {
 
@@ -25,7 +25,7 @@ describe('asyncPopulate', function () {
 
     return Promise.all([
       expect(targetP).to.be.eventually.rejected,
-      expect(sourceP).to.be.eventually.rejected
+      expect(sourceP).to.be.eventually.rejected,
     ]);
   });
 
@@ -34,44 +34,26 @@ describe('asyncPopulate', function () {
       num: 1,
       str: 'hello',
       funcs: {
-        sync: function () {
-          return 'shouldHaveThisValue'
-        },
-        async: async function () {
-          return 'shouldHaveResolvedValue';
-        },
-        promise: function () {
-          return Promise.resolve('shouldWorkWithPromises');
-        }
+        sync: () => 'shouldHaveThisValue',
+        async: async() => 'shouldHaveResolvedValue',
+        promise: () => Promise.resolve('shouldWorkWithPromises'),
       },
       arrays: {
         simple: [1, 2, 3],
         funcs: [
-          function () {
-            return 1;
-          },
-          async function () {
-            return 2;
-          },
-          function () {
-            return Promise.resolve(3);
-          }
+          () => 1,
+          async() => 2,
+          () => Promise.resolve(3),
         ],
         nested: [
-          1, [
-            {a: 1, b: 2},
-            {c: 3, d: 4},
-            [
-              {
-                p: function () {
-                  return 20
-                },
-                q: [6, 7]
-              }
-            ]
-          ]
-        ]
-      }
+          1,
+          [
+            { a: 1, b: 2 },
+            { c: 3, d: 4 },
+            [{ p: () => 20, q: [6, 7] }],
+          ],
+        ],
+      },
     };
 
     const target = {};
@@ -83,24 +65,22 @@ describe('asyncPopulate', function () {
       funcs: {
         sync: 'shouldHaveThisValue',
         async: 'shouldHaveResolvedValue',
-        promise: 'shouldWorkWithPromises'
+        promise: 'shouldWorkWithPromises',
       },
       arrays: {
         simple: [1, 2, 3],
         funcs: [1, 2, 3],
         nested: [
           1, [
-            {a: 1, b: 2},
-            {c: 3, d: 4},
-            [
-              {
-                p: 20,
-                q: [6, 7]
-              }
-            ]
-          ]
-        ]
-      }
+            { a: 1, b: 2 },
+            { c: 3, d: 4 },
+            [{
+              p: 20,
+              q: [6, 7],
+            }],
+          ],
+        ],
+      },
     });
   }));
 
@@ -108,17 +88,15 @@ describe('asyncPopulate', function () {
     const target = {
       x: {
         y: 1,
-        z: 3
+        z: 3,
       },
-      p: [1, 2, 3]
+      p: [1, 2, 3],
     };
     const source = {
       x: {
-        y: function () {
-          return 'yo';
-        }
+        y: () => 'yo',
       },
-      p: [4]
+      p: [4],
     };
 
     await asyncPopulate(target, source);
@@ -126,10 +104,9 @@ describe('asyncPopulate', function () {
     expect(target).to.be.eql({
       x: {
         y: 'yo',
-        z: 3
+        z: 3,
       },
-      p: [4]
+      p: [4],
     });
-
   }));
 });

@@ -4,12 +4,12 @@
 
 import '../test-helper/testUtils';
 import ObjectAdapter from '../../src/adapters/ObjectAdapter';
-import {expect} from 'chai';
-import Debug from 'debug';
+import { expect } from 'chai';
 import DummyModel from '../test-helper/DummyModel';
 import asyncFunction from '../test-helper/asyncFunction';
+// import _debug from 'debug';
 
-const debug = Debug('ObjectAdapterSpec');
+// const debug = _debug('ObjectAdapterSpec');
 
 describe('ObjectAdapter', function () {
   it('can be created', function () {
@@ -21,14 +21,14 @@ describe('ObjectAdapter', function () {
 
   describe('#build', function () {
     it('builds the model', asyncFunction(async function () {
-      const model = await adapter.build(DummyModel, {a: 1, b: 2});
+      const model = await adapter.build(DummyModel, { a: 1, b: 2 });
       expect(model).to.be.an.instanceof(DummyModel);
       expect(model.a).to.be.equal(1);
       expect(model.b).to.be.equal(2);
     }));
 
     it('returns a promise', function () {
-      const modelP = adapter.build(DummyModel, {a: 1, b: 2});
+      const modelP = adapter.build(DummyModel, { a: 1, b: 2 });
       expect(modelP.then).to.be.a('function');
       return expect(modelP).to.be.eventually.fulfilled;
     });
