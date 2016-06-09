@@ -13,9 +13,9 @@ import BuildMany from './generators/BuildMany';
 import ChanceGenerator from './generators/ChanceGenerator';
 import attrGenerator from './generators/attrGenerator';
 import DefaultAdapter from './adapters/DefaultAdapter';
-import _debug from 'debug';
+// import _debug from 'debug';
 
-const debug = _debug('FactoryGirl');
+// const debug = _debug('FactoryGirl');
 
 class FactoryGirl {
   factories = {};
@@ -23,7 +23,7 @@ class FactoryGirl {
   adapters = {};
   created = new Set();
 
-  constructor(options) {
+  constructor(options = {}) {
     this.assoc = attrGenerator(this, Assoc);
     this.assocMany = attrGenerator(this, AssocMany);
     this.assocBuild = attrGenerator(this, Build);
@@ -35,8 +35,6 @@ class FactoryGirl {
 
     this.defaultAdapter = new DefaultAdapter;
     this.options = options;
-
-    debug('FactoryGirl created');
   }
 
   define(name, Model, initializer, options) {
@@ -51,9 +49,15 @@ class FactoryGirl {
     return this.getFactory(name).attrs(attrs, buildOptions);
   }
 
-  build(name, attrs, buildOptions) {
+  async build(name, attrs = {}, buildOptions = {}) {
     const adapter = this.getAdapter(name);
-    return this.getFactory(name).build(adapter, attrs, buildOptions);
+    return this.getFactory(name)
+      .build(adapter, attrs, buildOptions)
+      .then((model) => (
+        this.options.afterBuild ?
+          this.options.afterBuild(model, attrs, buildOptions) :
+          model
+      ));
   }
 
   create(name, attrs, buildOptions) {
@@ -63,7 +67,12 @@ class FactoryGirl {
       .then((createdModel) => {
         this.addToCreatedList(adapter, createdModel);
         return createdModel;
-      });
+      })
+      .then((model) => (
+        this.options.afterCreate ?
+          this.options.afterCreate(model, attrs, buildOptions) :
+          model
+      ));
   }
 
   attrsMany(name, num, attrs, buildOptions) {
@@ -72,7 +81,15 @@ class FactoryGirl {
 
   buildMany(name, num, attrs, buildOptions) {
     const adapter = this.getAdapter(name);
-    return this.getFactory(name).buildMany(adapter, num, attrs, buildOptions);
+    return this.getFactory(name)
+      .buildMany(adapter, num, attrs, buildOptions)
+      .then((models) => (
+        this.options.afterBuild ?
+          Promise.all(models.map(
+            (model) => this.options.afterBuild(model, attrs, buildOptions)
+          )) :
+          models
+      ));
   }
 
   createMany(name, num, attrs, buildOptions) {
@@ -81,7 +98,14 @@ class FactoryGirl {
       .createMany(adapter, num, attrs, buildOptions).then((createdModels) => {
         this.addToCreatedList(adapter, createdModels);
         return createdModels;
-      });
+      })
+      .then((models) => (
+        this.options.afterCreate ?
+          Promise.all(models.map(
+            (model) => this.options.afterCreate(model, attrs, buildOptions)
+          )) :
+          models
+      ));
   }
 
   getFactory(name, throwError = true) {

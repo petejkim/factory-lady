@@ -3,15 +3,15 @@
  */
 
 import asyncPopulate from './utils/asyncPopulate';
-import _debug from 'debug';
+// import _debug from 'debug';
 
-const debug = _debug('Factory');
+// const debug = _debug('Factory');
 
 class Factory {
   name = null;
   Model = null;
   initializer = null;
-  options = null;
+  options = {};
 
   constructor(Model, initializer, options = {}) {
     if (!Model || typeof Model !== 'function') {
@@ -27,9 +27,7 @@ class Factory {
 
     this.Model = Model;
     this.initializer = initializer;
-    this.options = options;
-
-    debug(`Factory created for model: ${Model.name}`);
+    this.options = { ...this.options, ...options };
   }
 
   getFactoryAttrs(buildOptions = {}) {
@@ -53,14 +51,26 @@ class Factory {
     return modelAttrs;
   }
 
-  async build(adapter, attrs = {}, buildOptions = {}) {
+  async build(adapter, attrs = {}, buildOptions = {}, buildCallbacks = true) {
     const modelAttrs = await this.attrs(attrs, buildOptions);
-    return adapter.build(this.Model, modelAttrs);
+    return adapter.build(this.Model, modelAttrs)
+      .then((model) => (
+        this.options.afterBuild && buildCallbacks ?
+          this.options.afterBuild(model, attrs, buildOptions) :
+          model
+      ));
   }
 
   async create(adapter, attrs = {}, buildOptions = {}) {
-    const model = await this.build(adapter, attrs, buildOptions);
-    return adapter.save(this.Model, model);
+    const model = await this.build(
+      adapter, attrs, buildOptions, false
+    );
+    return adapter.save(this.Model, model)
+      .then((savedModel) => (
+        this.options.afterCreate ?
+          this.options.afterCreate(savedModel, attrs, buildOptions) :
+          savedModel
+      ));
   }
 
   attrsMany(num, _attrsArray = [], _buildOptionsArray = []) {
@@ -106,18 +116,43 @@ class Factory {
     return Promise.all(models);
   }
 
-  async buildMany(adapter, num, attrsArray = [], buildOptionsArray = []) {
+  async buildMany(
+    adapter, num, attrsArray = [], buildOptionsArray = [], buildCallbacks = true
+  ) {
     const attrs = await this.attrsMany(num, attrsArray, buildOptionsArray);
     const models = attrs.map((attr) => adapter.build(this.Model, attr));
-    return Promise.all(models);
+    return Promise.all(models)
+      .then((builtModels) => (
+        this.options.afterBuild && buildCallbacks ?
+          Promise.all(builtModels.map(
+            (builtModel) => this.options.afterBuild(
+              builtModel, attrsArray, buildOptionsArray
+            )
+          )) :
+          builtModels
+      ));
   }
 
   async createMany(adapter, num, attrsArray = [], buildOptionsArray = []) {
     const models = await this.buildMany(
-      adapter, num, attrsArray, buildOptionsArray
+      adapter,
+      num,
+      attrsArray,
+      buildOptionsArray,
+      false
     );
+
     const savedModels = models.map((model) => adapter.save(this.Model, model));
-    return Promise.all(savedModels);
+    return Promise.all(savedModels)
+      .then((createdModels) => (
+        this.options.afterCreate ?
+          Promise.all(createdModels.map(
+            (createdModel) => this.options.afterCreate(
+              createdModel, attrsArray, buildOptionsArray
+            )
+          )) :
+          createdModels
+      ));
   }
 }
 

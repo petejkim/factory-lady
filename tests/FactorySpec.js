@@ -23,13 +23,11 @@ describe('Factory', function () {
       expect(factory).to.be.instanceof(Factory);
       expect(factory.Model).to.be.equal(DummyModel);
       expect(factory.initializer).to.be.equal(initializer);
-      expect(factory.options).to.be.equal(options);
     });
 
-    it('defaults options to empty object', function () {
+    it('can be created without options', function () {
       const factory = new Factory(DummyModel, {});
       expect(factory).to.be.instanceof(Factory);
-      expect(factory.options).to.be.eql({});
     });
 
     it('validates Model', function () {
@@ -205,6 +203,35 @@ describe('Factory', function () {
       const model = await objFactory.build(dummyAdapter);
       expect(model).to.be.an.instanceof(DummyModel);
     }));
+
+    it('invokes afterBuild callback option if any',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        const factoryWithOptions
+          = new Factory(DummyModel, simpleObjInit, { afterBuild: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const model = await factoryWithOptions.build(
+          dummyAdapter, dummyAttrs, dummyBuildOptions
+        );
+        expect(spy).to.have.been.calledWith(
+          model, dummyAttrs, dummyBuildOptions
+        );
+      })
+    );
+
+    it('accepts afterBuild callback returning a promise',
+      asyncFunction(async function () {
+        const factoryWithOptions = new Factory(
+          DummyModel,
+          simpleObjInit,
+          { afterBuild: (model) => Promise.resolve(model) }
+        );
+
+        const model = await factoryWithOptions.build(dummyAdapter);
+        expect(model).to.be.an.instanceof(DummyModel);
+      })
+    );
   });
 
   describe('#create', function () {
@@ -238,6 +265,45 @@ describe('Factory', function () {
       const model = await objFactory.create(dummyAdapter);
       expect(model).to.be.an.instanceof(DummyModel);
     }));
+
+    it('invokes afterCreate callback option if any',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        const factoryWithOptions
+          = new Factory(DummyModel, simpleObjInit, { afterCreate: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const model = await factoryWithOptions.create(
+          dummyAdapter, dummyAttrs, dummyBuildOptions
+        );
+        expect(spy).to.have.been.calledWith(
+          model, dummyAttrs, dummyBuildOptions
+        );
+      })
+    );
+
+    it('accepts afterCreate callback returning a promise',
+      asyncFunction(async function () {
+        const factoryWithOptions = new Factory(
+          DummyModel,
+          simpleObjInit,
+          { afterCreate: (model) => Promise.resolve(model) }
+        );
+
+        const model = await factoryWithOptions.create(dummyAdapter);
+        expect(model).to.be.an.instanceof(DummyModel);
+      })
+    );
+
+    it('does not invoke afterBuild callback on create',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        const factoryWithOptions
+          = new Factory(DummyModel, simpleObjInit, { afterBuild: spy });
+        await factoryWithOptions.create(dummyAdapter);
+        expect(spy).to.have.callCount(0);
+      })
+    );
   });
 
   describe('#buildMany', function () {
@@ -275,6 +341,41 @@ describe('Factory', function () {
         const models = await objFactory.buildMany(dummyAdapter, 5);
         expect(models).to.be.an('array');
         expect(models).to.have.lengthOf(5);
+        models.forEach(function (model) {
+          expect(model).to.be.an.instanceof(DummyModel);
+        });
+      })
+    );
+
+    it('invokes afterBuild callback option if any for each model',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        const factoryWithOptions
+          = new Factory(DummyModel, simpleObjInit, { afterBuild: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const models = await factoryWithOptions.buildMany(
+          dummyAdapter, 5, dummyAttrs, dummyBuildOptions
+        );
+        expect(spy).to.have.callCount(5);
+        for (let i = 0; i < 5; i++) {
+          expect(spy.getCall(i)).to.have.been.calledWith(
+            models[i], dummyAttrs, dummyBuildOptions
+          );
+        }
+      })
+    );
+
+    it('accepts afterBuild callback returning a promise',
+      asyncFunction(async function () {
+        const factoryWithOptions = new Factory(
+          DummyModel,
+          simpleObjInit,
+          { afterBuild: (model) => Promise.resolve(model) }
+        );
+
+        const models = await factoryWithOptions.buildMany(dummyAdapter, 5);
+        expect(models).to.be.an('array');
         models.forEach(function (model) {
           expect(model).to.be.an.instanceof(DummyModel);
         });
@@ -322,6 +423,51 @@ describe('Factory', function () {
         models.forEach(function (model) {
           expect(model).to.be.an.instanceof(DummyModel);
         });
+      })
+    );
+
+    it('invokes afterCreate callback option if any for each model',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        const factoryWithOptions
+          = new Factory(DummyModel, simpleObjInit, { afterCreate: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const models = await factoryWithOptions.createMany(
+          dummyAdapter, 5, dummyAttrs, dummyBuildOptions
+        );
+        expect(spy).to.have.callCount(5);
+        for (let i = 0; i < 5; i++) {
+          expect(spy.getCall(i)).to.have.been.calledWith(
+            models[i], dummyAttrs, dummyBuildOptions
+          );
+        }
+      })
+    );
+
+    it('accepts afterCreate callback returning a promise',
+      asyncFunction(async function () {
+        const factoryWithOptions = new Factory(
+          DummyModel,
+          simpleObjInit,
+          { afterCreate: (model) => Promise.resolve(model) }
+        );
+
+        const models = await factoryWithOptions.createMany(dummyAdapter, 5);
+        expect(models).to.be.an('array');
+        models.forEach(function (model) {
+          expect(model).to.be.an.instanceof(DummyModel);
+        });
+      })
+    );
+
+    it('does not invoke afterBuild callback on createMany',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        const factoryWithOptions
+          = new Factory(DummyModel, simpleObjInit, { afterBuild: spy });
+        await factoryWithOptions.createMany(dummyAdapter, 2);
+        expect(spy).to.have.callCount(0);
       })
     );
   });

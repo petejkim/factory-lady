@@ -5,10 +5,10 @@
 import FactoryGirl from './FactoryGirl';
 
 const factory = new FactoryGirl();
+factory.Factory = FactoryGirl;
 
 export default factory;
 
-// TODO: implement afterBuild, afterCreate options
 // TODO: Object adapter still works with models. Either change that or,
-//       add a new JSONAdapter
-// TODO: Allow creating new FactoryGirl objects
+//       add a new JSONAdapter, or maybe we don't need it as we have assocAttrs
+

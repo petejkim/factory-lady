@@ -201,6 +201,30 @@ describe('FactoryGirl', function () {
       expect(model.name).to.be.equal('Mark');
       expect(model.age).to.be.equal(40);
     }));
+
+    it('invokes afterBuild callback option if any',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        factoryGirl.withOptions({ afterBuild: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const model =
+          await factoryGirl.build('factory1', dummyAttrs, dummyBuildOptions);
+        expect(spy).to.have.been.calledWith(
+          model, dummyAttrs, dummyBuildOptions
+        );
+      })
+    );
+
+    it('accepts afterBuild callback returning a promise',
+      asyncFunction(async function () {
+        factoryGirl.withOptions(
+          { afterBuild: (model) => Promise.resolve(model) }
+        );
+        const model = await factoryGirl.build('factory1');
+        expect(model).to.be.an.instanceof(DummyModel);
+      })
+    );
   });
 
   describe('#create', function () {
@@ -244,6 +268,30 @@ describe('FactoryGirl', function () {
       expect(model.name).to.be.equal('Mark');
       expect(model.age).to.be.equal(40);
     }));
+
+    it('invokes afterCreate callback option if any',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        factoryGirl.withOptions({ afterCreate: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const model =
+          await factoryGirl.create('factory1', dummyAttrs, dummyBuildOptions);
+        expect(spy).to.have.been.calledWith(
+          model, dummyAttrs, dummyBuildOptions
+        );
+      })
+    );
+
+    it('accepts afterCreate callback returning a promise',
+      asyncFunction(async function () {
+        factoryGirl.withOptions(
+          { afterCreate: (model) => Promise.resolve(model) }
+        );
+        const model = await factoryGirl.create('factory1');
+        expect(model).to.be.an.instanceof(DummyModel);
+      })
+    );
   });
 
   describe('#attrsMany', function () {
@@ -337,6 +385,37 @@ describe('FactoryGirl', function () {
         expect(model.age).to.be.equal(40);
       });
     }));
+
+    it('invokes afterBuild callback option if any for each model',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        factoryGirl.withOptions({ afterBuild: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const models = await factoryGirl.buildMany(
+          'factory1', 5, dummyAttrs, dummyBuildOptions
+        );
+        expect(spy).to.have.callCount(5);
+        for (let i = 0; i < 5; i++) {
+          expect(spy.getCall(i)).to.have.been.calledWith(
+            models[i], dummyAttrs, dummyBuildOptions
+          );
+        }
+      })
+    );
+
+    it('accepts afterBuild callback returning a promise',
+      asyncFunction(async function () {
+        factoryGirl.withOptions(
+          { afterBuild: (model) => Promise.resolve(model) }
+        );
+        const models = await factoryGirl.buildMany('factory1', 5);
+        expect(models).to.be.an('array');
+        models.forEach(function (model) {
+          expect(model).to.be.an.instanceof(DummyModel);
+        });
+      })
+    );
   });
 
   describe('#createMany', function () {
@@ -385,6 +464,37 @@ describe('FactoryGirl', function () {
         expect(model.age).to.be.equal(40);
       });
     }));
+
+    it('invokes afterCreate callback option if any for each model',
+      asyncFunction(async function () {
+        const spy = sinon.spy(model => model);
+        factoryGirl.withOptions({ afterCreate: spy });
+        const dummyAttrs = {};
+        const dummyBuildOptions = {};
+        const models = await factoryGirl.createMany(
+          'factory1', 5, dummyAttrs, dummyBuildOptions
+        );
+        expect(spy).to.have.callCount(5);
+        for (let i = 0; i < 5; i++) {
+          expect(spy.getCall(i)).to.have.been.calledWith(
+            models[i], dummyAttrs, dummyBuildOptions
+          );
+        }
+      })
+    );
+
+    it('accepts afterCreate callback returning a promise',
+      asyncFunction(async function () {
+        factoryGirl.withOptions(
+          { afterCreate: (model) => Promise.resolve(model) }
+        );
+        const models = await factoryGirl.createMany('factory1', 5);
+        expect(models).to.be.an('array');
+        models.forEach(function (model) {
+          expect(model).to.be.an.instanceof(DummyModel);
+        });
+      })
+    );
   });
 
   describe('#withOptions', function () {

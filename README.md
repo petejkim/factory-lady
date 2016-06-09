@@ -92,7 +92,7 @@ factory.define('user', User, function (buildOptions) {
 factory.build('user', {}, {confirmed: true}); 
 ```
 
-### Options (to be implemented)
+### Options
 
 Options can be provided when you define a model-factory:
 
