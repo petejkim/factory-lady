@@ -243,12 +243,12 @@ factory.setAdapter(adapter);
 factory.setAdapter(adapter, 'factory-name');
 ```
 
-## Creating new Factories (to be implemented)
+## Creating new Factories
 
 You can create multiple factories which have different settings:
 
 ```javascript
-var anotherFactory = new factory.Factory();
+var anotherFactory = new factory.FactoryGirl();
 anotherFactory.setAdapter(new MongooseAdapter()); // use the Mongoose adapter
 ```
 
@@ -258,11 +258,8 @@ It started out as a fork of [factory-lady](https://github.com/petejkim/factory-l
 
 ## License
 
-Copyright (c) 2016 Chetan Verma.
+Copyright (c) 2016 Chetan Verma.  
+Copyright (c) 2014 Simon Wade.  
+Copyright (c) 2011 Peter Jihoon Kim.  
 
-Copyright (c) 2014 Simon Wade.
-
-Copyright (c) 2011 Peter Jihoon Kim.
-
- 
 This software is licensed under the [MIT License](http://github.com/aexmachina/factory-girl/raw/master/LICENSE.txt).

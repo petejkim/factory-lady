@@ -5,10 +5,11 @@
 import FactoryGirl from './FactoryGirl';
 
 const factory = new FactoryGirl();
-factory.Factory = FactoryGirl;
+factory.FactoryGirl = FactoryGirl;
 
 export default factory;
 
 // TODO: Object adapter still works with models. Either change that or,
-//       add a new JSONAdapter, or maybe we don't need it as we have assocAttrs
+//       add a new JSONAdapter, or maybe we don't need it at all as we now have
+//       assocAttrs
 
