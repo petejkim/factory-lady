@@ -263,7 +263,7 @@ Same as `#assoc`, but builds the associated models rather than creating them.
 
 Creates multiple entries.
 
-### Factory#assocManyBuild
+### Factory#assocBuildMany
 
 Same as `#assocMany`, but builds the associated models rather than creating them.
 
