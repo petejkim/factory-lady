@@ -14,9 +14,9 @@ with it.
 ```javascript
 import factory from 'factory-girl';
 import User from '../models/User';
-import \_debug from 'debug';
+import _debug from 'debug';
 
-const debug = \_debug('factory-girl-demo');
+const debug = _debug('factory-girl-demo');
 
 factory.define('User', User, {
   email: 'dummy_user@my_domain.com',
@@ -308,7 +308,7 @@ Now, while requesting `factory-girl` to create a `User` instance, we can do:
 
 ```javascript
 factory.create('User', {}, { passwordExpired: true, addressCount: 4 })
-  .then((user) => { debug(user'); })
+  .then((user) => { debug('user'); })
 ```
 Which would result in something like:
 ```javascript
