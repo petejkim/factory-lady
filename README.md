@@ -17,6 +17,7 @@ To use `factory-girl` in the browser or other JavaScript environments, just incl
 ## Usage
 
 Refer [API docs](docs/api.md) for complete API documentation.
+Refer [this tutorial](docs/tutorial.md) to see building a simple user factory.
 
 ```javascript
 var factory = require('factory-girl');

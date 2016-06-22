@@ -40,7 +40,7 @@ models for this model-factory.
 The initializer specifies what attributes need to be initialized to create a meaningful instance of the model.
 - options - Optionally you can provide an `options` object.
 
-### Initlizers - values, sequences, functions, async functions, chance
+### Initlizers - values, sequences, functions, async functions, chance, assoc, assocMany, assocBuild, assocBuildMany, assocAttrs, assocAttrsMany
 
 ### #withOptions
 ### #attrs
@@ -49,8 +49,7 @@ The initializer specifies what attributes need to be initialized to create a mea
 ### #buildMany
 ### #create
 ### #createMany
-### #sequence
-### #chance
+
 
 
 
