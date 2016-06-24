@@ -162,6 +162,55 @@ factory.define('User', User, {
 });
 ```
 
+Another useful value generator offered by `factory-girl` is `oneOf`. Assuming
+ we want to have a `gender` field. Now, we can obviously write a function to
+ randomly return `male` or `female`, but `factory-girl` simplifies this for
+ you a little. You can ask `factory-girl` to randomly choose a value from a set
+ of values:
+ 
+```javascript
+factory.define('User', User, {
+ email: factory.sequence('user.email', (n) => `dummy_user_${n}@my_domain.com`),
+ password: factory.chance('word', { syllables: 4 }),
+ name: factory.chance('name', { middle: true }),
+ about: factory.chance('paragraph', { sentences: 2 }),
+ password_expiry: () => methodToAddMonths(new Date(), 1),
+ favorite_cn_joke: () => { 
+   fetch('http://api.icndb.com/jokes/random')
+     .then(response => response.value.joke)
+ },
+ gender: factory.oneOf(['male', 'female'])
+});
+```
+
+That's not all! `oneOf` not just handles scalar values, you can pass in a
+function, an asynchronous function (that returns a promise), or any other 
+generator, e.g:
+
+```javascript
+factory.define('User', User, {
+  email: factory.sequence('user.email', (n) => `dummy_user_${n}@my_domain.com`),
+  password: factory.chance('word', { syllables: 4 }),
+  name: factory.chance('name', { middle: true }),
+  about: factory.chance('paragraph', { sentences: 2 }),
+  password_expiry: () => methodToAddMonths(new Date(), 1),
+  favorite_cn_joke: () => { 
+    fetch('http://api.icndb.com/jokes/random')
+    .then(response => response.value.joke)
+  },
+  gender: factory.oneOf(['male', 'female']),
+  numberOrCharacterOrName: factory.oneOf([
+    factory.oneOf([1, 2, 3]),
+    factory.oneOf(['a', 'b', 'c']),
+    factory.chance('name')
+  ]),
+  syncOrAsync: factory.oneOf([
+    () => new Date(),
+    () => fetch('date/from/server').then(resp => resp.date)
+  ])
+});
+```
+
 So far we have been dealing with a single model. Most of the times you have 
 several models associated with each other there are a few ways `factory-girl` 
 allows you to have associations. Let's say we would like to have our users to 

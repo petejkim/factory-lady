@@ -11,6 +11,7 @@ import AssocMany from './generators/AssocMany';
 import AssocAttrsMany from './generators/AssocAttrsMany';
 import BuildMany from './generators/BuildMany';
 import ChanceGenerator from './generators/ChanceGenerator';
+import OneOf from './generators/OneOf';
 import attrGenerator from './generators/attrGenerator';
 import DefaultAdapter from './adapters/DefaultAdapter';
 // import _debug from 'debug';
@@ -32,6 +33,7 @@ class FactoryGirl {
     this.assocAttrsMany = attrGenerator(this, AssocAttrsMany);
     this.seq = this.sequence = attrGenerator(this, Sequence);
     this.chance = attrGenerator(this, ChanceGenerator);
+    this.oneOf = attrGenerator(this, OneOf);
 
     this.defaultAdapter = new DefaultAdapter;
     this.options = options;

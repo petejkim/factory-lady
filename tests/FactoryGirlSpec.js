@@ -30,6 +30,8 @@ describe('FactoryGirl', function () {
       expect(factoryGirl.assocBuildMany).to.be.a('function');
       expect(factoryGirl.sequence).to.be.a('function');
       expect(factoryGirl.seq).to.be.a('function');
+      expect(factoryGirl.chance).to.be.a('function');
+      expect(factoryGirl.oneOf).to.be.a('function');
     });
 
     it('defines default adapter', function () {
