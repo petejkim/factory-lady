@@ -85,6 +85,8 @@ factory.define('user', User, function (buildOptions) {
     attrs.confirmed = true;
     attrs.confirmedAt = new Date();
   }
+
+  return attrs;
 });
 factory.build('user', function(err, user) {
   console.log(user.attributes);
