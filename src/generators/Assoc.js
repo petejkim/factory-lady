@@ -4,7 +4,7 @@
 
 import ModelGenerator from './ModelGenerator';
 
-class Assoc extends ModelGenerator {
+export default class Assoc extends ModelGenerator {
   async generate() {
     const model = await this.factoryGirl.create(
       this.name, this.attrs, this.buildOptions
@@ -12,5 +12,3 @@ class Assoc extends ModelGenerator {
     return this.key ? model[this.key] : model;
   }
 }
-
-export default Assoc;

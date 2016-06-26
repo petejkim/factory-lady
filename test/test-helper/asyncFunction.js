@@ -2,7 +2,7 @@
  * Created by chetanv on 06/06/16.
  */
 
-const asyncFunction = (func) => async (done) => {
+const asyncFunction = func => async done => {
   try {
     await func();
     done();

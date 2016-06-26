@@ -1,4 +1,5 @@
 node_modules/
+
 ### Node template
 # Logs
 logs
@@ -37,3 +38,6 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# IDEs
+.idea

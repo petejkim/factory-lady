@@ -2,7 +2,6 @@
  * Created by chetanv on 07/06/16.
  */
 
-
 import './test-helper/testUtils';
 import FactoryGirl from '../src/FactoryGirl';
 import Factory from '../src/Factory';
@@ -12,9 +11,6 @@ import DummyModel from './test-helper/DummyModel';
 import DummyAdapter from './test-helper/DummyAdapter';
 import asyncFunction from './test-helper/asyncFunction';
 import sinon from 'sinon';
-// import _debug from 'debug';
-
-// const debug = _debug('FactoryGirlSpec');
 
 describe('FactoryGirl', function () {
   describe('#constructor', function () {

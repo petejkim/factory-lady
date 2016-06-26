@@ -9,24 +9,20 @@ import Chance from 'chance';
 // const debug = _debug('Chance');
 const chance = new Chance();
 
-class ChanceGenerator extends Generator {
+export default class ChanceGenerator extends Generator {
   method = null;
-  params = null;
+  options = null;
 
   constructor(factoryGirl, chanceMethod, options) {
-    super(factoryGirl);
-
     if (typeof chance[chanceMethod] !== 'function') {
       throw new Error('Invalid chance method requested');
     }
-
+    super(factoryGirl);
     this.method = chanceMethod;
-    this.params = options;
+    this.options = options;
   }
 
   generate() {
-    return Promise.resolve(chance[this.method](this.params));
+    return Promise.resolve(chance[this.method](this.options));
   }
 }
-
-export default ChanceGenerator;

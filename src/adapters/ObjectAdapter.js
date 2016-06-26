@@ -2,10 +2,10 @@
  * Created by chetanv on 01/06/16.
  */
 
-class ObjectAdapter {
+export default class ObjectAdapter {
   async build(Model, props) {
     const model = new Model;
-    Object.keys(props).forEach((key) => { model[key] = props[key]; });
+    Object.assign(model, props);
     return model;
   }
 
@@ -17,5 +17,3 @@ class ObjectAdapter {
     return model;
   }
 }
-
-export default ObjectAdapter;

@@ -4,18 +4,12 @@
 
 import ModelGenerator from './ModelGenerator';
 
-class ManyModelGenerator extends ModelGenerator {
-  constructor(
-    factoryGirl, name, num, key = null, attrs = {}, buildOptions = {}
-  ) {
-    super(factoryGirl, name, key, attrs, buildOptions);
-
+export default class ManyModelGenerator extends ModelGenerator {
+  constructor(factoryGirl, name, num, key = null, attrs = {}, buildOptions = {}) {
     if (typeof num !== 'number' || num < 1) {
-      throw new Error('Invalid number of items requested.');
+      throw new Error('Invalid number of items requested');
     }
-
+    super(factoryGirl, name, key, attrs, buildOptions);
     this.num = num;
   }
 }
-
-export default ManyModelGenerator;

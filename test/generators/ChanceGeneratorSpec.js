@@ -30,7 +30,7 @@ describe('ChanceGenerator', function () {
     it('stores methodName and options', function () {
       const chance = new ChanceGenerator({}, 'bool', { likelihood: 30 });
       expect(chance.method).to.be.equal('bool');
-      expect(chance.params).to.be.eql({ likelihood: 30 });
+      expect(chance.options).to.be.eql({ likelihood: 30 });
     });
   });
 

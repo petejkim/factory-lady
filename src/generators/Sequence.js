@@ -4,19 +4,16 @@
 
 import Generator from './Generator';
 
-class Sequence extends Generator {
+export default class Sequence extends Generator {
+  // why static and not module scope?
   static sequences = {};
-  id = '';
 
   constructor(factoryGirl, id, callback = null) {
-    super(factoryGirl);
-
     if (typeof id !== 'string') {
       throw new Error('Invalid sequence key passed');
     }
-
+    super(factoryGirl);
     this.id = id;
-
     Sequence.sequences[id] = Sequence.sequences[id] || 1;
     this.callback = callback;
   }
@@ -26,5 +23,3 @@ class Sequence extends Generator {
     return Promise.resolve(this.callback ? this.callback(count) : count);
   }
 }
-
-export default Sequence;

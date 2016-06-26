@@ -4,7 +4,7 @@
 
 import ManyModelGenerator from './ManyModelGenerator';
 
-class BuildMany extends ManyModelGenerator {
+export default class BuildMany extends ManyModelGenerator {
   async generate() {
     const models = await this.factoryGirl.buildMany(
       this.name, this.num, this.attrs, this.buildOptions
@@ -12,5 +12,3 @@ class BuildMany extends ManyModelGenerator {
     return this.key ? models.map(model => model[this.key]) : models;
   }
 }
-
-export default BuildMany;
