@@ -16,6 +16,9 @@ To use `factory-girl` in the browser or other JavaScript environments, just incl
 
 ## Usage
 
+Refer [API docs](docs/api.md) for complete API documentation.
+Refer [this tutorial](docs/tutorial.md) to see building a simple user factory.
+
 ```javascript
 var factory = require('factory-girl');
 var User    = require('../models/user');
@@ -25,149 +28,113 @@ factory.define('user', User, {
   score: 50,
 });
 
-factory.build('user', function(err, user) {
-  console.log(user.attributes);
-  // => {username: 'Bob', score: 50}
+factory.build('user').then(function(user) {
+  debug(user);
+  // => User {username: 'Bob', score: 50}
 });
 ```
 
 ## Defining Factories
 
-```javascript
-var factory = require('factory-girl');
-var User    = require('../models/user');
+Refer [API docs](docs/api.md) for complete API documentation.
 
-factory.define('user', User, {
-  email: factory.sequence(function(n) {
-    return 'user' + n + '@demo.com';
-  }),
-  // async functions can be used by accepting a callback as an argument
-  async: function(callback) {
-    somethingAsync(callback);
-  },
-  // you can refer to other attributes using `this`
-  username: function() {
-    return this.email;
-  }
-});
-factory.build('user', function(err, user) {
-  console.log(user.attributes);
-  // => {state: 'active', email: 'user1@demo.com', async: 'foo', username: 'user1@demo.com'}
+Define factories using the `factory.define` API
+
+For example:
+
+```javascript
+// Using objects as initializer
+factory.define('product', Product, {
+  // use sequences to generate values sequentially
+  id: factory.sequence('Product.id', (n) => `product_${n}`),
+  
+  // use functions to compute some complex value
+  launchDate: () => new Date(),
+   
+  // return a promise to populate data asynchronously
+  asyncData: () => fetch('some/resource')
 });
 ```
 
-### Initializer function
-You can provide a function instead of an object to initialize models.
-You can pass the `buildOptions` object to the `factory.attrs`, `factory.build`, `factory.create` and the same object will be passed on to the initializer function.
-
 ```javascript
-var factory = require('factory-girl');
-var User    = require('../models/user');
-
+// Using functions as initializer
 factory.define('user', User, function (buildOptions) {
   var attrs = {
-    email: factory.sequence(function(n) {
-      return 'user' + n + '@demo.com';
-    }),
-    // async functions can be used by accepting a callback as an argument
-    async: function(callback) {
-      somethingAsync(callback);
-    },
-    // you can refer to other attributes using `this`
-    username: function() {
-      return this.email;
-    },
+    // seq is an alias for sequence
+    email: factory.seq('User.email', (n) => `user${n}@ymail.com`),
+    
+    // use the chance(http://chancejs.com/) library to generate real-life like data
+    about: factory.chance('sentence'),
+    
+    // use assoc to associate with other models
+    profileImage: factory.assoc('profile_image', '_id'),
+    
+    // or assocMany to associate multiple models
+    addresses: factory.assocMany('address', 2, '_id'),
+    
+    // use assocBuild or assocBuildMany to embed models that are not persisted
+    creditCard: factory.assocBuild('credit_card', {}, {type: 'masterCard'}),
+    
+    // use assocAttrs or assocAttrsMany to embed plain json objects
+    twitterDetails: factory.assocAttr('twitter_details'),
+    
     confirmed: false,
     confirmedAt: null
   };
   
+  // use build options to modify the returned object
   if (buildOptions.confirmedUser) {
     attrs.confirmed = true;
     attrs.confirmedAt = new Date();
   }
 });
-factory.build('user', function(err, user) {
-  console.log(user.attributes);
-  // => {state: 'active', email: 'user1@demo.com', async: 'foo', username: 'user1@demo.com'}
-});
+
+// buildOptions can be passed while requesting an object
+factory.build('user', {}, {confirmed: true}); 
 ```
 
 ### Options
 
-Options can be provided when you define a model:
+Options can be provided when you define a model-factory:
 
 ```javascript
 factory.define('user', User, { foo: 'bar' }, options);
 ```
 
-Alternatively you can create a new factory that specifies options for all of its models:
+Alternatively you can set options for the factory that will get applied for all model-factories:
 
 ```javascript
-var builder = factory.withOptions(options);
+factory.withOptions(options);
 ```
 
 Currently the supported options are:
 
-#### `afterBuild: function(instance, attrs, callback)`
+#### `afterBuild: function(model, attrs, buildOptions)`
 
 Provides a function that is called after the model is built.
+The function should return the instance or throw an error. For asynchronous functions, it should return a promise that either resolves with the instance or rejects with the error.
 
-#### `afterCreate: function(instance, attrs, callback)`
+#### `afterCreate: function(model, attrs, buildOptions)`
 
 Provides a function that is called after a new model instance is saved.
+The function should return the instance or throw an error. For asynchronous functions, it should return a promise that either resolves with the instance or rejects with the error.
 
 ```javascript
-factory.define('user', User, {
-  foo: 'bar'
-}, {
-  afterCreate: function(instance, attrs, callback) {
-    generateBazBasedOnID(instance.id, function(error, generatedBaz) {
-      if(error) {
-        callback(error, null);
-      } else {
-        instance.baz = generatedBaz;
-        callback(null, instance);
-      }
+factory.define('user', User, {foo: 'bar'}, {
+  afterBuild: (model, attrs, buildOptions) => {
+    return doSomethingAsync(model).then(() => {
+      doWhateverElse(model);
+      return model;
     });
+  },
+  afterCreate: (model, attrs, buildOptions) => {
+    modify(model);
+    if ('something' === 'wrong') {
+      throw new Error;
+    }
+    mayBeLog('something');
+    return model;
   }
-});
-```
-
-Other builder options can be accessed, inside hooks, using `this.options`.
-
-## Defining Associations
-
-```javascript
-factory.define('post', Post, {
-  // create associations using factory.assoc(model, key) or factory.assoc('user') to return the user object itself.
-  user_id: factory.assoc('user', 'id'),
-  // create array of associations using factory.assocMany(model, key, num)
-  comments: factory.assocMany('comment', 'text', 2)
-});
-factory.create('post', function(err, post) {
-  console.log(post.attributes);
-  // => { id: 1, user_id: 1, comments: [{ text: 'hello' }, { text: 'hello' }] }
-});
-```
-
-Be aware that `assoc()` will always create associated records, even when `factory.build()` is called.
-You can use `assocBuild()`, which will always build associated records.
-
-## Defining Sequences
-
-```javascript
-factory.define('post', Post, {
-  // Creates a new sequence that returns the next number in the sequence for
-  // each created instance, starting with 1.
-  num: factory.sequence(),
-  // factory.sequence can be abbreviated as factory.seq
-  email: factory.seq(function(n) {
-    return 'email' + n + '@test.com';
-  }),
-  // Can also be async
-  asyncProp: factory.seq(function(n, callback) {
-    somethingAsync(n, callback);
-  })
 });
 ```
 
@@ -175,199 +142,106 @@ factory.define('post', Post, {
 
 ### Factory#attrs
 
-Generates and returns attrs.
+Generates and returns model attributes as a json object instead of the model instance. This may be useful where you need a json representation of the model e.g. mocking API response
 
 ```javascript
-factory.attrs('post', function(err, postAttrs) {
-  // postAttrs is a post attributes
-  console.log(postAttrs);
-  // => {title: 'Hello', authorEmail: 'user1@demo.com'}
+factory.attrs('post').then((postAttrs) => {
+  // postAttrs is a json representation of the Post model
+  debug(postAttrs);
 });
 
-factory.attrs('post', {title: 'Foo', content: 'Bar'}, function(err, postAttrs) {
-  // build post attrs and override title and content
+factory.attrs('post', {title: 'Foo', content: 'Bar'}).then((postAttrs) => {
+  // builds post json object and overrides title and content
+  debug(postAttrs);
+});
+
+factory.attrs('post', {title: 'Foo'}, {hasComments: true}).then((postAttrs) => {
+  // builds post json object
+  // overrides title 
+  // invokes the initializer function with buildOptions as {hasComments: true}
+  debug(postAttrs);
+});
+
+```
+
+You can use `Factory#attrsMany` to generate a set of model attributes
+
+```javascript
+factory.attrsMany('post', 5, [{title: 'foo1'}, {title: 'foo2'}]).then((postAttrsArray) => {
+  // postAttrsArray is an array of 5 post json objects
+  debug(postAttrsArray);
 });
 ```
 
-In case you have defined your factory with an [initializer function](#initializer-function), you can pass on `buildOptions` to be passed to the initializer function.
-
-```javascript
-factory.attrs('user', {}, { confirmedUser: true }, function (err, userAttrs) {
-  // userAttrs is a user attributes
-  console.log(userAttrs);
-}
-```
-Note that in case you want to pass buildOptions, you have to pass attributes parameter as well. Otherwise, the buildOptions will be treated as attribute parameters.
+Refer [API docs](docs/api.md) for complete API documentation.
 
 ### Factory#build
 
-Creates a new (unsaved) instance.
+Builds a new model instance that is not persisted.
 
 ```javascript
-factory.build('post', function(err, post) {
-  // post is a Post instance that is not saved
-});
-factory.build('post', {title: 'Foo', content: 'Bar'}, function(err, post) {
-  // build a post and override title and content
+factory.build('post').then((post) => {
+  // post is a Post instance that is not persisted
+  debug(post);
 });
 ```
 
-In case you have defined your factory with an [initializer function](#initializer-function), you can pass on `buildOptions` to be passed to the initializer function.
+The buildMany version builds an array of model instances
 
 ```javascript
-factory.build('user', {}, { confirmedUser: true }, function (err, userAttrs) {
-  // userAttrs is a user attributes
-  console.log(userAttrs);
-}
+factory.buildMany('post', 5).then((postsArray) => {
+  // postsArray is an array of 5 Post instances
+  debug(postsArray);
+});
 ```
-Note that in case you want to pass buildOptions, you have to pass attributes parameter as well. Otherwise, the buildOptions will be treated as attribute parameters.
+
+Similar to `Factory#attrs`, you can pass attributes to override or buildOptions.
+
+Refer [API docs](docs/api.md) for complete API documentation.
 
 ### Factory#create
 
-Builds and saves a new instance.
+Builds a new model instance that is persisted
 
 ```
-factory.create('post', function(err, post) {
+factory.create('post').then((post) => {
   // post is a saved Post instance
+  debug(post);
 });
 ```
 
-In case you have defined your factory with an [initializer function](#initializer-function), you can pass on `buildOptions` to be passed to the initializer function.
+The createMany version creates an array of model instances
 
 ```javascript
-factory.create('user', {}, { confirmedUser: true }, function (err, userAttrs) {
-  // userAttrs is a user attributes
-  console.log(userAttrs);
-}
-```
-Note that in case you want to pass buildOptions, you have to pass attributes parameter as well. Otherwise, the buildOptions will be treated as attribute parameters.
-
-
-### Factory#assoc(model, key = null, attrs = null, buildOptions = null)
-
-Defines an attribute of a model that creates an associated instance of another model.
-
-Use the `key` argument to return an attribute of the associated instance.
-
-You can optionally provide attributes to the associated factory by passing an object as third
-argument.
-
-Be aware that `assoc()` will always _create_ associated records, even when `factory.build()` is
-called. You can use `assocBuild()`, which will always build associated records.
-
-### Factory#assocBuild(model, key = null, attrs = null, buildOptions = null)
-
-Same as `#assoc`, but builds the associated models rather than creating them.
-
-### Factory#assocMany(model, key, num, attrs = null, buildOptions = null)
-
-Creates multiple entries.
-
-### Factory#assocManyBuild
-
-Same as `#assocMany`, but builds the associated models rather than creating them.
-
-### Factory#buildMany
-
-Allow you to create a number of models at once.
-
-```javascript
-factory.buildMany('post', 10, function(err, posts) {
-  // build 10 posts
+factory.createMany('post', 5).then((postsArray) => {
+  // postsArray is an array of 5 Post saved instances
+  debug(postsArray);
 });
-
-factory.buildMany('post', 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
-  // build 10 posts, using build options for first two
-});
-
-factory.buildMany('post', 10, {withImage: true}, function(err, posts) {
-  // build 10 posts, using same build options for all of them
-});
-
-factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], function(err, posts) {
-  // build 2 posts using the specified attributes
-});
-
-factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], [{withImage: true}], function(err, posts) {
-  // build 2 posts using the specified attributes
-  // build first post using the build option
-});
-
-factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], {withImage: true}, function(err, posts) {
-  // build first 2 posts using the specified attributes using same build options for all of them
-});
-
-
-factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, function(err, posts) {
-  // build 10 posts using the specified attributes for the first and second
-});
-
-factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
-  // build 10 posts using the specified attributes and build options for the first and second
-});
-
-factory.buildMany('post', [{title: 'Foo'}, {title: 'Bar'}], 10, {withImage: true}, function(err, posts) {
-  // build 10 posts using the specified attributes for the first and second
-  // uses same build options for all of them
-});
-
-
-factory.buildMany('post', {title: 'Foo'}, 10, function(err, posts) {
-  // build 10 posts using the specified attributes for all of them
-});
-
-factory.buildMany('post', {title: 'Foo'}, 10, [{withImage: true}, {veryLong: true}], function(err, posts) {
-  // build 10 posts using the specified attributes for all of them but using build options only for first two
-});
-
-factory.buildMany('post', {title: 'Foo'}, 10, {withImage: true}, function(err, posts) {
-  // build 10 posts using the specified attributes and build options for all of them
-});
-
 ```
 
-### Factory#createMany
+Similar to `Factory#attrs` and `Factory#build`, you can pass attributes to override or buildOptions.
 
-`factory.createMany` takes the same arguments as `buildMany`, but returns saved models.
-
-### Factory#buildSync
-
-When you have factories that don't use async property functions, you can use `buildSync()`.
-Be aware that `assoc()` is an async function, so it can't be used with `buildSync()`.
-
-```javascript
-var doc = factory.buildSync('post', {title: 'Foo'});
-```
+Refer [API docs](docs/api.md) for complete API documentation.
 
 ### Factory#cleanup
 
 Destroys all of the created models. This is done using the adapter's `destroy` method.
+It might be useful to clear all created models before each test or testSuite. 
 
 ## Adapters
 
-Adapters provide [support for different databases and ORMs](https://www.npmjs.org/browse/keyword/factory-girl).
+Adapters provide support for different databases and ORMs
 Adapters can be registered for specific models, or as the 'default adapter', which is used for any models for which an adapter has not been specified.
 See the adapter docs for usage, but typical usage is:
 
 ```javascript
-// use the bookshelf adapter as the default adapter
-require('factory-girl-bookshelf')();
-```
+const adapter = new factory.MongooseAdapter();
 
-### `ObjectAdapter`
+// use the mongoose adapter as the default adapter
+factory.setAdapter(adapter);
 
-You can use the included ObjectAdapter to work without model classes. This adapter simply returns
-the provided attribute objects.
-
-```
-factory.setAdapter(new factory.ObjectAdapter());
-```
-
-### Using Different Adapters Per-model
-
-```
-// use an ObjectAdapter for the `post` model only
-factory.setAdapter(new factory.ObjectAdapter(), 'post');
+// Or use it only for one model-factory
+factory.setAdapter(adapter, 'factory-name');
 ```
 
 ## Creating new Factories
@@ -375,18 +249,8 @@ factory.setAdapter(new factory.ObjectAdapter(), 'post');
 You can create multiple factories which have different settings:
 
 ```javascript
-var anotherFactory = new factory.Factory();
-var BookshelfAdapter = require('factory-girl-bookshelf').BookshelfAdapter;
-anotherFactory.setAdapter(new BookshelfAdapter()); // use the Bookshelf adapter
-```
-
-## Like Promises?
-
-Me too! Bluebird and q are both supported:
-
-```javascript
-var bluebird = require('bluebird');
-var factory = require('factory-girl').promisify(bluebird);
+var anotherFactory = new factory.FactoryGirl();
+anotherFactory.setAdapter(new MongooseAdapter()); // use the Mongoose adapter
 ```
 
 ## History
@@ -395,5 +259,8 @@ It started out as a fork of [factory-lady](https://github.com/petejkim/factory-l
 
 ## License
 
-Copyright (c) 2014 Simon Wade. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
-Copyright (c) 2011 Peter Jihoon Kim. This software is licensed under the [MIT License](http://github.com/petejkim/factory-lady/raw/master/LICENSE).
+Copyright (c) 2016 Chetan Verma.  
+Copyright (c) 2014 Simon Wade.  
+Copyright (c) 2011 Peter Jihoon Kim.  
+
+This software is licensed under the [MIT License](http://github.com/aexmachina/factory-girl/raw/master/LICENSE.txt).

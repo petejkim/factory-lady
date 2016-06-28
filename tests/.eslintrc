@@ -1,0 +1,14 @@
+{
+  "env": {
+    "mocha": true
+  },
+  "plugins": [
+    "mocha"
+  ],
+  "rules": {
+    "no-unused-expressions": 0,
+    "padded-blocks": 0,
+    "prefer-arrow-callback": 0,
+    "func-names": 0
+  }
+}
