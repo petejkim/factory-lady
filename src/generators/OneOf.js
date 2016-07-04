@@ -4,9 +4,7 @@
 
 import Generator from './Generator';
 
-class OneOf extends Generator {
-  valueSet = [];
-
+export default class OneOf extends Generator {
   generate(possibleValues) {
     if (!Array.isArray(possibleValues)) {
       throw new Error('Expected an array of possible values');
@@ -22,5 +20,3 @@ class OneOf extends Generator {
     return (typeof value === 'function') ? value() : value;
   }
 }
-
-export default OneOf;
