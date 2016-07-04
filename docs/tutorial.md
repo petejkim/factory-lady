@@ -138,11 +138,12 @@ factory.define('User', User, {
 });
 ```
 
-So far we have been dealing only with a single model. Most of the times you have several
-models that are associated with each other. There are a few ways `factory-girl` allows you
-to have associations. Let's say we would like our users to have a profile image. We start
-by defining a factory for the profile image model:
-
+So far we have been dealing with a single model. Most of the times you have 
+several models associated with each other there are a few ways `factory-girl` 
+allows you to have associations. Let's say we would like to have our users to 
+have a profile image. We start by defining a factory for profile image model 
+(assuming we already have a `ProfileImage` model):
+ 
 ```javascript
 factory.define('ProfileImage', ProfileImage, {
   id: factory.sequence('ProfileImage.id'),

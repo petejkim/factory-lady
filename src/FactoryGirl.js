@@ -9,6 +9,7 @@ import AssocAttrs from './generators/AssocAttrs';
 import AssocMany from './generators/AssocMany';
 import AssocAttrsMany from './generators/AssocAttrsMany';
 import ChanceGenerator from './generators/ChanceGenerator';
+import OneOf from './generators/OneOf';
 import DefaultAdapter from './adapters/DefaultAdapter';
 
 export default class FactoryGirl {
@@ -26,6 +27,7 @@ export default class FactoryGirl {
     this.assocAttrsMany = generatorThunk(this, AssocAttrsMany);
     this.seq = this.sequence = generatorThunk(this, Sequence);
     this.chance = generatorThunk(this, ChanceGenerator);
+    this.oneOf = generatorThunk(this, OneOf);
 
     this.defaultAdapter = new DefaultAdapter;
     this.options = options;
