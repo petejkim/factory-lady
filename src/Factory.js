@@ -46,16 +46,15 @@ export default class Factory {
 
   async build(adapter, extraAttrs = {}, buildOptions = {}, buildCallbacks = true) {
     const modelAttrs = await this.attrs(extraAttrs, buildOptions);
-    return adapter.build(this.Model, modelAttrs)
-      .then(model => (this.options.afterBuild && buildCallbacks ?
-          this.options.afterBuild(model, extraAttrs, buildOptions) :
-          model
-      ));
+    const model = adapter.build(this.Model, modelAttrs);
+    return this.options.afterBuild && buildCallbacks ?
+        this.options.afterBuild(model, extraAttrs, buildOptions) :
+        model;
   }
 
   async create(adapter, attrs = {}, buildOptions = {}) {
     const model = await this.build(adapter, attrs, buildOptions, false);
-    return adapter.save(this.Model, model)
+    return adapter.save(model, this.Model)
       .then(savedModel => (this.options.afterCreate ?
           this.options.afterCreate(savedModel, attrs, buildOptions) :
           savedModel
@@ -111,7 +110,7 @@ export default class Factory {
     const models = await this.buildMany(
       adapter, num, attrsArray, buildOptionsArray, false
     );
-    const savedModels = models.map(model => adapter.save(this.Model, model));
+    const savedModels = models.map(model => adapter.save(model, this.Model));
     return Promise.all(savedModels)
       .then(createdModels => (this.options.afterCreate ?
           Promise.all(createdModels.map(createdModel => this.options.afterCreate(

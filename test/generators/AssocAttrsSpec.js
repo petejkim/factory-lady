@@ -8,9 +8,6 @@ import { expect } from 'chai';
 import DummyFactoryGirl from '../test-helper/DummyFactoryGirl';
 import asyncFunction from '../test-helper/asyncFunction';
 import sinon from 'sinon';
-// import _debug from 'debug';
-
-// const debug = _debug('AssocAttrsSpec');
 
 describe('AssocAttrs', function () {
   describe('#generate', function () {
@@ -19,13 +16,12 @@ describe('AssocAttrs', function () {
     const key = 'someKey';
     const dummyAttrs = {};
     const dummyBuildOptions = {};
-    const assocAttrs =
-      new AssocAttrs(factoryGirl, name, key, dummyAttrs, dummyBuildOptions);
+    const assocAttrs = new AssocAttrs(factoryGirl);
 
     it('calls attrs on the factoryGirl object',
       asyncFunction(async function () {
         const spy = sinon.spy(factoryGirl, 'attrs');
-        await assocAttrs.generate();
+        await assocAttrs.generate(name, key, dummyAttrs, dummyBuildOptions);
         expect(spy).to.have.been.calledWith(
           name, dummyAttrs, dummyBuildOptions
         );
@@ -34,23 +30,23 @@ describe('AssocAttrs', function () {
     );
 
     it('returns a promise', function () {
-      const modelP = assocAttrs.generate();
+      const modelP = assocAttrs.generate(name, key, dummyAttrs, dummyBuildOptions);
       expect(modelP.then).to.be.a('function');
       return expect(modelP).to.be.eventually.fulfilled;
     });
 
     it('resolves to the object returned by factory if key is null',
       asyncFunction(async function () {
-        const assocAttrsWithNullKey = new AssocAttrs(factoryGirl, name);
-        const model = await assocAttrsWithNullKey.generate();
+        const assocAttrsWithNullKey = new AssocAttrs(factoryGirl);
+        const model = await assocAttrsWithNullKey.generate(name);
         expect(model).to.be.an('object');
       })
     );
 
     it('resolves to the object property returned by factory if key is not null',
       asyncFunction(async function () {
-        const assocAttrsWithKey = new AssocAttrs(factoryGirl, name, 'name');
-        const modelA = await assocAttrsWithKey.generate();
+        const assocAttrsWithKey = new AssocAttrs(factoryGirl);
+        const modelA = await assocAttrsWithKey.generate(name, 'name');
         expect(modelA).to.be.equal('Bill');
       })
     );

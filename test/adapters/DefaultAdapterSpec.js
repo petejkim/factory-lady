@@ -7,9 +7,6 @@ import DefaultAdapter from '../../src/adapters/DefaultAdapter';
 import { expect } from 'chai';
 import DummyModel from '../test-helper/DummyModel';
 import asyncFunction from '../test-helper/asyncFunction';
-// import _debug from 'debug';
-
-// const debug = _debug('DefaultAdapterSpec');
 
 describe('DefaultAdapter', function () {
   it('can be created', function () {
@@ -21,40 +18,35 @@ describe('DefaultAdapter', function () {
 
   describe('#build', function () {
     it('builds the model', asyncFunction(async function () {
-      const model = await adapter.build(DummyModel, {
+      const model = adapter.build(DummyModel, {
         name: 'Bruce',
         age: 204,
       });
       expect(model).to.be.an.instanceof(DummyModel);
-      expect(model.name).to.be.equal('Bruce');
-      expect(model.age).to.be.equal(204);
+      expect(model.attrs.name).to.be.equal('Bruce');
+      expect(model.attrs.age).to.be.equal(204);
       expect(model.constructorCalled).to.be.equal(true);
     }));
 
-    it('returns a promise', function () {
-      const modelP = adapter.build(DummyModel, {});
-      expect(modelP.then).to.be.a('function');
-      return expect(modelP).to.be.eventually.fulfilled;
-    });
   });
 
   describe('#save', function () {
     it('calls save on the model', asyncFunction(async function () {
       const model = new DummyModel;
-      const savedModel = await adapter.save(DummyModel, model);
+      const savedModel = await adapter.save(model, DummyModel);
       expect(savedModel.saveCalled).to.be.equal(true);
     }));
 
     it('returns a promise', function () {
       const model = new DummyModel;
-      const savedModelP = adapter.save(DummyModel, model);
+      const savedModelP = adapter.save(model, DummyModel);
       expect(savedModelP.then).to.be.a('function');
       return expect(savedModelP).to.be.eventually.fulfilled;
     });
 
     it('resolves to the object itself', asyncFunction(async function () {
       const model = new DummyModel;
-      const savedModel = await adapter.save(DummyModel, model);
+      const savedModel = await adapter.save(model, DummyModel);
       expect(savedModel).to.be.equal(model);
     }));
   });
@@ -62,20 +54,20 @@ describe('DefaultAdapter', function () {
   describe('#destroy', function () {
     it('calls destroy on the model', asyncFunction(async function () {
       const model = new DummyModel;
-      const destroyedModel = await adapter.destroy(DummyModel, model);
+      const destroyedModel = await adapter.destroy(model, DummyModel);
       expect(destroyedModel.destroyCalled).to.be.equal(true);
     }));
 
     it('returns a promise', function () {
       const model = new DummyModel;
-      const destroyedModelP = adapter.destroy(DummyModel, model);
+      const destroyedModelP = adapter.destroy(model, DummyModel);
       expect(destroyedModelP.then).to.be.a('function');
       return expect(destroyedModelP).to.be.eventually.fulfilled;
     });
 
     it('resolves to the object itself', asyncFunction(async function () {
       const model = new DummyModel;
-      const destroyedModel = await adapter.destroy(DummyModel, model);
+      const destroyedModel = await adapter.destroy(model, DummyModel);
       expect(destroyedModel).to.be.equal(model);
     }));
   });

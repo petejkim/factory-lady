@@ -6,29 +6,26 @@ import Factory from './Factory';
 import Sequence from './generators/Sequence';
 import Assoc from './generators/Assoc';
 import AssocAttrs from './generators/AssocAttrs';
-import Build from './generators/Build';
 import AssocMany from './generators/AssocMany';
 import AssocAttrsMany from './generators/AssocAttrsMany';
-import BuildMany from './generators/BuildMany';
 import ChanceGenerator from './generators/ChanceGenerator';
-import attrGenerator from './generators/attrGenerator';
 import DefaultAdapter from './adapters/DefaultAdapter';
 
-class FactoryGirl {
+export default class FactoryGirl {
   factories = {};
   options = {};
   adapters = {};
   created = new Set();
 
   constructor(options = {}) {
-    this.assoc = attrGenerator(this, Assoc);
-    this.assocMany = attrGenerator(this, AssocMany);
-    this.assocBuild = attrGenerator(this, Build);
-    this.assocBuildMany = attrGenerator(this, BuildMany);
-    this.assocAttrs = attrGenerator(this, AssocAttrs);
-    this.assocAttrsMany = attrGenerator(this, AssocAttrsMany);
-    this.seq = this.sequence = attrGenerator(this, Sequence);
-    this.chance = attrGenerator(this, ChanceGenerator);
+    this.assoc = generatorThunk(this, Assoc);
+    this.assocMany = generatorThunk(this, AssocMany);
+    this.assocBuild = deprecate('assocBuild', 'assocAttrs');
+    this.assocBuildMany = deprecate('assocBuildMany', 'assocAttrsMany');
+    this.assocAttrs = generatorThunk(this, AssocAttrs);
+    this.assocAttrsMany = generatorThunk(this, AssocAttrsMany);
+    this.seq = this.sequence = generatorThunk(this, Sequence);
+    this.chance = generatorThunk(this, ChanceGenerator);
 
     this.defaultAdapter = new DefaultAdapter;
     this.options = options;
@@ -41,7 +38,7 @@ class FactoryGirl {
     this.factories[name] = new Factory(Model, initializer, options);
   }
 
-  attrs(name, attrs, buildOptions) {
+  async attrs(name, attrs, buildOptions) {
     return this.getFactory(name).attrs(attrs, buildOptions);
   }
 
@@ -97,7 +94,7 @@ class FactoryGirl {
 
   getFactory(name, throwError = true) {
     if (!this.factories[name] && throwError) {
-      throw new Error('Invalid factory requested');
+      throw new Error(`Invalid factory '${name} requested`);
     }
     return this.factories[name];
   }
@@ -132,13 +129,24 @@ class FactoryGirl {
     return Promise.all(promises);
   }
 
-  setAdapter(adapter, factory) {
-    if (!factory) {
+  setAdapter(adapter, factoryNames = null) {
+    if (!factoryNames) {
       this.defaultAdapter = adapter;
     } else {
-      this.adapters[factory] = adapter;
+      factoryNames = Array.isArray(factoryNames) ? factoryNames : [factoryNames];
+      factoryNames.forEach(name => { this.adapters[name] = adapter; });
     }
+    return adapter;
   }
 }
 
-export default FactoryGirl;
+export function generatorThunk(factoryGirl, SomeGenerator) {
+  const generator = new SomeGenerator(factoryGirl);
+  return (...args) => () => generator.generate(...args);
+}
+
+function deprecate(method, see) {
+  return () => {
+    throw new Error(`The ${method} method has been deprecated, use ${see} instead`);
+  };
+}

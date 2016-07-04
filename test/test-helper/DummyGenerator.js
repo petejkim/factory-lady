@@ -2,14 +2,11 @@
  * Created by chetanv on 06/06/16.
  */
 
-class DummyGenerator {
+export default class DummyGenerator {
   constructor() {
     this.constructorCalled = true;
   }
-
-  async generate() {
+  generate() {
     return 'hello';
   }
 }
-
-export default DummyGenerator;

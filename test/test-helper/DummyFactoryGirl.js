@@ -3,8 +3,9 @@
  */
 
 import DummyModel from './DummyModel';
+import DummyAdapter from './DummyAdapter';
 
-class DummyFactoryGirl {
+export default class DummyFactoryGirl {
 
   async create(/* name, attrs, buildOptions */) {
     return new DummyModel({
@@ -65,6 +66,8 @@ class DummyFactoryGirl {
       }),
     ];
   }
-}
 
-export default DummyFactoryGirl;
+  getAdapter(/* name */) {
+    return new DummyAdapter;
+  }
+}

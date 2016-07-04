@@ -13,4 +13,8 @@ export default class Generator {
   generate() {
     throw new Error('Override this method to generate a value');
   }
+
+  getAttribute(name, model, key) {
+    return this.factoryGirl.getAdapter(name).get(model, key);
+  }
 }

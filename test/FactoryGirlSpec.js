@@ -22,8 +22,8 @@ describe('FactoryGirl', function () {
     it('defines generator methods', function () {
       expect(factoryGirl.assoc).to.be.a('function');
       expect(factoryGirl.assocMany).to.be.a('function');
-      expect(factoryGirl.assocBuild).to.be.a('function');
-      expect(factoryGirl.assocBuildMany).to.be.a('function');
+      expect(factoryGirl.assocAttrs).to.be.a('function');
+      expect(factoryGirl.assocAttrsMany).to.be.a('function');
       expect(factoryGirl.sequence).to.be.a('function');
       expect(factoryGirl.seq).to.be.a('function');
     });
@@ -194,8 +194,8 @@ describe('FactoryGirl', function () {
     it('resolves to model correctly', asyncFunction(async function () {
       const model = await factoryGirl.build('factory1');
       expect(model).to.be.an.instanceof(DummyModel);
-      expect(model.name).to.be.equal('Mark');
-      expect(model.age).to.be.equal(40);
+      expect(model.attrs.name).to.be.equal('Mark');
+      expect(model.attrs.age).to.be.equal(40);
     }));
 
     it('invokes afterBuild callback option if any',
@@ -261,8 +261,8 @@ describe('FactoryGirl', function () {
     it('resolves to model correctly', asyncFunction(async function () {
       const model = await factoryGirl.create('factory1');
       expect(model).to.be.an.instanceof(DummyModel);
-      expect(model.name).to.be.equal('Mark');
-      expect(model.age).to.be.equal(40);
+      expect(model.attrs.name).to.be.equal('Mark');
+      expect(model.attrs.age).to.be.equal(40);
     }));
 
     it('invokes afterCreate callback option if any',
@@ -377,8 +377,8 @@ describe('FactoryGirl', function () {
       expect(models).to.be.an('array');
       models.forEach(function (model) {
         expect(model).to.be.an.instanceof(DummyModel);
-        expect(model.name).to.be.equal('Mark');
-        expect(model.age).to.be.equal(40);
+        expect(model.attrs.name).to.be.equal('Mark');
+        expect(model.attrs.age).to.be.equal(40);
       });
     }));
 
@@ -456,8 +456,8 @@ describe('FactoryGirl', function () {
       expect(models).to.be.an('array');
       models.forEach(function (model) {
         expect(model).to.be.an.instanceof(DummyModel);
-        expect(model.name).to.be.equal('Mark');
-        expect(model.age).to.be.equal(40);
+        expect(model.attrs.name).to.be.equal('Mark');
+        expect(model.attrs.age).to.be.equal(40);
       });
     }));
 

@@ -5,21 +5,29 @@
 import Generator from './Generator';
 
 export default class Sequence extends Generator {
-  // why static and not module scope?
   static sequences = {};
 
-  constructor(factoryGirl, id, callback = null) {
-    if (typeof id !== 'string') {
-      throw new Error('Invalid sequence key passed');
-    }
+  constructor(factoryGirl, id = null, callback = null) {
     super(factoryGirl);
-    this.id = id;
-    Sequence.sequences[id] = Sequence.sequences[id] || 1;
+    if (typeof id === 'function') {
+      callback = id;
+      id = null;
+    }
+    this.id = id || generateId();
     this.callback = callback;
+    Sequence.sequences[this.id] = Sequence.sequences[this.id] || 1;
   }
-
   generate() {
-    const count = Sequence.sequences[this.id]++;
-    return Promise.resolve(this.callback ? this.callback(count) : count);
+    const next = Sequence.sequences[this.id]++;
+    return this.callback ? this.callback(next) : next;
   }
+}
+
+function generateId() {
+  let id;
+  let i = 0;
+  do {
+    id = `_${i++}`;
+  } while (id in Sequence.sequences);
+  return id;
 }

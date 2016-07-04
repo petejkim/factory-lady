@@ -15,36 +15,23 @@ describe('ChanceGenerator', function () {
     it('validates the passed chance method', function () {
       /* eslint-disable no-new */
       function invalidMethod() {
-        new ChanceGenerator({}, 'invalidMethodName');
+        new ChanceGenerator({}).generate('invalidMethodName');
       }
 
       function validMethod() {
-        new ChanceGenerator({}, 'bool');
+        new ChanceGenerator({}).generate('bool');
       }
       /* eslint-enable no-new */
 
       expect(invalidMethod).to.throw(Error);
       expect(validMethod).to.not.throw(Error);
     });
-
-    it('stores methodName and options', function () {
-      const chance = new ChanceGenerator({}, 'bool', { likelihood: 30 });
-      expect(chance.method).to.be.equal('bool');
-      expect(chance.options).to.be.eql({ likelihood: 30 });
-    });
   });
 
   describe('#generate', function () {
-    it('returns a promise', function () {
-      const chance = new ChanceGenerator({}, 'bool', { likelihood: 30 });
-      const valP = chance.generate();
-      expect(valP.then).to.be.a('function');
-      return expect(valP).to.be.eventually.fulfilled;
-    });
-
     it('resolves to a value', asyncFunction(async function () {
-      const chance = new ChanceGenerator({}, 'bool', { likelihood: 30 });
-      const val = await chance.generate();
+      const chance = new ChanceGenerator({});
+      const val = await chance.generate('bool', { likelihood: 30 });
       expect(val).to.exist;
     }));
   });

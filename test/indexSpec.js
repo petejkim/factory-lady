@@ -4,13 +4,9 @@
 
 import { expect } from 'chai';
 import Factory from '../src';
-// import _debug from 'debug';
 import ObjectAdapter from '../src/adapters/ObjectAdapter';
 import './test-helper/dummyFactories';
 import asyncFunction from './test-helper/asyncFunction';
-// import { User, Address, PhoneNumber } from './test-helper/dummyModels';
-
-// const debug = _debug('indexSpec');
 
 describe('index', function () {
   Factory.setAdapter(new ObjectAdapter);
@@ -28,8 +24,7 @@ describe('index', function () {
     }));
 
     it('can override attrs', asyncFunction(async function () {
-      const attrs =
-        await Factory.attrs('PhoneNumber', { number: '0987654321' });
+      const attrs = await Factory.attrs('PhoneNumber', { number: '0987654321' });
       expect(attrs).to.be.eql({
         type: 'mobile',
         number: '0987654321',
@@ -64,5 +59,6 @@ describe('index', function () {
       const attrs = await Factory.attrs('User');
       expect(attrs.bio).to.exist;
     }));
+
   });
 });

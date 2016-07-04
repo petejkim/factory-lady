@@ -6,32 +6,20 @@
 import '../test-helper/testUtils';
 import Sequence from '../../src/generators/Sequence';
 import { expect } from 'chai';
-// import _debug from 'debug';
 import asyncFunction from '../test-helper/asyncFunction';
 import sinon from 'sinon';
 
-// const debug = _debug('SequenceSpec');
-
 describe('Sequence', function () {
   describe('#constructor', function () {
-    it('#can be created', function () {
-      const sequence = new Sequence({}, 'some.id');
+    it('can be created', function () {
+      const sequence = new Sequence({});
       expect(sequence).to.be.instanceof(Sequence);
     });
 
-    it('throws error if id is not valid', function () {
-      /* eslint-disable no-new */
-      function noId() {
-        new Sequence({});
-      }
-
-      function invalidId() {
-        new Sequence({}, 2);
-      }
-
-      /* eslint-enable no-new */
-      expect(noId).to.throw(Error);
-      expect(invalidId).to.throw(Error);
+    it('generates an id if not provided', function () {
+      const sequence = new Sequence({});
+      expect(sequence.id).to.exist;
+      expect(Sequence.sequences[sequence.id]).to.equal(1);
     });
 
     it('initialises the sequence for id', function () {
@@ -65,13 +53,6 @@ describe('Sequence', function () {
   });
 
   describe('#generate', function () {
-    it('returns a promise', function () {
-      const sequence = new Sequence({}, 'some.id.2');
-      const seqP = sequence.generate();
-      expect(seqP.then).to.be.a('function');
-      return expect(seqP).to.be.eventually.fulfilled;
-    });
-
     it('generates numbers sequentially', asyncFunction(async function () {
       const sequence = new Sequence({}, 'some.id.3');
       const seq1 = await sequence.generate();

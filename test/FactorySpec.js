@@ -255,7 +255,7 @@ describe('Factory', function () {
         const spy = sinon.spy(dummyAdapter, 'save');
         await objFactory.create(dummyAdapter);
         expect(spy).to.have.been.calledWith(
-          DummyModel, sinon.match(new DummyModel(simpleObjInit))
+          sinon.match(new DummyModel(simpleObjInit)), DummyModel
         );
         dummyAdapter.save.restore();
       })
@@ -409,7 +409,7 @@ describe('Factory', function () {
         await objFactory.createMany(dummyAdapter, 5);
         expect(spy).to.have.callCount(5);
         expect(spy).to.have.been.calledWith(
-          DummyModel, sinon.match(new DummyModel(simpleObjInit))
+          sinon.match(new DummyModel(simpleObjInit)), DummyModel
         );
         dummyAdapter.save.restore();
       })

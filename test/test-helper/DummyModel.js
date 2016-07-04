@@ -3,22 +3,26 @@
  */
 
 class DummyModel {
-  constructor(props = {}) {
-    this.name = props.name || 'George';
-    this.age = props.age || 27;
+  constructor(attrs = {}) {
+    this.attrs = {
+      name: attrs.name || 'George',
+      age: attrs.age || 27,
+    };
     this.constructorCalled = true;
   }
-
-  save() {
+  async save() {
     this.saveCalled = true;
+    return this;
   }
-
-  destroy() {
+  async destroy() {
     this.destroyCalled = true;
+    return this;
   }
-
-  remove() {
-    this.removeCalled = true;
+  get(attr) {
+    return this.attrs[attr];
+  }
+  set(attrs) {
+    return Object.assign(this.attrs, attrs);
   }
 }
 
