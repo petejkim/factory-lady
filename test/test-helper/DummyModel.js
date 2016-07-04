@@ -2,7 +2,7 @@
  * Created by chetanv on 06/06/16.
  */
 
-class DummyModel {
+export default class DummyModel {
   constructor(attrs = {}) {
     this.attrs = {
       name: attrs.name || 'George',
@@ -25,5 +25,3 @@ class DummyModel {
     return Object.assign(this.attrs, attrs);
   }
 }
-
-export default DummyModel;
