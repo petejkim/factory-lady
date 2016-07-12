@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 01/06/16.
- */
 /* eslint-disable no-unused-vars */
 export default class DefaultAdapter {
   build(Model, props) {

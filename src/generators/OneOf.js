@@ -1,11 +1,8 @@
-/**
- * Created by chetanv on 24/06/16.
- */
 
 import Generator from './Generator';
 
 export default class OneOf extends Generator {
-  generate(possibleValues) {
+  async generate(possibleValues) {
     if (!Array.isArray(possibleValues)) {
       throw new Error('Expected an array of possible values');
     }

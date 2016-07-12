@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 06/06/16.
- */
 
 import '../test-helper/testUtils';
 import Assoc from '../../src/generators/Assoc';

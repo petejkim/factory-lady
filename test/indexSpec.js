@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 08/06/16.
- */
 
 import { expect } from 'chai';
 import Factory from '../src';

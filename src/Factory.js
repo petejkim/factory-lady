@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 01/06/16.
- */
 
 import asyncPopulate from './utils/asyncPopulate';
 

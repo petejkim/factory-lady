@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 07/06/16.
- */
 
 export default function asyncPopulate(target, source) {
   if (typeof target !== 'object') {
