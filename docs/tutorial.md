@@ -1,7 +1,7 @@
 ### Tutorial
 
 This tutorial introduces the capabilities of `factory-girl`. We'll start with a simple
-factory for a hypothetical `User` model    and gradually add to it. This tutorial may not
+factory for a hypothetical `User` model and gradually add to it. This tutorial may not
 cover all aspects of `factory-girl`, but should serve as a good starting point.
 
 ### The `User` Factory
@@ -168,8 +168,8 @@ don't pass `'id'` and the `ProfileImage` instance itself will be assigned to the
 `profileImage` attribute.
 
 > Note that `factory.assoc` will persist the model instance to DB. In case you don't want
-the model to be persisted, use `factory.assocAttrs` which just builds the model instance
-and does not persist it to DB.
+the model to be persisted, use `factory.assocAttrs` which just builds the attributes and
+does not persist a model to the DB.
 
 At times you may want to associate more than one model instance. For example, let's say we
 want our users to have a list of addresses. Assuming we already have an `Address` model,

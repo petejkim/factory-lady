@@ -7,19 +7,15 @@ import Generator from './Generator';
 export default class Sequence extends Generator {
   static sequences = {};
 
-  constructor(factoryGirl, id = null, callback = null) {
-    super(factoryGirl);
+  generate(id = null, callback = null) {
     if (typeof id === 'function') {
       callback = id;
       id = null;
     }
-    this.id = id || generateId();
-    this.callback = callback;
-    Sequence.sequences[this.id] = Sequence.sequences[this.id] || 1;
-  }
-  generate() {
-    const next = Sequence.sequences[this.id]++;
-    return this.callback ? this.callback(next) : next;
+    id = id || this.id || (this.id = generateId());
+    Sequence.sequences[id] = Sequence.sequences[id] || 1;
+    const next = Sequence.sequences[id]++;
+    return callback ? callback(next) : next;
   }
 }
 

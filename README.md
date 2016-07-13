@@ -86,6 +86,7 @@ factory.define('account', Account, buildOptions => {
     attrs.confirmed = true;
     attrs.confirmedAt = new Date();
   }
+  return attrs;
 });
 
 // buildOptions can be passed while requesting an object
