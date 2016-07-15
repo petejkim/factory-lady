@@ -1,9 +1,10 @@
 import DefaultAdapter from './DefaultAdapter';
 import factory from '../index';
 
+/* eslint-disable no-unused-vars */
 export default class BookshelfAdapter extends DefaultAdapter {
-  save(Model, doc) {
-    return doc.save(null, { method: 'insert' });
+  save(doc, Model) {
+    return doc.save();
   }
 }
 
