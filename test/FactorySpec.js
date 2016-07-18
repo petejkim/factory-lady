@@ -222,7 +222,7 @@ describe('Factory', function () {
         const factoryWithOptions = new Factory(
           DummyModel,
           simpleObjInit,
-          { afterBuild: (model) => Promise.resolve(model) }
+          { afterBuild: model => Promise.resolve(model) }
         );
 
         const model = await factoryWithOptions.build(dummyAdapter);
@@ -284,7 +284,7 @@ describe('Factory', function () {
         const factoryWithOptions = new Factory(
           DummyModel,
           simpleObjInit,
-          { afterCreate: (model) => Promise.resolve(model) }
+          { afterCreate: model => Promise.resolve(model) }
         );
 
         const model = await factoryWithOptions.create(dummyAdapter);
@@ -368,7 +368,7 @@ describe('Factory', function () {
         const factoryWithOptions = new Factory(
           DummyModel,
           simpleObjInit,
-          { afterBuild: (model) => Promise.resolve(model) }
+          { afterBuild: model => Promise.resolve(model) }
         );
 
         const models = await factoryWithOptions.buildMany(dummyAdapter, 5);
@@ -447,7 +447,7 @@ describe('Factory', function () {
         const factoryWithOptions = new Factory(
           DummyModel,
           simpleObjInit,
-          { afterCreate: (model) => Promise.resolve(model) }
+          { afterCreate: model => Promise.resolve(model) }
         );
 
         const models = await factoryWithOptions.createMany(dummyAdapter, 5);

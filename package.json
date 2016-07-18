@@ -52,6 +52,7 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.9.0",
     "bluebird": "^2.9.25",
+    "bookshelf": "^0.10.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "del": "^2.2.0",
@@ -62,13 +63,16 @@
     "eslint-plugin-mocha": "^3.0.0",
     "eslint-plugin-react": "^5.1.1",
     "istanbul": "^1.0.0-alpha.2",
-    "mocha": "^2.2.5",
+    "knex": "^0.11.7",
+    "mocha": "^2.5.3",
     "mocha-eslint": "^2.1.1",
+    "mongoose": "^4.5.4",
     "rollup": "^0.27.0",
     "rollup-plugin-babel": "^2.5.0",
     "should": "^6.0.3",
     "sinon": "^2.0.0-pre",
-    "sinon-chai": "https://github.com/sjmulder/sinon-chai.git#pr/sinon-2.0.0-pre"
+    "sinon-chai": "https://github.com/sjmulder/sinon-chai.git#pr/sinon-2.0.0-pre",
+    "sqlite3": "^3.1.4"
   },
   "scripts": {
     "lint": "eslint src test tools",

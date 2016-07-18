@@ -4,6 +4,7 @@
   "rules": {
     "max-len": ["error", 90],
     "no-param-reassign": "off",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "arrow-parens": ["error", "as-needed"]
   }
 }
