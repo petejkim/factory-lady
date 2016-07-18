@@ -1,19 +1,13 @@
-/**
- * Created by chetanv on 01/06/16.
- */
+import DefaultAdapter from './DefaultAdapter';
+import factory from '../index';
 
-class MongooseAdapter {
-  async build(Model, props) {
-    return new Model(props);
-  }
-
-  save(Model, model) {
-    return model.save();
-  }
-
-  destroy(Model, model) {
+/* eslint-disable no-unused-vars */
+export default class MongooseAdapter extends DefaultAdapter {
+  async destroy(model, Model) {
     return model.remove();
   }
 }
 
-export default MongooseAdapter;
+MongooseAdapter.init = function init(factoryNames) {
+  return factory.setAdapter(new MongooseAdapter(), factoryNames);
+};

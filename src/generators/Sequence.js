@@ -1,30 +1,26 @@
-/**
- * Created by chetanv on 01/06/16.
- */
 
 import Generator from './Generator';
 
-class Sequence extends Generator {
+export default class Sequence extends Generator {
   static sequences = {};
-  id = '';
 
-  constructor(factoryGirl, id, callback = null) {
-    super(factoryGirl);
-
-    if (typeof id !== 'string') {
-      throw new Error('Invalid sequence key passed');
+  generate(id = null, callback = null) {
+    if (typeof id === 'function') {
+      callback = id;
+      id = null;
     }
-
-    this.id = id;
-
+    id = id || this.id || (this.id = generateId());
     Sequence.sequences[id] = Sequence.sequences[id] || 1;
-    this.callback = callback;
-  }
-
-  generate() {
-    const count = Sequence.sequences[this.id]++;
-    return Promise.resolve(this.callback ? this.callback(count) : count);
+    const next = Sequence.sequences[id]++;
+    return callback ? callback(next) : next;
   }
 }
 
-export default Sequence;
+function generateId() {
+  let id;
+  let i = 0;
+  do {
+    id = `_${i++}`;
+  } while (id in Sequence.sequences);
+  return id;
+}

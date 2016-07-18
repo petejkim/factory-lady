@@ -1,21 +1,22 @@
-/**
- * Created by chetanv on 01/06/16.
- */
+import DefaultAdapter from './DefaultAdapter';
 
-class ObjectAdapter {
-  async build(Model, props) {
+/* eslint-disable no-unused-vars */
+export default class ObjectAdapter extends DefaultAdapter {
+  build(Model, props) {
     const model = new Model;
-    Object.keys(props).forEach((key) => { model[key] = props[key]; });
+    this.set(props, model, Model);
     return model;
   }
-
-  async save(Model, model) {
+  async save(model, Model) {
     return model;
   }
-
-  async destroy(Model, model) {
+  async destroy(model, Model) {
     return model;
+  }
+  get(model, attr, Model) {
+    return model[attr];
+  }
+  set(props, model, Model) {
+    return Object.assign(model, props);
   }
 }
-
-export default ObjectAdapter;

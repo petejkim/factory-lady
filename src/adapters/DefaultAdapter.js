@@ -1,20 +1,18 @@
-/**
- * Created by chetanv on 01/06/16.
- */
-
-
-class DefaultAdapter {
+/* eslint-disable no-unused-vars */
+export default class DefaultAdapter {
   build(Model, props) {
-    return Promise.resolve(new Model(props));
+    return new Model(props);
   }
-
-  save(Model, model) {
+  async save(model, Model) {
     return Promise.resolve(model.save()).then(() => model);
   }
-
-  destroy(Model, model) {
+  async destroy(model, Model) {
     return Promise.resolve(model.destroy()).then(() => model);
   }
+  get(model, attr, Model) {
+    return model.get(attr);
+  }
+  set(props, model, Model) {
+    return model.set(props);
+  }
 }
-
-export default DefaultAdapter;

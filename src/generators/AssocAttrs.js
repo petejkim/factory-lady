@@ -1,16 +1,9 @@
-/**
- * Created by chetanv on 08/06/16.
- */
 
-import ModelGenerator from './ModelGenerator';
+import Generator from './Generator';
 
-class AssocAttrs extends ModelGenerator {
-  async generate() {
-    const model = await this.factoryGirl.attrs(
-      this.name, this.attrs, this.buildOptions
-    );
-    return this.key ? model[this.key] : model;
+export default class AssocAttrs extends Generator {
+  async generate(name, key = null, attrs = {}, buildOptions = {}) {
+    const model = await this.factoryGirl.attrs(name, attrs, buildOptions);
+    return key ? this.getAttribute(name, model, key) : model;
   }
 }
-
-export default AssocAttrs;

@@ -1,15 +1,8 @@
-/**
- * Created by chetanv on 24/06/16.
- */
 
 import Generator from './Generator';
 
-class OneOf extends Generator {
-  valueSet = [];
-
-  constructor(factoryGirl, possibleValues) {
-    super(factoryGirl);
-
+export default class OneOf extends Generator {
+  async generate(possibleValues) {
     if (!Array.isArray(possibleValues)) {
       throw new Error('Expected an array of possible values');
     }
@@ -18,18 +11,9 @@ class OneOf extends Generator {
       throw new Error('Empty array passed for possible values');
     }
 
-    this.valueSet = possibleValues;
-  }
-
-  generate() {
-    const size = this.valueSet.length;
+    const size = possibleValues.length;
     const randomIndex = Math.floor(Math.random() * size);
-    const value = this.valueSet[randomIndex];
-    if (typeof value === 'function') {
-      return Promise.resolve(value());
-    }
-    return Promise.resolve(value);
+    const value = possibleValues[randomIndex];
+    return (typeof value === 'function') ? value() : value;
   }
 }
-
-export default OneOf;

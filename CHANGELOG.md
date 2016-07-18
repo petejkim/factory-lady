@@ -1,5 +1,10 @@
 ## v4.0.0
-Re-written the library
+
+Total rewrite. Should preserve backwards compatibility except as noted below.
+
+- `assocBuild` is now `assocAttr`
+- `assocBuildMany`
+- `FactoryGirl.setAdapter` now takes an array of `factoryNames` for convenience
 
 ## v3.0.0
 
