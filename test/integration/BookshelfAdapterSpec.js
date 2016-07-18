@@ -22,7 +22,7 @@ describe('BookshelfAdapterIntegration', function () {
   const adapter = new BookshelfAdapter;
 
   before(function (done) {
-    bookshelf.knex.schema.createTable('kittens', (table) => {
+    bookshelf.knex.schema.createTable('kittens', table => {
       table.increments();
       table.string('name');
     }).then(() => done());
@@ -45,13 +45,13 @@ describe('BookshelfAdapterIntegration', function () {
   it('saves models correctly', function (done) {
     const kitten = adapter.build(Kitten, { name: 'fluffy' });
     adapter.save(kitten, Kitten)
-      .then((k) => {
+      .then(k => {
         expect(k).to.have.property('id');
         return k;
       })
-      .then((k) => k.destroy())
+      .then(k => k.destroy())
       .then(() => done())
-      .catch((err) => done(err))
+      .catch(err => done(err))
     ;
   });
 
@@ -59,12 +59,12 @@ describe('BookshelfAdapterIntegration', function () {
     const kitten = adapter.build(Kitten, { name: 'smellyCat' });
     adapter.save(kitten, Kitten)
       .then(() => Kitten.count())
-      .then((count) => expect(count).to.be.equal(1))
+      .then(count => expect(count).to.be.equal(1))
       .then(() => adapter.destroy(kitten, Kitten))
       .then(() => Kitten.count())
-      .then((count) => expect(count).to.be.equal(0))
+      .then(count => expect(count).to.be.equal(0))
       .then(() => done())
-      .catch((err) => done(err))
+      .catch(err => done(err))
     ;
   });
 });

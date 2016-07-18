@@ -217,7 +217,7 @@ describe('FactoryGirl', function () {
     it('accepts afterBuild callback returning a promise',
       asyncFunction(async function () {
         factoryGirl.withOptions(
-          { afterBuild: (model) => Promise.resolve(model) }
+          { afterBuild: model => Promise.resolve(model) }
         );
         const model = await factoryGirl.build('factory1');
         expect(model).to.be.an.instanceof(DummyModel);
@@ -284,7 +284,7 @@ describe('FactoryGirl', function () {
     it('accepts afterCreate callback returning a promise',
       asyncFunction(async function () {
         factoryGirl.withOptions(
-          { afterCreate: (model) => Promise.resolve(model) }
+          { afterCreate: model => Promise.resolve(model) }
         );
         const model = await factoryGirl.create('factory1');
         expect(model).to.be.an.instanceof(DummyModel);
@@ -405,7 +405,7 @@ describe('FactoryGirl', function () {
     it('accepts afterBuild callback returning a promise',
       asyncFunction(async function () {
         factoryGirl.withOptions(
-          { afterBuild: (model) => Promise.resolve(model) }
+          { afterBuild: model => Promise.resolve(model) }
         );
         const models = await factoryGirl.buildMany('factory1', 5);
         expect(models).to.be.an('array');
@@ -484,7 +484,7 @@ describe('FactoryGirl', function () {
     it('accepts afterCreate callback returning a promise',
       asyncFunction(async function () {
         factoryGirl.withOptions(
-          { afterCreate: (model) => Promise.resolve(model) }
+          { afterCreate: model => Promise.resolve(model) }
         );
         const models = await factoryGirl.createMany('factory1', 5);
         expect(models).to.be.an('array');

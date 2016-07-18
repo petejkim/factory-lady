@@ -51,10 +51,10 @@ describe('MongooseAdapterIntegration', function () {
 
     const kitten = adapter.build(Kitten, { name: 'fluffy' });
     adapter.save(kitten, Kitten)
-      .then((k) => expect(k).to.have.property('_id'))
+      .then(k => expect(k).to.have.property('_id'))
       .then(() => Kitten.remove({}))
       .then(() => done())
-      .catch((err) => done(err))
+      .catch(err => done(err))
     ;
   });
 
@@ -64,7 +64,7 @@ describe('MongooseAdapterIntegration', function () {
     const kitten = adapter.build(Kitten, { name: 'smellyCat' });
     adapter.save(kitten, Kitten)
       .then(() => Kitten.count())
-      .then((count) => expect(count).to.be.equal(1))
+      .then(count => expect(count).to.be.equal(1))
       .then(() => adapter.destroy(kitten, Kitten))
       .then(() => Kitten.count())
       .then(count => expect(count).to.be.equal(0))
