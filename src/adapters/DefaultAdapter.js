@@ -16,3 +16,5 @@ export default class DefaultAdapter {
     return model.set(props);
   }
 }
+
+export { DefaultAdapter };

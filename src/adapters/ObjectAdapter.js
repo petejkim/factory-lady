@@ -20,3 +20,5 @@ export default class ObjectAdapter extends DefaultAdapter {
     return Object.assign(model, props);
   }
 }
+
+export { ObjectAdapter };

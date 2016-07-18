@@ -1,4 +1,3 @@
-
 import './test-helper/testUtils';
 import FactoryGirl from '../src/FactoryGirl';
 import Factory from '../src/Factory';
@@ -29,6 +28,22 @@ describe('FactoryGirl', function () {
 
     it('defines default adapter', function () {
       expect(factoryGirl.getAdapter()).to.be.an.instanceof(DefaultAdapter);
+    });
+  });
+
+  describe('deprecated methods', function () {
+    const factoryGirl = new FactoryGirl();
+    it('throws error on calling deprecated methods', function () {
+      function assocBuild() {
+        factoryGirl.assocBuild('whatever');
+      }
+
+      function assocBuildMany() {
+        factoryGirl.assocBuildMany('whatever', 2);
+      }
+
+      expect(assocBuild).to.throw(Error);
+      expect(assocBuildMany).to.throw(Error);
     });
   });
 
@@ -97,6 +112,30 @@ describe('FactoryGirl', function () {
 
       expect(factoryGirl.getAdapter('factory2'))
         .to.be.an.instanceof(DefaultAdapter);
+
+      expect(factoryGirl.getAdapter()).to.be.an.instanceof(DefaultAdapter);
+    });
+
+    it('sets adapter for multiple factories', function () {
+      const factoryGirl = new FactoryGirl();
+      factoryGirl.define('factory1', DummyModel, {});
+      factoryGirl.define('factory2', DummyModel, {});
+
+      expect(factoryGirl.getAdapter('factory1'))
+        .to.be.an.instanceof(DefaultAdapter);
+
+      expect(factoryGirl.getAdapter('factory2'))
+        .to.be.an.instanceof(DefaultAdapter);
+
+      const dummyAdapter = new DummyAdapter;
+
+      factoryGirl.setAdapter(dummyAdapter, ['factory1', 'factory2']);
+
+      expect(factoryGirl.getAdapter('factory1'))
+        .to.be.an.instanceof(DummyAdapter);
+
+      expect(factoryGirl.getAdapter('factory2'))
+        .to.be.an.instanceof(DummyAdapter);
 
       expect(factoryGirl.getAdapter()).to.be.an.instanceof(DefaultAdapter);
     });

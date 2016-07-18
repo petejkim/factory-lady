@@ -11,3 +11,5 @@ export default class BookshelfAdapter extends DefaultAdapter {
 BookshelfAdapter.init = function init(factoryNames) {
   return factory.setAdapter(new BookshelfAdapter(), factoryNames);
 };
+
+export { BookshelfAdapter };

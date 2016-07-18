@@ -1,4 +1,3 @@
-
 import OneOf from '../../src/generators/OneOf';
 import { expect } from 'chai';
 import asyncFunction from '../test-helper/asyncFunction';
@@ -55,7 +54,9 @@ describe('OneOf', function () {
     }));
 
     it('can accept async functions as values', asyncFunction(async function () {
+      /* eslint-disable arrow-parens */
       const possibleValues = [async() => 23];
+      /* eslint-enable arrow-parens */
       const oneOf = new OneOf({});
 
       const val = await oneOf.generate(possibleValues);

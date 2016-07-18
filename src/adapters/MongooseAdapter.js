@@ -11,3 +11,5 @@ export default class MongooseAdapter extends DefaultAdapter {
 MongooseAdapter.init = function init(factoryNames) {
   return factory.setAdapter(new MongooseAdapter(), factoryNames);
 };
+
+export { MongooseAdapter };
