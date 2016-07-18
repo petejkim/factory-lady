@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 06/06/16.
- */
 
 import DummyModel from './DummyModel';
 import DummyAdapter from './DummyAdapter';

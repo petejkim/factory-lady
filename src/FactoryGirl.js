@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 01/06/16.
- */
 
 import Factory from './Factory';
 import Sequence from './generators/Sequence';

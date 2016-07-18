@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 08/06/16.
- */
 
 import '../test-helper/testUtils';
 import ChanceGenerator from '../../src/generators/ChanceGenerator';

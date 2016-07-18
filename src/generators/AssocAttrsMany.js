@@ -1,6 +1,3 @@
-/**
- * Created by chetanv on 08/06/16.
- */
 
 
 import Generator from './Generator';
