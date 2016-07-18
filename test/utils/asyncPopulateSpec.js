@@ -35,14 +35,18 @@ describe('asyncPopulate', function () {
       str: 'hello',
       funcs: {
         sync: () => 'shouldHaveThisValue',
-        async: async() => 'shouldHaveResolvedValue',
+        /* eslint-disable arrow-parens */
+        async: async () => 'shouldHaveResolvedValue',
+        /* eslint-enable arrow-parens */
         promise: () => Promise.resolve('shouldWorkWithPromises'),
       },
       arrays: {
         simple: [1, 2, 3],
         funcs: [
           () => 1,
+          /* eslint-disable arrow-parens */
           async() => 2,
+          /* eslint-enable arrow-parens */
           () => Promise.resolve(3),
         ],
         nested: [
