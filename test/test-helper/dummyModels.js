@@ -1,4 +1,3 @@
-
 export class User {
 
 }
@@ -11,8 +10,13 @@ export class PhoneNumber {
 
 }
 
+export class DummyModel {
+
+}
+
 export default {
   User,
   Address,
   PhoneNumber,
+  DummyModel,
 };
