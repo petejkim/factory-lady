@@ -1,5 +1,4 @@
 import DefaultAdapter from './DefaultAdapter';
-import factory from '../index';
 
 /* eslint-disable no-unused-vars */
 export default class MongooseAdapter extends DefaultAdapter {
@@ -7,9 +6,5 @@ export default class MongooseAdapter extends DefaultAdapter {
     return model.remove();
   }
 }
-
-MongooseAdapter.init = function init(factoryNames) {
-  return factory.setAdapter(new MongooseAdapter(), factoryNames);
-};
 
 export { MongooseAdapter };
