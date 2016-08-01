@@ -1095,10 +1095,6 @@ var BookshelfAdapter = function (_DefaultAdapter) {
   return BookshelfAdapter;
 }(DefaultAdapter);
 
-BookshelfAdapter.init = function init(factoryNames) {
-  return factory.setAdapter(new BookshelfAdapter(), factoryNames);
-};
-
 /* eslint-disable no-unused-vars */
 
 var MongooseAdapter = function (_DefaultAdapter) {
@@ -1138,10 +1134,6 @@ var MongooseAdapter = function (_DefaultAdapter) {
 
   return MongooseAdapter;
 }(DefaultAdapter);
-
-MongooseAdapter.init = function init(factoryNames) {
-  return factory.setAdapter(new MongooseAdapter(), factoryNames);
-};
 
 /* eslint-disable no-unused-vars */
 
@@ -1227,9 +1219,9 @@ var ObjectAdapter = function (_DefaultAdapter) {
 var factory = new FactoryGirl();
 factory.FactoryGirl = FactoryGirl;
 
-exports['default'] = factory;
 exports.BookshelfAdapter = BookshelfAdapter;
 exports.DefaultAdapter = DefaultAdapter;
 exports.MongooseAdapter = MongooseAdapter;
 exports.ObjectAdapter = ObjectAdapter;
+exports['default'] = factory;
 //# sourceMappingURL=index.js.map

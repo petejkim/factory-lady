@@ -1089,10 +1089,6 @@ var BookshelfAdapter = function (_DefaultAdapter) {
   return BookshelfAdapter;
 }(DefaultAdapter);
 
-BookshelfAdapter.init = function init(factoryNames) {
-  return factory.setAdapter(new BookshelfAdapter(), factoryNames);
-};
-
 /* eslint-disable no-unused-vars */
 
 var MongooseAdapter = function (_DefaultAdapter) {
@@ -1132,10 +1128,6 @@ var MongooseAdapter = function (_DefaultAdapter) {
 
   return MongooseAdapter;
 }(DefaultAdapter);
-
-MongooseAdapter.init = function init(factoryNames) {
-  return factory.setAdapter(new MongooseAdapter(), factoryNames);
-};
 
 /* eslint-disable no-unused-vars */
 

@@ -6,5 +6,3 @@ export default class MongooseAdapter extends DefaultAdapter {
     return model.remove();
   }
 }
-
-export { MongooseAdapter };
