@@ -753,6 +753,8 @@
 
   var FactoryGirl = function () {
     function FactoryGirl() {
+      var _this = this;
+
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
       _classCallCheck(this, FactoryGirl);
@@ -768,7 +770,9 @@
       this.assocBuildMany = deprecate('assocBuildMany', 'assocAttrsMany');
       this.assocAttrs = generatorThunk(this, AssocAttrs);
       this.assocAttrsMany = generatorThunk(this, AssocAttrsMany);
-      this.seq = this.sequence = generatorThunk(this, Sequence);
+      this.seq = this.sequence = function () {
+        return generatorThunk(_this, Sequence).apply(undefined, arguments);
+      };
       this.chance = generatorThunk(this, ChanceGenerator);
       this.oneOf = generatorThunk(this, OneOf);
 
@@ -812,7 +816,7 @@
       key: 'build',
       value: function () {
         var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(name) {
-          var _this = this;
+          var _this2 = this;
 
           var attrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
           var buildOptions = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
@@ -823,7 +827,7 @@
                 case 0:
                   adapter = this.getAdapter(name);
                   return _context2.abrupt('return', this.getFactory(name).build(adapter, attrs, buildOptions).then(function (model) {
-                    return _this.options.afterBuild ? _this.options.afterBuild(model, attrs, buildOptions) : model;
+                    return _this2.options.afterBuild ? _this2.options.afterBuild(model, attrs, buildOptions) : model;
                   }));
 
                 case 2:
@@ -844,7 +848,7 @@
       key: 'create',
       value: function () {
         var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(name, attrs, buildOptions) {
-          var _this2 = this;
+          var _this3 = this;
 
           var adapter;
           return _regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -853,9 +857,9 @@
                 case 0:
                   adapter = this.getAdapter(name);
                   return _context3.abrupt('return', this.getFactory(name).create(adapter, attrs, buildOptions).then(function (createdModel) {
-                    return _this2.addToCreatedList(adapter, createdModel);
+                    return _this3.addToCreatedList(adapter, createdModel);
                   }).then(function (model) {
-                    return _this2.options.afterCreate ? _this2.options.afterCreate(model, attrs, buildOptions) : model;
+                    return _this3.options.afterCreate ? _this3.options.afterCreate(model, attrs, buildOptions) : model;
                   }));
 
                 case 2:
@@ -881,7 +885,7 @@
       key: 'buildMany',
       value: function () {
         var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(name, num, attrs, buildOptions) {
-          var _this3 = this;
+          var _this4 = this;
 
           var adapter;
           return _regeneratorRuntime.wrap(function _callee4$(_context4) {
@@ -890,8 +894,8 @@
                 case 0:
                   adapter = this.getAdapter(name);
                   return _context4.abrupt('return', this.getFactory(name).buildMany(adapter, num, attrs, buildOptions).then(function (models) {
-                    return _this3.options.afterBuild ? _Promise.all(models.map(function (model) {
-                      return _this3.options.afterBuild(model, attrs, buildOptions);
+                    return _this4.options.afterBuild ? _Promise.all(models.map(function (model) {
+                      return _this4.options.afterBuild(model, attrs, buildOptions);
                     })) : models;
                   }));
 
@@ -913,7 +917,7 @@
       key: 'createMany',
       value: function () {
         var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee5(name, num, attrs, buildOptions) {
-          var _this4 = this;
+          var _this5 = this;
 
           var adapter;
           return _regeneratorRuntime.wrap(function _callee5$(_context5) {
@@ -922,10 +926,10 @@
                 case 0:
                   adapter = this.getAdapter(name);
                   return _context5.abrupt('return', this.getFactory(name).createMany(adapter, num, attrs, buildOptions).then(function (models) {
-                    return _this4.addToCreatedList(adapter, models);
+                    return _this5.addToCreatedList(adapter, models);
                   }).then(function (models) {
-                    return _this4.options.afterCreate ? _Promise.all(models.map(function (model) {
-                      return _this4.options.afterCreate(model, attrs, buildOptions);
+                    return _this5.options.afterCreate ? _Promise.all(models.map(function (model) {
+                      return _this5.options.afterCreate(model, attrs, buildOptions);
                     })) : models;
                   }));
 
@@ -1036,7 +1040,7 @@
     }, {
       key: 'setAdapter',
       value: function setAdapter(adapter) {
-        var _this5 = this;
+        var _this6 = this;
 
         var factoryNames = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
@@ -1045,7 +1049,7 @@
         } else {
           factoryNames = Array.isArray(factoryNames) ? factoryNames : [factoryNames];
           factoryNames.forEach(function (name) {
-            _this5.adapters[name] = adapter;
+            _this6.adapters[name] = adapter;
           });
         }
         return adapter;
