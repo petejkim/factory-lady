@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance')) :
-  typeof define === 'function' && define.amd ? define(['babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/keys', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance'], factory) :
-  (global.Factory = factory(global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Set,global._classCallCheck,global._createClass,global._typeof,global._Object$keys,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance));
-}(this, function (_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Set,_classCallCheck,_createClass,_typeof,_Object$keys,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance'), require('babel-runtime/core-js/object/assign')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/keys', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance', 'babel-runtime/core-js/object/assign'], factory) :
+  (factory((global.Factory = global.Factory || {}),global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Set,global._classCallCheck,global._createClass,global._typeof,global._Object$keys,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance,global._Object$assign));
+}(this, function (exports,_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Set,_classCallCheck,_createClass,_typeof,_Object$keys,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance,_Object$assign) { 'use strict';
 
   _slicedToArray = 'default' in _slicedToArray ? _slicedToArray['default'] : _slicedToArray;
   _getIterator = 'default' in _getIterator ? _getIterator['default'] : _getIterator;
@@ -19,6 +19,7 @@
   _possibleConstructorReturn = 'default' in _possibleConstructorReturn ? _possibleConstructorReturn['default'] : _possibleConstructorReturn;
   _inherits = 'default' in _inherits ? _inherits['default'] : _inherits;
   Chance = 'default' in Chance ? Chance['default'] : Chance;
+  _Object$assign = 'default' in _Object$assign ? _Object$assign['default'] : _Object$assign;
 
   function asyncPopulate(target, source) {
     if ((typeof target === 'undefined' ? 'undefined' : _typeof(target)) !== 'object') {
@@ -347,29 +348,26 @@
   var Sequence = function (_Generator) {
     _inherits(Sequence, _Generator);
 
-    function Sequence(factoryGirl) {
-      var id = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-      var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
-
+    function Sequence() {
       _classCallCheck(this, Sequence);
 
-      var _this = _possibleConstructorReturn(this, _Object$getPrototypeOf(Sequence).call(this, factoryGirl));
-
-      if (typeof id === 'function') {
-        callback = id;
-        id = null;
-      }
-      _this.id = id || generateId();
-      _this.callback = callback;
-      Sequence.sequences[_this.id] = Sequence.sequences[_this.id] || 1;
-      return _this;
+      return _possibleConstructorReturn(this, _Object$getPrototypeOf(Sequence).apply(this, arguments));
     }
 
     _createClass(Sequence, [{
       key: 'generate',
       value: function generate() {
-        var next = Sequence.sequences[this.id]++;
-        return this.callback ? this.callback(next) : next;
+        var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+        var callback = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+        if (typeof id === 'function') {
+          callback = id;
+          id = null;
+        }
+        id = id || this.id || (this.id = generateId());
+        Sequence.sequences[id] = Sequence.sequences[id] || 1;
+        var next = Sequence.sequences[id]++;
+        return callback ? callback(next) : next;
       }
     }]);
 
@@ -1076,10 +1074,158 @@
     };
   }
 
+  /* eslint-disable no-unused-vars */
+
+  var BookshelfAdapter = function (_DefaultAdapter) {
+    _inherits(BookshelfAdapter, _DefaultAdapter);
+
+    function BookshelfAdapter() {
+      _classCallCheck(this, BookshelfAdapter);
+
+      return _possibleConstructorReturn(this, _Object$getPrototypeOf(BookshelfAdapter).apply(this, arguments));
+    }
+
+    _createClass(BookshelfAdapter, [{
+      key: 'save',
+      value: function save(doc, Model) {
+        return doc.save(null, { method: 'insert' });
+      }
+    }]);
+
+    return BookshelfAdapter;
+  }(DefaultAdapter);
+
+  /* eslint-disable no-unused-vars */
+
+  var MongooseAdapter = function (_DefaultAdapter) {
+    _inherits(MongooseAdapter, _DefaultAdapter);
+
+    function MongooseAdapter() {
+      _classCallCheck(this, MongooseAdapter);
+
+      return _possibleConstructorReturn(this, _Object$getPrototypeOf(MongooseAdapter).apply(this, arguments));
+    }
+
+    _createClass(MongooseAdapter, [{
+      key: 'destroy',
+      value: function () {
+        var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(model, Model) {
+          return _regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  return _context.abrupt('return', model.remove());
+
+                case 1:
+                case 'end':
+                  return _context.stop();
+              }
+            }
+          }, _callee, this);
+        }));
+
+        function destroy(_x, _x2) {
+          return ref.apply(this, arguments);
+        }
+
+        return destroy;
+      }()
+    }]);
+
+    return MongooseAdapter;
+  }(DefaultAdapter);
+
+  /* eslint-disable no-unused-vars */
+
+  var ObjectAdapter = function (_DefaultAdapter) {
+    _inherits(ObjectAdapter, _DefaultAdapter);
+
+    function ObjectAdapter() {
+      _classCallCheck(this, ObjectAdapter);
+
+      return _possibleConstructorReturn(this, _Object$getPrototypeOf(ObjectAdapter).apply(this, arguments));
+    }
+
+    _createClass(ObjectAdapter, [{
+      key: 'build',
+      value: function build(Model, props) {
+        var model = new Model();
+        this.set(props, model, Model);
+        return model;
+      }
+    }, {
+      key: 'save',
+      value: function () {
+        var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(model, Model) {
+          return _regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  return _context.abrupt('return', model);
+
+                case 1:
+                case 'end':
+                  return _context.stop();
+              }
+            }
+          }, _callee, this);
+        }));
+
+        function save(_x, _x2) {
+          return ref.apply(this, arguments);
+        }
+
+        return save;
+      }()
+    }, {
+      key: 'destroy',
+      value: function () {
+        var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(model, Model) {
+          return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
+                  return _context2.abrupt('return', model);
+
+                case 1:
+                case 'end':
+                  return _context2.stop();
+              }
+            }
+          }, _callee2, this);
+        }));
+
+        function destroy(_x3, _x4) {
+          return ref.apply(this, arguments);
+        }
+
+        return destroy;
+      }()
+    }, {
+      key: 'get',
+      value: function get(model, attr, Model) {
+        return model[attr];
+      }
+    }, {
+      key: 'set',
+      value: function set(props, model, Model) {
+        return _Object$assign(model, props);
+      }
+    }]);
+
+    return ObjectAdapter;
+  }(DefaultAdapter);
+
   var factory = new FactoryGirl();
   factory.FactoryGirl = FactoryGirl;
 
-  return factory;
+  exports.BookshelfAdapter = BookshelfAdapter;
+  exports.DefaultAdapter = DefaultAdapter;
+  exports.MongooseAdapter = MongooseAdapter;
+  exports.ObjectAdapter = ObjectAdapter;
+  exports['default'] = factory;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 //# sourceMappingURL=index.umd.js.map
