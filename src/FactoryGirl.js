@@ -1,4 +1,3 @@
-
 import Factory from './Factory';
 import Sequence from './generators/Sequence';
 import Assoc from './generators/Assoc';
@@ -22,7 +21,8 @@ export default class FactoryGirl {
     this.assocBuildMany = deprecate('assocBuildMany', 'assocAttrsMany');
     this.assocAttrs = generatorThunk(this, AssocAttrs);
     this.assocAttrsMany = generatorThunk(this, AssocAttrsMany);
-    this.seq = this.sequence = generatorThunk(this, Sequence);
+    this.seq = this.sequence =
+      (...args) => generatorThunk(this, Sequence)(...args);
     this.chance = generatorThunk(this, ChanceGenerator);
     this.oneOf = generatorThunk(this, OneOf);
 
@@ -104,8 +104,8 @@ export default class FactoryGirl {
 
   getAdapter(factory) {
     return factory ?
-        (this.adapters[factory] || this.defaultAdapter) :
-        this.defaultAdapter;
+      (this.adapters[factory] || this.defaultAdapter) :
+      this.defaultAdapter;
   }
 
   addToCreatedList(adapter, models) {
@@ -133,7 +133,9 @@ export default class FactoryGirl {
       this.defaultAdapter = adapter;
     } else {
       factoryNames = Array.isArray(factoryNames) ? factoryNames : [factoryNames];
-      factoryNames.forEach(name => { this.adapters[name] = adapter; });
+      factoryNames.forEach(name => {
+        this.adapters[name] = adapter;
+      });
     }
     return adapter;
   }
