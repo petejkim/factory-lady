@@ -1217,5 +1217,5 @@ var ObjectAdapter = function (_DefaultAdapter) {
 var factory = new FactoryGirl();
 factory.FactoryGirl = FactoryGirl;
 
-export { BookshelfAdapter, DefaultAdapter, MongooseAdapter, ObjectAdapter };export default factory;
+export { BookshelfAdapter, DefaultAdapter, MongooseAdapter, ObjectAdapter, factory };export default factory;
 //# sourceMappingURL=index.es6.js.map

@@ -1227,5 +1227,6 @@ exports.BookshelfAdapter = BookshelfAdapter;
 exports.DefaultAdapter = DefaultAdapter;
 exports.MongooseAdapter = MongooseAdapter;
 exports.ObjectAdapter = ObjectAdapter;
+exports.factory = factory;
 exports['default'] = factory;
 //# sourceMappingURL=index.js.map
