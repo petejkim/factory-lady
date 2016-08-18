@@ -1141,6 +1141,27 @@
 
   /* eslint-disable no-unused-vars */
 
+  var SequelizeAdapter = function (_DefaultAdapter) {
+    _inherits(SequelizeAdapter, _DefaultAdapter);
+
+    function SequelizeAdapter() {
+      _classCallCheck(this, SequelizeAdapter);
+
+      return _possibleConstructorReturn(this, _Object$getPrototypeOf(SequelizeAdapter).apply(this, arguments));
+    }
+
+    _createClass(SequelizeAdapter, [{
+      key: 'build',
+      value: function build(Model, props) {
+        return Model.build(props);
+      }
+    }]);
+
+    return SequelizeAdapter;
+  }(DefaultAdapter);
+
+  /* eslint-disable no-unused-vars */
+
   var ObjectAdapter = function (_DefaultAdapter) {
     _inherits(ObjectAdapter, _DefaultAdapter);
 
@@ -1226,6 +1247,7 @@
   exports.BookshelfAdapter = BookshelfAdapter;
   exports.DefaultAdapter = DefaultAdapter;
   exports.MongooseAdapter = MongooseAdapter;
+  exports.SequelizeAdapter = SequelizeAdapter;
   exports.ObjectAdapter = ObjectAdapter;
   exports.factory = factory;
   exports['default'] = factory;
