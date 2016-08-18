@@ -65,6 +65,11 @@ promise = promise.then(() => {
     fs.readFileSync('LICENSE.txt', 'utf-8'),
     'utf-8'
   );
+  fs.writeFileSync(
+    'dist/README.md',
+    fs.readFileSync('README.md', 'utf-8'),
+    'utf-8'
+  );
 });
 
 // eslint-disable-next-line no-console
