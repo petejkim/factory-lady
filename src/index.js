@@ -8,4 +8,6 @@ export ObjectAdapter from './adapters/ObjectAdapter';
 const factory = new FactoryGirl();
 factory.FactoryGirl = FactoryGirl;
 
+export { factory };
+
 export default factory;

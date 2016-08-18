@@ -14,6 +14,7 @@ const del = require('del');
 const rollup = require('rollup');
 const babel = require('rollup-plugin-babel');
 const pkg = require('../package.json');
+const browserify = require('browserify');
 
 let promise = Promise.resolve();
 
@@ -39,6 +40,13 @@ for (const format of ['es6', 'cjs', 'umd']) {
     moduleName: format === 'umd' ? 'Factory' : undefined,
   })));
 }
+
+promise = promise.then(() => {
+  browserify('src/index.js', { standalone: 'FactoryGirl' })
+    .transform('babelify', { presets: ['es2015', 'stage-0'] })
+    .bundle()
+    .pipe(fs.createWriteStream('dist/browser.js'));
+});
 
 // Copy package.json and LICENSE.txt
 promise = promise.then(() => {

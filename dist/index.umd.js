@@ -1227,6 +1227,7 @@
   exports.DefaultAdapter = DefaultAdapter;
   exports.MongooseAdapter = MongooseAdapter;
   exports.ObjectAdapter = ObjectAdapter;
+  exports.factory = factory;
   exports['default'] = factory;
 
   Object.defineProperty(exports, '__esModule', { value: true });
