@@ -1,4 +1,3 @@
-
 import '../test-helper/testUtils';
 import MongooseAdapter from '../../src/adapters/MongooseAdapter';
 import { expect } from 'chai';
