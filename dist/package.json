@@ -29,7 +29,7 @@
     }
   ],
   "dependencies": {
-    "babel-runtime": "^6.6.1",
-    "chance": "^1.0.3"
+    "babel-runtime": "^6.11.6",
+    "chance": "^1.0.4"
   }
 }
