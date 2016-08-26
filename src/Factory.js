@@ -8,7 +8,7 @@ export default class Factory {
   options = {};
 
   constructor(Model, initializer, options = {}) {
-    if (!Model || typeof Model !== 'function') {
+    if (!Model) {
       throw new Error('Invalid Model constructor passed to the factory');
     }
     if ((typeof initializer !== 'object' && typeof initializer !== 'function') ||
