@@ -10185,7 +10185,7 @@ var Factory = function () {
     this.initializer = null;
     this.options = {};
 
-    if (!Model || typeof Model !== 'function') {
+    if (!Model) {
       throw new Error('Invalid Model constructor passed to the factory');
     }
     if ((typeof initializer === 'undefined' ? 'undefined' : (0, _typeof3.default)(initializer)) !== 'object' && typeof initializer !== 'function' || !initializer) {

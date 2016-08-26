@@ -23,7 +23,7 @@ user factory.
 Here's the crash course:
 
 ```javascript
-var factory = require('factory-girl');
+var factory = require('factory-girl').factory;
 var User    = require('../models/user');
 
 factory.define('user', User, {
