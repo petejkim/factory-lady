@@ -12,6 +12,8 @@ export default function asyncPopulate(target, source) {
     if (Array.isArray(source[attr])) {
       target[attr] = [];
       promise = asyncPopulate(target[attr], source[attr]);
+    } else if (source[attr] === null) {
+      target[attr] = null;
     } else if (typeof source[attr] === 'object') {
       target[attr] = target[attr] || {};
       promise = asyncPopulate(target[attr], source[attr]);

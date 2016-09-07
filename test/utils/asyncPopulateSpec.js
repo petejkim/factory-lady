@@ -3,13 +3,9 @@
 import '../test-helper/testUtils';
 import asyncPopulate from '../../src/utils/asyncPopulate';
 import { expect } from 'chai';
-// import _debug from 'debug';
 import asyncFunction from '../test-helper/asyncFunction';
 
-// const debug = _debug('asyncPopulateSpec');
-
 describe('asyncPopulate', function () {
-
   it('returns a promise', function () {
     const asyncPopulateP = asyncPopulate({}, {});
     expect(asyncPopulateP.then).to.be.a('function');
@@ -29,6 +25,7 @@ describe('asyncPopulate', function () {
   it('populates objects correctly', asyncFunction(async function () {
     const source = {
       num: 1,
+      nullValue: null,
       str: 'hello',
       funcs: {
         sync: () => 'shouldHaveThisValue',
@@ -62,6 +59,7 @@ describe('asyncPopulate', function () {
 
     expect(target).to.be.eql({
       num: 1,
+      nullValue: null,
       str: 'hello',
       funcs: {
         sync: 'shouldHaveThisValue',
