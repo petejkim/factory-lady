@@ -35,7 +35,12 @@ export default class Factory {
     const factoryAttrs = await this.getFactoryAttrs(buildOptions);
     const modelAttrs = {};
 
-    await asyncPopulate(modelAttrs, factoryAttrs);
+    const filteredAttrs = {};
+    Object.keys(factoryAttrs)
+      .filter(k => !extraAttrs.hasOwnProperty(k))
+      .forEach(k => (filteredAttrs[k] = factoryAttrs[k]));
+
+    await asyncPopulate(modelAttrs, filteredAttrs);
     await asyncPopulate(modelAttrs, extraAttrs);
 
     return modelAttrs;

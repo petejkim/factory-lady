@@ -7,9 +7,6 @@ import DummyModel from './test-helper/DummyModel';
 import DummyAdapter from './test-helper/DummyAdapter';
 import asyncFunction from './test-helper/asyncFunction';
 import sinon from 'sinon';
-// import _debug from 'debug';
-
-// const debug = _debug('FactorySpec');
 
 describe('Factory', function () {
   describe('#constructor', function () {
@@ -163,7 +160,6 @@ describe('Factory', function () {
         age: 24,
         address: {
           address1: 'Some Address Override',
-          address2: 'Some Address 2',
         },
       });
     }));
