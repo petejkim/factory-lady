@@ -292,13 +292,13 @@ describe('Factory', function () {
       })
     );
 
-    it('does not invoke afterBuild callback on create',
+    it('invokes afterBuild callback on create',
       asyncFunction(async function () {
         const spy = sinon.spy(model => model);
         const factoryWithOptions
           = new Factory(DummyModel, simpleObjInit, { afterBuild: spy });
         await factoryWithOptions.create(dummyAdapter);
-        expect(spy).to.have.callCount(0);
+        expect(spy).to.have.callCount(1);
       })
     );
   });
@@ -458,13 +458,13 @@ describe('Factory', function () {
       })
     );
 
-    it('does not invoke afterBuild callback on createMany',
+    it('invokes afterBuild callback on createMany',
       asyncFunction(async function () {
         const spy = sinon.spy(model => model);
         const factoryWithOptions
           = new Factory(DummyModel, simpleObjInit, { afterBuild: spy });
         await factoryWithOptions.createMany(dummyAdapter, 2);
-        expect(spy).to.have.callCount(0);
+        expect(spy).to.have.callCount(2);
       })
     );
   });

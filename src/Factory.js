@@ -50,7 +50,7 @@ export default class Factory {
   }
 
   async create(adapter, attrs = {}, buildOptions = {}) {
-    const model = await this.build(adapter, attrs, buildOptions, false);
+    const model = await this.build(adapter, attrs, buildOptions);
     return adapter.save(model, this.Model)
       .then(savedModel => (this.options.afterCreate ?
           this.options.afterCreate(savedModel, attrs, buildOptions) :
@@ -105,7 +105,7 @@ export default class Factory {
 
   async createMany(adapter, num, attrsArray = [], buildOptionsArray = []) {
     const models = await this.buildMany(
-      adapter, num, attrsArray, buildOptionsArray, false
+      adapter, num, attrsArray, buildOptionsArray
     );
     const savedModels = models.map(model => adapter.save(model, this.Model));
     return Promise.all(savedModels)
