@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance'), require('babel-runtime/core-js/object/assign')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/keys', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance', 'babel-runtime/core-js/object/assign'], factory) :
-  (factory((global.Factory = global.Factory || {}),global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Set,global._classCallCheck,global._createClass,global._typeof,global._Object$keys,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance,global._Object$assign));
-}(this, function (exports,_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Set,_classCallCheck,_createClass,_typeof,_Object$keys,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance,_Object$assign) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance'), require('babel-runtime/core-js/object/assign')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/core-js/object/keys', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance', 'babel-runtime/core-js/object/assign'], factory) :
+  (factory((global.Factory = global.Factory || {}),global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Set,global._classCallCheck,global._createClass,global._Object$keys,global._typeof,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance,global._Object$assign));
+}(this, function (exports,_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Set,_classCallCheck,_createClass,_Object$keys,_typeof,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance,_Object$assign) { 'use strict';
 
   _slicedToArray = 'default' in _slicedToArray ? _slicedToArray['default'] : _slicedToArray;
   _getIterator = 'default' in _getIterator ? _getIterator['default'] : _getIterator;
@@ -13,8 +13,8 @@
   _Set = 'default' in _Set ? _Set['default'] : _Set;
   _classCallCheck = 'default' in _classCallCheck ? _classCallCheck['default'] : _classCallCheck;
   _createClass = 'default' in _createClass ? _createClass['default'] : _createClass;
-  _typeof = 'default' in _typeof ? _typeof['default'] : _typeof;
   _Object$keys = 'default' in _Object$keys ? _Object$keys['default'] : _Object$keys;
+  _typeof = 'default' in _typeof ? _typeof['default'] : _typeof;
   _Object$getPrototypeOf = 'default' in _Object$getPrototypeOf ? _Object$getPrototypeOf['default'] : _Object$getPrototypeOf;
   _possibleConstructorReturn = 'default' in _possibleConstructorReturn ? _possibleConstructorReturn['default'] : _possibleConstructorReturn;
   _inherits = 'default' in _inherits ? _inherits['default'] : _inherits;
@@ -93,7 +93,7 @@
         var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
           var extraAttrs = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
           var buildOptions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-          var factoryAttrs, modelAttrs;
+          var factoryAttrs, modelAttrs, filteredAttrs;
           return _regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
@@ -104,17 +104,25 @@
                 case 2:
                   factoryAttrs = _context.sent;
                   modelAttrs = {};
-                  _context.next = 6;
-                  return asyncPopulate(modelAttrs, factoryAttrs);
+                  filteredAttrs = {};
 
-                case 6:
+                  _Object$keys(factoryAttrs).filter(function (k) {
+                    return !extraAttrs.hasOwnProperty(k);
+                  }).forEach(function (k) {
+                    return filteredAttrs[k] = factoryAttrs[k];
+                  });
+
                   _context.next = 8;
-                  return asyncPopulate(modelAttrs, extraAttrs);
+                  return asyncPopulate(modelAttrs, filteredAttrs);
 
                 case 8:
+                  _context.next = 10;
+                  return asyncPopulate(modelAttrs, extraAttrs);
+
+                case 10:
                   return _context.abrupt('return', modelAttrs);
 
-                case 9:
+                case 11:
                 case 'end':
                   return _context.stop();
               }

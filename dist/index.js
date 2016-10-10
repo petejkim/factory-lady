@@ -13,8 +13,8 @@ var _asyncToGenerator = _interopDefault(require('babel-runtime/helpers/asyncToGe
 var _Set = _interopDefault(require('babel-runtime/core-js/set'));
 var _classCallCheck = _interopDefault(require('babel-runtime/helpers/classCallCheck'));
 var _createClass = _interopDefault(require('babel-runtime/helpers/createClass'));
-var _typeof = _interopDefault(require('babel-runtime/helpers/typeof'));
 var _Object$keys = _interopDefault(require('babel-runtime/core-js/object/keys'));
+var _typeof = _interopDefault(require('babel-runtime/helpers/typeof'));
 var _Object$getPrototypeOf = _interopDefault(require('babel-runtime/core-js/object/get-prototype-of'));
 var _possibleConstructorReturn = _interopDefault(require('babel-runtime/helpers/possibleConstructorReturn'));
 var _inherits = _interopDefault(require('babel-runtime/helpers/inherits'));
@@ -93,7 +93,7 @@ var Factory = function () {
       var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
         var extraAttrs = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
         var buildOptions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-        var factoryAttrs, modelAttrs;
+        var factoryAttrs, modelAttrs, filteredAttrs;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -104,17 +104,25 @@ var Factory = function () {
               case 2:
                 factoryAttrs = _context.sent;
                 modelAttrs = {};
-                _context.next = 6;
-                return asyncPopulate(modelAttrs, factoryAttrs);
+                filteredAttrs = {};
 
-              case 6:
+                _Object$keys(factoryAttrs).filter(function (k) {
+                  return !extraAttrs.hasOwnProperty(k);
+                }).forEach(function (k) {
+                  return filteredAttrs[k] = factoryAttrs[k];
+                });
+
                 _context.next = 8;
-                return asyncPopulate(modelAttrs, extraAttrs);
+                return asyncPopulate(modelAttrs, filteredAttrs);
 
               case 8:
+                _context.next = 10;
+                return asyncPopulate(modelAttrs, extraAttrs);
+
+              case 10:
                 return _context.abrupt('return', modelAttrs);
 
-              case 9:
+              case 11:
               case 'end':
                 return _context.stop();
             }

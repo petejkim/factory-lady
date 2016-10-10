@@ -10146,6 +10146,10 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -10216,7 +10220,7 @@ var Factory = function () {
       var ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
         var extraAttrs = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
         var buildOptions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-        var factoryAttrs, modelAttrs;
+        var factoryAttrs, modelAttrs, filteredAttrs;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -10227,17 +10231,25 @@ var Factory = function () {
               case 2:
                 factoryAttrs = _context.sent;
                 modelAttrs = {};
-                _context.next = 6;
-                return (0, _asyncPopulate2.default)(modelAttrs, factoryAttrs);
+                filteredAttrs = {};
 
-              case 6:
+                (0, _keys2.default)(factoryAttrs).filter(function (k) {
+                  return !extraAttrs.hasOwnProperty(k);
+                }).forEach(function (k) {
+                  return filteredAttrs[k] = factoryAttrs[k];
+                });
+
                 _context.next = 8;
-                return (0, _asyncPopulate2.default)(modelAttrs, extraAttrs);
+                return (0, _asyncPopulate2.default)(modelAttrs, filteredAttrs);
 
               case 8:
+                _context.next = 10;
+                return (0, _asyncPopulate2.default)(modelAttrs, extraAttrs);
+
+              case 10:
                 return _context.abrupt('return', modelAttrs);
 
-              case 9:
+              case 11:
               case 'end':
                 return _context.stop();
             }
@@ -10444,7 +10456,7 @@ var Factory = function () {
 
 exports.default = Factory;
 
-},{"./utils/asyncPopulate":155,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/typeof":20,"babel-runtime/regenerator":21}],140:[function(require,module,exports){
+},{"./utils/asyncPopulate":155,"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/typeof":20,"babel-runtime/regenerator":21}],140:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
