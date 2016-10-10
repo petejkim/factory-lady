@@ -46,10 +46,10 @@ export default class Factory {
     return modelAttrs;
   }
 
-  async build(adapter, extraAttrs = {}, buildOptions = {}, buildCallbacks = true) {
+  async build(adapter, extraAttrs = {}, buildOptions = {}) {
     const modelAttrs = await this.attrs(extraAttrs, buildOptions);
     const model = adapter.build(this.Model, modelAttrs);
-    return this.options.afterBuild && buildCallbacks ?
+    return this.options.afterBuild ?
         this.options.afterBuild(model, extraAttrs, buildOptions) :
         model;
   }
