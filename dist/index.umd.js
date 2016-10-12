@@ -34,6 +34,8 @@
       if (Array.isArray(source[attr])) {
         target[attr] = [];
         promise = asyncPopulate(target[attr], source[attr]);
+      } else if (source[attr] === null) {
+        target[attr] = null;
       } else if (_typeof(source[attr]) === 'object') {
         target[attr] = target[attr] || {};
         promise = asyncPopulate(target[attr], source[attr]);
@@ -104,25 +106,21 @@
                 case 2:
                   factoryAttrs = _context.sent;
                   modelAttrs = {};
-                  filteredAttrs = {};
-
-                  _Object$keys(factoryAttrs).filter(function (k) {
-                    return !extraAttrs.hasOwnProperty(k);
-                  }).forEach(function (k) {
-                    return filteredAttrs[k] = factoryAttrs[k];
-                  });
-
-                  _context.next = 8;
+                  filteredAttrs = _Object$keys(factoryAttrs).reduce(function (attrs, name) {
+                    if (!extraAttrs.hasOwnProperty(name)) attrs[name] = factoryAttrs[name];
+                    return attrs;
+                  }, {});
+                  _context.next = 7;
                   return asyncPopulate(modelAttrs, filteredAttrs);
 
-                case 8:
-                  _context.next = 10;
+                case 7:
+                  _context.next = 9;
                   return asyncPopulate(modelAttrs, extraAttrs);
 
-                case 10:
+                case 9:
                   return _context.abrupt('return', modelAttrs);
 
-                case 11:
+                case 10:
                 case 'end':
                   return _context.stop();
               }
@@ -142,7 +140,6 @@
         var ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(adapter) {
           var extraAttrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
           var buildOptions = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-          var buildCallbacks = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
           var modelAttrs, model;
           return _regeneratorRuntime.wrap(function _callee2$(_context2) {
             while (1) {
@@ -154,7 +151,7 @@
                 case 2:
                   modelAttrs = _context2.sent;
                   model = adapter.build(this.Model, modelAttrs);
-                  return _context2.abrupt('return', this.options.afterBuild && buildCallbacks ? this.options.afterBuild(model, extraAttrs, buildOptions) : model);
+                  return _context2.abrupt('return', this.options.afterBuild ? this.options.afterBuild(model, extraAttrs, buildOptions) : model);
 
                 case 5:
                 case 'end':
@@ -164,7 +161,7 @@
           }, _callee2, this);
         }));
 
-        function build(_x7, _x8, _x9, _x10) {
+        function build(_x7, _x8, _x9) {
           return ref.apply(this, arguments);
         }
 
@@ -184,7 +181,7 @@
               switch (_context3.prev = _context3.next) {
                 case 0:
                   _context3.next = 2;
-                  return this.build(adapter, attrs, buildOptions, false);
+                  return this.build(adapter, attrs, buildOptions);
 
                 case 2:
                   model = _context3.sent;
@@ -200,7 +197,7 @@
           }, _callee3, this);
         }));
 
-        function create(_x14, _x15, _x16) {
+        function create(_x12, _x13, _x14) {
           return ref.apply(this, arguments);
         }
 
@@ -276,7 +273,7 @@
           }, _callee4, this);
         }));
 
-        function buildMany(_x21, _x22, _x23, _x24, _x25) {
+        function buildMany(_x19, _x20, _x21, _x22, _x23) {
           return ref.apply(this, arguments);
         }
 
@@ -296,7 +293,7 @@
               switch (_context5.prev = _context5.next) {
                 case 0:
                   _context5.next = 2;
-                  return this.buildMany(adapter, num, attrsArray, buildOptionsArray, false);
+                  return this.buildMany(adapter, num, attrsArray, buildOptionsArray);
 
                 case 2:
                   models = _context5.sent;
@@ -317,7 +314,7 @@
           }, _callee5, this);
         }));
 
-        function createMany(_x29, _x30, _x31, _x32) {
+        function createMany(_x27, _x28, _x29, _x30) {
           return ref.apply(this, arguments);
         }
 
