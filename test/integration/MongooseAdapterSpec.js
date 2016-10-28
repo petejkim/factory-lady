@@ -1,5 +1,6 @@
 import '../test-helper/testUtils';
 import MongooseAdapter from '../../src/adapters/MongooseAdapter';
+import { factory } from '../../src/index';
 import mongoose from 'mongoose';
 import { expect } from 'chai';
 
@@ -27,6 +28,19 @@ describe('MongooseAdapterIntegration', function () {
     });
 
     db.once('open', () => {
+      const Email = mongoose.model('Email', new mongoose.Schema({
+        subject: String,
+        thread: { type: mongoose.Schema.Types.ObjectId, ref: 'Thread' },
+      }));
+
+      factory.define('email', Email, {
+        subject: 'ttt',
+        thread: factory.assoc('thread', '_id'),
+      });
+
+      const Thread = mongoose.model('Thread', new mongoose.Schema({}));
+      factory.define('thread', Thread, {});
+
       done();
     });
   });
@@ -72,4 +86,16 @@ describe('MongooseAdapterIntegration', function () {
       .catch(err => done(err))
     ;
   });
+
+  /* eslint-disable no-underscore-dangle */
+  it('allows to pass mongo ObjectId as defalt attibute', function (done) {
+    factory.create('thread')
+      .then(thread => {
+        factory.create('email', { thread: thread._id }).then(email => {
+          expect(email.thread).to.be.equal(thread._id);
+          done();
+        });
+      });
+  });
+  /* eslint-enable no-underscore-dangle */
 });
