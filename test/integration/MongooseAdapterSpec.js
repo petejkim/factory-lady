@@ -89,6 +89,8 @@ describe('MongooseAdapterIntegration', function () {
 
   /* eslint-disable no-underscore-dangle */
   it('allows to pass mongo ObjectId as defalt attibute', function (done) {
+    mongoUnavailable ? this.skip() : null;
+
     factory.create('thread')
       .then(thread => {
         factory.create('email', { thread: thread._id }).then(email => {
