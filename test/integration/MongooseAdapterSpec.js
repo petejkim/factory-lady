@@ -46,7 +46,7 @@ describe('MongooseAdapterIntegration', function () {
   });
 
   it('builds models and access attributes correctly', function (done) {
-    mongoUnavailable ? this.skip() : null;
+    mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'fluffy' });
     expect(kitten).to.be.instanceof(Kitten);
@@ -61,7 +61,7 @@ describe('MongooseAdapterIntegration', function () {
   });
 
   it('saves models correctly', function (done) {
-    mongoUnavailable ? this.skip() : null;
+    mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'fluffy' });
     adapter.save(kitten, Kitten)
@@ -73,7 +73,7 @@ describe('MongooseAdapterIntegration', function () {
   });
 
   it('destroys models correctly', function (done) {
-    mongoUnavailable ? this.skip() : null;
+    mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'smellyCat' });
     adapter.save(kitten, Kitten)
@@ -88,16 +88,16 @@ describe('MongooseAdapterIntegration', function () {
   });
 
   /* eslint-disable no-underscore-dangle */
-  it('allows to pass mongo ObjectId as defalt attibute', function (done) {
-    mongoUnavailable ? this.skip() : null;
+  it('allows to pass mongo ObjectId as a default attribute', function (done) {
+    mongoUnavailable && this.skip();
 
+    let thread;
     factory.create('thread')
-      .then(thread => {
-        factory.create('email', { thread: thread._id }).then(email => {
-          expect(email.thread).to.be.equal(thread._id);
-          done();
-        });
-      });
+      .then(created => (thread = created))
+      .then(() => factory.create('email', { thread: thread._id }))
+      .then(email => expect(email.thread).to.be.equal(thread._id))
+      .then(() => done())
+      .catch(err => done(err));
   });
   /* eslint-enable no-underscore-dangle */
 });
