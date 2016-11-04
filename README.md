@@ -339,6 +339,9 @@ Be aware that `assoc()` is an async function, so it can't be used with `buildSyn
 
 ```javascript
 var doc = factory.buildSync('post', {title: 'Foo'});
+
+// or with buildOptions
+var doc = factory.buildSync('post', { title: 'Foo' }, { veryLong: true });
 ```
 
 ### Factory#cleanup
