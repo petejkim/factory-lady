@@ -2,6 +2,7 @@
 
 var factory = require('..');
 var should = require('chai').should();
+var promise = require('bluebird');
 var context = describe;
 require('./utils/factories');
 var adapters = require('./utils/adapters');

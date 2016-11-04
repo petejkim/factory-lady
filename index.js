@@ -331,12 +331,16 @@
         });
       };
 
-      builder.buildSync = function (name, attrs) {
+      builder.buildSync = function (name, attrs, buildOptions) {
         if (!factories[name]) {
           throw new Error("No factory defined for model '" + name + "'");
         }
         var model = factories[name].model;
-        attrs = merge(copy(factories[name].attributes), attrs);
+        var attributes = factories[name].attributes;
+        if (typeof attributes === 'function') {
+          attributes = attributes.call(null, buildOptions || {});
+        }
+        attrs = merge(copy(attributes), attrs);
         var names = keys(attrs);
         for (var i = 0; i < names.length; i++) {
           var key = names[i], fn = attrs[key];
