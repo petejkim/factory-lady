@@ -2,7 +2,6 @@
 
 var factory = require('..');
 var should = require('chai').should();
-var promise = require('bluebird');
 var context = describe;
 require('./utils/factories');
 var adapters = require('./utils/adapters');
@@ -617,35 +616,6 @@ describe('factory', function () {
         job.constructor.should.eql(Object);
       });
     });
-
-    it('can be used with buildOptions', function() {
-      var company = 'Bar Inc';
-      var another = new factory.Factory();
-      another.setAdapter(new factory.ObjectAdapter(), 'anotherModel');
-      another.define('anotherModel', null, function(buildOptions) {
-        var attrs = {
-          title: 'Scientist',
-          company: 'Foobar Inc.'
-        }
-
-        if (buildOptions.head) {
-          attrs.title = 'Head Scientist';
-        }
-
-        return attrs;
-      });
-
-      another.build('anotherModel', { company: company }, { head: true }, function (err, job) {
-        job.constructor.should.eql(Object);
-        job.title.should.eql('Head Scientist');
-        job.company.should.eql(company);
-      });
-
-      var obj = another.buildSync('anotherModel', { company: company }, { head: true });
-      obj.constructor.should.eql(Object);
-      obj.title.should.eql('Head Scientist');
-      obj.company.should.eql(company);
-    });
   });
 
   describe('#buildSync', function () {
@@ -665,6 +635,12 @@ describe('factory', function () {
         post.title.should.eql('Bazqux Co.');
         post.should.not.have.property('saveCalled');
       });
+    });
+
+    it('allows the use of buildOptions', function() {
+      var user = factory.buildSync('user', {}, { facebookUser: true });
+      (user instanceof User).should.be.true;
+      user.facebook.id.should.exist;
     });
 
     it('allows synchronous function properties', function () {
