@@ -616,6 +616,35 @@ describe('factory', function () {
         job.constructor.should.eql(Object);
       });
     });
+
+    it('can be used with buildOptions', function() {
+      var company = 'Bar Inc';
+      var another = new factory.Factory();
+      another.setAdapter(new factory.ObjectAdapter(), 'anotherModel');
+      another.define('anotherModel', null, function(buildOptions) {
+        var attrs = {
+          title: 'Scientist',
+          company: 'Foobar Inc.'
+        }
+
+        if (buildOptions.head) {
+          attrs.title = 'Head Scientist';
+        }
+
+        return attrs;
+      });
+
+      another.build('anotherModel', { company: company }, { head: true }, function (err, job) {
+        job.constructor.should.eql(Object);
+        job.title.should.eql('Head Scientist');
+        job.company.should.eql(company);
+      });
+
+      var obj = another.buildSync('anotherModel', { company: company }, { head: true });
+      obj.constructor.should.eql(Object);
+      obj.title.should.eql('Head Scientist');
+      obj.company.should.eql(company);
+    });
   });
 
   describe('#buildSync', function () {
