@@ -637,6 +637,12 @@ describe('factory', function () {
       });
     });
 
+    it('allows the use of buildOptions', function() {
+      var user = factory.buildSync('user', {}, { facebookUser: true });
+      (user instanceof User).should.be.true;
+      user.facebook.id.should.exist;
+    });
+
     it('allows synchronous function properties', function () {
       var post = factory.buildSync('blogpost');
       (post instanceof BlogPost).should.be.true;
