@@ -597,6 +597,7 @@ describe('FactoryGirl', function () {
       factoryGirl.cleanUp();
       expect(spy1).to.have.callCount(4);
       expect(spy2).to.have.callCount(1);
+      expect(spy2).to.have.been.calledWith(dummyModel2, DummyModel);
       expect(spy3).to.have.callCount(1);
 
       expect(factoryGirl.created.size).to.be.equal(0);
