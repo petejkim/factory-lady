@@ -215,7 +215,7 @@ factory.createMany('post', 5).then(postsArray => {
 Similar to `Factory#attrs` and `Factory#build`, you can pass `attrs` to override and
 `buildOptions`.
 
-### Factory#cleanup
+### Factory#cleanUp
 
 Destroys all of the created models. This is done using the adapter's `destroy` method.
 It might be useful to clear all created models before each test or testSuite.

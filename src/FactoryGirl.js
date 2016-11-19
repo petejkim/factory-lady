@@ -122,7 +122,7 @@ export default class FactoryGirl {
   cleanUp() {
     const promises = [];
     for (const [adapter, model] of this.created) {
-      promises.push(adapter.destroy(model.constructor, model));
+      promises.push(adapter.destroy(model, model.constructor));
     }
     this.created.clear();
     return Promise.all(promises);
