@@ -1,5 +1,6 @@
 import '../test-helper/testUtils';
 import MongooseAdapter from '../../src/adapters/MongooseAdapter';
+import { factory } from '../../src/index';
 import mongoose from 'mongoose';
 import { expect } from 'chai';
 
@@ -27,12 +28,25 @@ describe('MongooseAdapterIntegration', function () {
     });
 
     db.once('open', () => {
+      const Email = mongoose.model('Email', new mongoose.Schema({
+        subject: String,
+        thread: { type: mongoose.Schema.Types.ObjectId, ref: 'Thread' },
+      }));
+
+      factory.define('email', Email, {
+        subject: 'ttt',
+        thread: factory.assoc('thread', '_id'),
+      });
+
+      const Thread = mongoose.model('Thread', new mongoose.Schema({}));
+      factory.define('thread', Thread, {});
+
       done();
     });
   });
 
   it('builds models and access attributes correctly', function (done) {
-    mongoUnavailable ? this.skip() : null;
+    mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'fluffy' });
     expect(kitten).to.be.instanceof(Kitten);
@@ -47,7 +61,7 @@ describe('MongooseAdapterIntegration', function () {
   });
 
   it('saves models correctly', function (done) {
-    mongoUnavailable ? this.skip() : null;
+    mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'fluffy' });
     adapter.save(kitten, Kitten)
@@ -59,7 +73,7 @@ describe('MongooseAdapterIntegration', function () {
   });
 
   it('destroys models correctly', function (done) {
-    mongoUnavailable ? this.skip() : null;
+    mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'smellyCat' });
     adapter.save(kitten, Kitten)
@@ -72,4 +86,18 @@ describe('MongooseAdapterIntegration', function () {
       .catch(err => done(err))
     ;
   });
+
+  /* eslint-disable no-underscore-dangle */
+  it('allows to pass mongo ObjectId as a default attribute', function (done) {
+    mongoUnavailable && this.skip();
+
+    let thread;
+    factory.create('thread')
+      .then(created => (thread = created))
+      .then(() => factory.create('email', { thread: thread._id }))
+      .then(email => expect(email.thread).to.be.equal(thread._id))
+      .then(() => done())
+      .catch(err => done(err));
+  });
+  /* eslint-enable no-underscore-dangle */
 });
