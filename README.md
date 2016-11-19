@@ -23,8 +23,8 @@ user factory.
 Here's the crash course:
 
 ```javascript
-var factory = require('factory-girl').factory;
-var User    = require('../models/user');
+const factory = require('factory-girl').factory;
+const User    = require('../models/user');
 
 factory.define('user', User, {
   username: 'Bob',
@@ -76,7 +76,7 @@ factory.define('user', User, {
 ```javascript
 // Using functions as initializer
 factory.define('account', Account, buildOptions => {
-  var attrs = {
+  let attrs = {
     confirmed: false,
     confirmedAt: null
   };
@@ -241,7 +241,7 @@ factory.setAdapter(adapter, 'factory-name');
 You can create multiple factories which have different settings:
 
 ```javascript
-var anotherFactory = new factory.FactoryGirl();
+let anotherFactory = new factory.FactoryGirl();
 anotherFactory.setAdapter(new MongooseAdapter()); // use the Mongoose adapter
 ```
 

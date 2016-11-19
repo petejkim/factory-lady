@@ -60,44 +60,36 @@ describe('MongooseAdapterIntegration', function () {
     done();
   });
 
-  it('saves models correctly', function (done) {
+  it('saves models correctly', function () {
     mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'fluffy' });
-    adapter.save(kitten, Kitten)
+    return adapter.save(kitten, Kitten)
       .then(k => expect(k).to.have.property('_id'))
-      .then(() => Kitten.remove({}))
-      .then(() => done())
-      .catch(err => done(err))
-    ;
+      .then(() => Kitten.remove({}));
   });
 
-  it('destroys models correctly', function (done) {
+  it('destroys models correctly', function () {
     mongoUnavailable && this.skip();
 
     const kitten = adapter.build(Kitten, { name: 'smellyCat' });
-    adapter.save(kitten, Kitten)
+    return adapter.save(kitten, Kitten)
       .then(() => Kitten.count())
       .then(count => expect(count).to.be.equal(1))
       .then(() => adapter.destroy(kitten, Kitten))
       .then(() => Kitten.count())
-      .then(count => expect(count).to.be.equal(0))
-      .then(() => done())
-      .catch(err => done(err))
-    ;
+      .then(count => expect(count).to.be.equal(0));
   });
 
   /* eslint-disable no-underscore-dangle */
-  it('allows to pass mongo ObjectId as a default attribute', function (done) {
+  it('allows to pass mongo ObjectId as a default attribute', function () {
     mongoUnavailable && this.skip();
 
     let thread;
-    factory.create('thread')
+    return factory.create('thread')
       .then(created => (thread = created))
       .then(() => factory.create('email', { thread: thread._id }))
-      .then(email => expect(email.thread).to.be.equal(thread._id))
-      .then(() => done())
-      .catch(err => done(err));
+      .then(email => expect(email.thread).to.be.equal(thread._id));
   });
   /* eslint-enable no-underscore-dangle */
 });
