@@ -23,6 +23,7 @@ export default class FactoryGirl {
     this.assocAttrsMany = generatorThunk(this, AssocAttrsMany);
     this.seq = this.sequence =
       (...args) => generatorThunk(this, Sequence)(...args);
+    this.resetSeq = this.resetSequence = id => { Sequence.reset(id); };
     this.chance = generatorThunk(this, ChanceGenerator);
     this.oneOf = generatorThunk(this, OneOf);
 
@@ -125,6 +126,7 @@ export default class FactoryGirl {
       promises.push(adapter.destroy(model, model.constructor));
     }
     this.created.clear();
+    this.resetSeq();
     return Promise.all(promises);
   }
 

@@ -2,6 +2,7 @@ import './test-helper/testUtils';
 import FactoryGirl from '../src/FactoryGirl';
 import Factory from '../src/Factory';
 import DefaultAdapter from '../src/adapters/DefaultAdapter';
+import Sequence from '../src/generators/Sequence';
 import { expect } from 'chai';
 import DummyModel from './test-helper/DummyModel';
 import DummyAdapter from './test-helper/DummyAdapter';
@@ -22,6 +23,8 @@ describe('FactoryGirl', function () {
       expect(factoryGirl.assocAttrsMany).to.be.a('function');
       expect(factoryGirl.sequence).to.be.a('function');
       expect(factoryGirl.seq).to.be.a('function');
+      expect(factoryGirl.resetSeq).to.be.a('function');
+      expect(factoryGirl.resetSequence).to.be.a('function');
       expect(factoryGirl.chance).to.be.a('function');
       expect(factoryGirl.oneOf).to.be.a('function');
     });
@@ -594,6 +597,10 @@ describe('FactoryGirl', function () {
       factoryGirl.addToCreatedList(dummyAdapter2, dummyModel2);
       expect(factoryGirl.created.size).to.be.equal(5);
 
+      Sequence.sequences['some.id.1'] = 2;
+      expect(Sequence.sequences['some.id.1']).to.exist;
+
+
       factoryGirl.cleanUp();
       expect(spy1).to.have.callCount(4);
       expect(spy2).to.have.callCount(1);
@@ -601,6 +608,7 @@ describe('FactoryGirl', function () {
       expect(spy3).to.have.callCount(1);
 
       expect(factoryGirl.created.size).to.be.equal(0);
+      expect(Sequence.sequences['some.id.1']).to.not.exist;
     });
   });
 });
