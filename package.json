@@ -1,9 +1,22 @@
 {
   "name": "factory-girl",
   "description": "A factory library for Node.js and JavaScript inspired by factory_girl",
-  "main": "./index",
-  "author": "Simon Wade",
-  "version": "3.2.0-beta",
+  "main": "./src/index",
+  "author": [
+    "@aexmachina",
+    "@chetanism"
+  ],
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ],
+    "plugins": [
+      "transform-runtime",
+      "transform-class-properties"
+    ]
+  },
+  "version": "4.0.0-beta.7",
   "keywords": [
     "factory",
     "test",
@@ -26,20 +39,50 @@
     }
   ],
   "dependencies": {
-    "lodash.merge": "^3.3.2"
+    "babel-runtime": "^6.11.6",
+    "chance": "^1.0.4"
   },
   "devDependencies": {
+    "babel-cli": "^6.8.0",
+    "babel-core": "^6.8.0",
+    "babel-eslint": "^6.0.4",
+    "babel-plugin-transform-runtime": "^6.8.0",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-es2015-rollup": "^1.1.1",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.9.0",
+    "babelify": "^7.3.0",
     "bluebird": "^2.9.25",
+    "bookshelf": "^0.10.0",
+    "browserify": "^13.1.0",
     "chai": "^3.5.0",
-    "mocha": "^2.2.5",
-    "should": "^6.0.3"
+    "chai-as-promised": "^5.3.0",
+    "del": "^2.2.0",
+    "eslint": "^2.11.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.8.1",
+    "eslint-plugin-jsx-a11y": "^1.3.0",
+    "eslint-plugin-mocha": "^3.0.0",
+    "eslint-plugin-react": "^5.1.1",
+    "istanbul": "^1.0.0-alpha.2",
+    "knex": "^0.11.7",
+    "mocha": "^2.5.3",
+    "mocha-eslint": "^2.1.1",
+    "mongoose": "^4.5.4",
+    "rollup": "^0.27.0",
+    "rollup-plugin-babel": "^2.5.0",
+    "sequelize": "^3.24.0",
+    "should": "^6.0.3",
+    "sinon": "^2.0.0-pre",
+    "sinon-chai": "https://github.com/sjmulder/sinon-chai.git#pr/sinon-2.0.0-pre",
+    "sqlite3": "^3.1.4"
   },
   "scripts": {
-    "test": "mocha"
-  },
-  "files": [
-    "lib",
-    "test",
-    "index.js"
-  ]
+    "lint": "eslint src test tools",
+    "test": "NODE_ENV=test mocha",
+    "test:cover": "NODE_ENV=test babel-node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
+    "build": "node tools/build",
+    "publish": "npm run prepublish && npm publish dist",
+    "prepublish": "npm run test && npm run build"
+  }
 }

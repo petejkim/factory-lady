@@ -1,0 +1,35 @@
+{
+  "name": "factory-girl",
+  "description": "A factory library for Node.js and JavaScript inspired by factory_girl",
+  "main": "./index",
+  "author": [
+    "@aexmachina",
+    "@chetanism"
+  ],
+  "version": "4.0.0-beta.5",
+  "keywords": [
+    "factory",
+    "test",
+    "bdd",
+    "tdd",
+    "fixture"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aexmachina/factory-girl.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "http://github.com/aexmachina/factory-girl/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/aexmachina/factory-girl/raw/master/LICENSE"
+    }
+  ],
+  "dependencies": {
+    "babel-runtime": "^6.11.6",
+    "chance": "^1.0.4"
+  }
+}

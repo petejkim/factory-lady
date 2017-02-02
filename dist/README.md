@@ -23,8 +23,8 @@ user factory.
 Here's the crash course:
 
 ```javascript
-const factory = require('factory-girl').factory;
-const User    = require('../models/user');
+var factory = require('factory-girl').factory;
+var User    = require('../models/user');
 
 factory.define('user', User, {
   username: 'Bob',
@@ -76,7 +76,7 @@ factory.define('user', User, {
 ```javascript
 // Using functions as initializer
 factory.define('account', Account, buildOptions => {
-  let attrs = {
+  var attrs = {
     confirmed: false,
     confirmedAt: null
   };
@@ -215,7 +215,7 @@ factory.createMany('post', 5).then(postsArray => {
 Similar to `Factory#attrs` and `Factory#build`, you can pass `attrs` to override and
 `buildOptions`.
 
-### Factory#cleanUp
+### Factory#cleanup
 
 Destroys all of the created models. This is done using the adapter's `destroy` method.
 It might be useful to clear all created models before each test or testSuite.
@@ -241,7 +241,7 @@ factory.setAdapter(adapter, 'factory-name');
 You can create multiple factories which have different settings:
 
 ```javascript
-let anotherFactory = new factory.FactoryGirl();
+var anotherFactory = new factory.FactoryGirl();
 anotherFactory.setAdapter(new MongooseAdapter()); // use the Mongoose adapter
 ```
 
