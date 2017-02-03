@@ -14,6 +14,25 @@ describe('Sequence', function () {
     });
   });
 
+  describe('#reset', function () {
+    it('reset the sequence for all if id not provided', function () {
+      Sequence.sequences['some.id.1'] = 2;
+      Sequence.sequences['some.id.2'] = 2;
+      Sequence.reset();
+      expect(Sequence.sequences['some.id.1']).to.not.exist;
+      expect(Sequence.sequences['some.id.2']).to.not.exist;
+    });
+
+    it('reset the sequence for id', function () {
+      Sequence.sequences['some.id.1'] = 2;
+      Sequence.sequences['some.id.2'] = 2;
+      Sequence.reset('some.id.1');
+      expect(Sequence.sequences['some.id.1']).to.not.exist;
+      expect(Sequence.sequences['some.id.2']).to.be.equal(2);
+      Sequence.reset('some.id.2');
+    });
+  });
+
   describe('#generate', function () {
     it('generates an id if not provided', function () {
       const sequence = new Sequence({});
