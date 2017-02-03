@@ -1,0 +1,5 @@
+- Update `version` in package.json and bower.json
+- `npm run build`
+- `git commit -m'Build dist' dist/`
+- <code>git tag `cat package.json | jq -r .version`</code>
+- `npm publish dist/`
