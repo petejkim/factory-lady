@@ -10555,6 +10555,9 @@ var FactoryGirl = function () {
     this.seq = this.sequence = function () {
       return generatorThunk(_this, _Sequence2.default).apply(undefined, arguments);
     };
+    this.resetSeq = this.resetSequence = function (id) {
+      _Sequence2.default.reset(id);
+    };
     this.chance = generatorThunk(this, _ChanceGenerator2.default);
     this.oneOf = generatorThunk(this, _OneOf2.default);
 
@@ -10799,7 +10802,7 @@ var FactoryGirl = function () {
           var adapter = _step2$value[0];
           var model = _step2$value[1];
 
-          promises.push(adapter.destroy(model.constructor, model));
+          promises.push(adapter.destroy(model, model.constructor));
         }
       } catch (err) {
         _didIteratorError2 = true;
@@ -10817,6 +10820,7 @@ var FactoryGirl = function () {
       }
 
       this.created.clear();
+      this.resetSeq();
       return _promise2.default.all(promises);
     }
   }, {
@@ -11913,6 +11917,17 @@ var Sequence = function (_Generator) {
       var next = Sequence.sequences[id]++;
       return callback ? callback(next) : next;
     }
+  }], [{
+    key: 'reset',
+    value: function reset() {
+      var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      if (!id) {
+        Sequence.sequences = {};
+      } else {
+        Sequence.sequences[id] = undefined;
+      }
+    }
   }]);
   return Sequence;
 }(_Generator3.default);
@@ -12000,6 +12015,7 @@ exports.default = asyncPopulate;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable no-underscore-dangle */
 function asyncPopulate(target, source) {
   if ((typeof target === 'undefined' ? 'undefined' : (0, _typeof3.default)(target)) !== 'object') {
     return _promise2.default.reject(new Error('Invalid target passed'));
@@ -12015,7 +12031,7 @@ function asyncPopulate(target, source) {
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (source[attr] === null) {
       target[attr] = null;
-    } else if ((0, _typeof3.default)(source[attr]) === 'object') {
+    } else if ((0, _typeof3.default)(source[attr]) === 'object' && !source[attr]._bsontype) {
       target[attr] = target[attr] || {};
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (typeof source[attr] === 'function') {
@@ -12031,6 +12047,7 @@ function asyncPopulate(target, source) {
   });
   return _promise2.default.all(promises);
 }
+/* eslint-enable no-underscore-dangle */
 
 },{"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/typeof":20}]},{},[154])(154)
 });

@@ -82,7 +82,6 @@
     "test": "NODE_ENV=test mocha",
     "test:cover": "NODE_ENV=test babel-node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
     "build": "node tools/build",
-    "publish": "npm run prepublish && npm publish dist",
     "prepublish": "npm run test && npm run build"
   }
 }

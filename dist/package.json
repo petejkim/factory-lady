@@ -1,12 +1,12 @@
 {
   "name": "factory-girl",
   "description": "A factory library for Node.js and JavaScript inspired by factory_girl",
-  "main": "./index",
+  "main": "./src/index",
   "author": [
     "@aexmachina",
     "@chetanism"
   ],
-  "version": "4.0.0-beta.5",
+  "version": "4.0.0-beta.7",
   "keywords": [
     "factory",
     "test",

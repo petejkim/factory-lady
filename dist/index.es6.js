@@ -15,6 +15,7 @@ import _inherits from 'babel-runtime/helpers/inherits';
 import Chance from 'chance';
 import _Object$assign from 'babel-runtime/core-js/object/assign';
 
+/* eslint-disable no-underscore-dangle */
 function asyncPopulate(target, source) {
   if ((typeof target === 'undefined' ? 'undefined' : _typeof(target)) !== 'object') {
     return _Promise.reject(new Error('Invalid target passed'));
@@ -30,7 +31,7 @@ function asyncPopulate(target, source) {
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (source[attr] === null) {
       target[attr] = null;
-    } else if (_typeof(source[attr]) === 'object') {
+    } else if (_typeof(source[attr]) === 'object' && !source[attr]._bsontype) {
       target[attr] = target[attr] || {};
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (typeof source[attr] === 'function') {
@@ -46,6 +47,7 @@ function asyncPopulate(target, source) {
   });
   return _Promise.all(promises);
 }
+/* eslint-enable no-underscore-dangle */
 
 var Factory = function () {
   function Factory(Model, initializer) {
@@ -367,6 +369,17 @@ var Sequence = function (_Generator) {
       Sequence.sequences[id] = Sequence.sequences[id] || 1;
       var next = Sequence.sequences[id]++;
       return callback ? callback(next) : next;
+    }
+  }], [{
+    key: 'reset',
+    value: function reset() {
+      var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      if (!id) {
+        Sequence.sequences = {};
+      } else {
+        Sequence.sequences[id] = undefined;
+      }
     }
   }]);
 
@@ -772,6 +785,9 @@ var FactoryGirl = function () {
     this.seq = this.sequence = function () {
       return generatorThunk(_this, Sequence).apply(undefined, arguments);
     };
+    this.resetSeq = this.resetSequence = function (id) {
+      Sequence.reset(id);
+    };
     this.chance = generatorThunk(this, ChanceGenerator);
     this.oneOf = generatorThunk(this, OneOf);
 
@@ -1016,7 +1032,7 @@ var FactoryGirl = function () {
           var adapter = _step2$value[0];
           var model = _step2$value[1];
 
-          promises.push(adapter.destroy(model.constructor, model));
+          promises.push(adapter.destroy(model, model.constructor));
         }
       } catch (err) {
         _didIteratorError2 = true;
@@ -1034,6 +1050,7 @@ var FactoryGirl = function () {
       }
 
       this.created.clear();
+      this.resetSeq();
       return _Promise.all(promises);
     }
   }, {
