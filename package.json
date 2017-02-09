@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "babel-runtime": "^6.11.6",
-    "chance": "^1.0.4",
+    "chance": "^1.0.4"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",
