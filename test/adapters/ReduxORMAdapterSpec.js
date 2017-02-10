@@ -29,18 +29,6 @@ describe('ReduxORMAdapter', function () {
   });
 
   describe('#save', function () {
-    it('resolves to the object itself', asyncFunction(async function () {
-      const model = adapter.build('DummyReduxORMModel', {
-        id: 1,
-        type: 'City',
-        name: 'Vic',
-        country: 'ES',
-
-      });
-      const savedModel = await adapter.save(model, DummyReduxORMModel);
-      expect(savedModel).to.be.equal(savedModel);
-    }));
-
     it('returns a promise', function () {
       const model = adapter.build('DummyReduxORMModel', {
         id: 1,
