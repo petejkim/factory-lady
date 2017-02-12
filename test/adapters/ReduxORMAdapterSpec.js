@@ -29,7 +29,7 @@ describe('ReduxORMAdapter', function () {
   });
 
   describe('#save', function () {
-        it('resolves to the object itself', asyncFunction(async function () {
+    it('resolves to the object itself', asyncFunction(async function () {
       const model = adapter.build('DummyReduxORMModel', {
         id: 1,
         type: 'City',
@@ -37,8 +37,8 @@ describe('ReduxORMAdapter', function () {
         country: 'ES',
 
       });
-      const savedModel = await adapter.save(model, DummyReduxORMModel);
-      return expect(savedModel).to.eventually.equal(model)
+      const savedModel = adapter.save(model, DummyReduxORMModel);
+      return expect(savedModel).to.eventually.equal(model);
     }));
     it('returns a promise', function () {
       const model = adapter.build('DummyReduxORMModel', {
