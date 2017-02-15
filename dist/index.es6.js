@@ -1096,6 +1096,87 @@ function deprecate(method, see) {
 
 /* eslint-disable no-unused-vars */
 
+var ObjectAdapter = function (_DefaultAdapter) {
+  _inherits(ObjectAdapter, _DefaultAdapter);
+
+  function ObjectAdapter() {
+    _classCallCheck(this, ObjectAdapter);
+
+    return _possibleConstructorReturn(this, _Object$getPrototypeOf(ObjectAdapter).apply(this, arguments));
+  }
+
+  _createClass(ObjectAdapter, [{
+    key: 'build',
+    value: function build(Model, props) {
+      var model = new Model();
+      this.set(props, model, Model);
+      return model;
+    }
+  }, {
+    key: 'save',
+    value: function () {
+      var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(model, Model) {
+        return _regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                return _context.abrupt('return', model);
+
+              case 1:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function save(_x, _x2) {
+        return _ref.apply(this, arguments);
+      }
+
+      return save;
+    }()
+  }, {
+    key: 'destroy',
+    value: function () {
+      var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(model, Model) {
+        return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                return _context2.abrupt('return', model);
+
+              case 1:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function destroy(_x3, _x4) {
+        return _ref2.apply(this, arguments);
+      }
+
+      return destroy;
+    }()
+  }, {
+    key: 'get',
+    value: function get(model, attr, Model) {
+      return model[attr];
+    }
+  }, {
+    key: 'set',
+    value: function set(props, model, Model) {
+      return _Object$assign(model, props);
+    }
+  }]);
+
+  return ObjectAdapter;
+}(DefaultAdapter);
+
+/* eslint-disable no-unused-vars */
+
 var BookshelfAdapter = function (_DefaultAdapter) {
   _inherits(BookshelfAdapter, _DefaultAdapter);
 
@@ -1178,21 +1259,27 @@ var SequelizeAdapter = function (_DefaultAdapter) {
 
 /* eslint-disable no-unused-vars */
 
-var ObjectAdapter = function (_DefaultAdapter) {
-  _inherits(ObjectAdapter, _DefaultAdapter);
+var ReduxORMAdapter = function (_DefaultAdapter) {
+  _inherits(ReduxORMAdapter, _DefaultAdapter);
 
-  function ObjectAdapter() {
-    _classCallCheck(this, ObjectAdapter);
+  function ReduxORMAdapter(session) {
+    _classCallCheck(this, ReduxORMAdapter);
 
-    return _possibleConstructorReturn(this, _Object$getPrototypeOf(ObjectAdapter).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, _Object$getPrototypeOf(ReduxORMAdapter).call(this));
+
+    _this.session = session;
+    return _this;
   }
 
-  _createClass(ObjectAdapter, [{
+  _createClass(ReduxORMAdapter, [{
     key: 'build',
-    value: function build(Model, props) {
-      var model = new Model();
-      this.set(props, model, Model);
-      return model;
+    value: function build(modelName, props) {
+      return this.session[modelName].create(props);
+    }
+  }, {
+    key: 'get',
+    value: function get(model, attr) {
+      return model[attr];
     }
   }, {
     key: 'save',
@@ -1226,7 +1313,9 @@ var ObjectAdapter = function (_DefaultAdapter) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                return _context2.abrupt('return', model);
+                return _context2.abrupt('return', _Promise.resolve(model.delete()).then(function () {
+                  return true;
+                }));
 
               case 1:
               case 'end':
@@ -1242,23 +1331,13 @@ var ObjectAdapter = function (_DefaultAdapter) {
 
       return destroy;
     }()
-  }, {
-    key: 'get',
-    value: function get(model, attr, Model) {
-      return model[attr];
-    }
-  }, {
-    key: 'set',
-    value: function set(props, model, Model) {
-      return _Object$assign(model, props);
-    }
   }]);
 
-  return ObjectAdapter;
+  return ReduxORMAdapter;
 }(DefaultAdapter);
 
 var factory = new FactoryGirl();
 factory.FactoryGirl = FactoryGirl;
 
-export { BookshelfAdapter, DefaultAdapter, MongooseAdapter, SequelizeAdapter, ObjectAdapter, factory };export default factory;
+export { ObjectAdapter, BookshelfAdapter, DefaultAdapter, MongooseAdapter, SequelizeAdapter, ReduxORMAdapter, factory };export default factory;
 //# sourceMappingURL=index.es6.js.map

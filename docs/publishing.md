@@ -2,6 +2,7 @@
 - `npm run build`
 - bash: `VERSION=$(cat package.json | jq -r .version)`  
   fish: `set VERSION (cat package.json | jq -r .version)`
-- `git commit -m "v$VERSION"`
-- <code>git tag `cat package.json | jq -r .version`</code>
+- `git commit -m "v$VERSION" -a`
+- `git tag "v$VERSION"`
 - `npm publish dist/`
+- `git push --tags`

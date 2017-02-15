@@ -10452,7 +10452,7 @@ var Factory = function () {
 
 exports.default = Factory;
 
-},{"./utils/asyncPopulate":155,"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/typeof":20,"babel-runtime/regenerator":21}],140:[function(require,module,exports){
+},{"./utils/asyncPopulate":156,"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/typeof":20,"babel-runtime/regenerator":21}],140:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10864,7 +10864,7 @@ function deprecate(method, see) {
   };
 }
 
-},{"./Factory":139,"./adapters/DefaultAdapter":142,"./generators/Assoc":146,"./generators/AssocAttrs":147,"./generators/AssocAttrsMany":148,"./generators/AssocMany":149,"./generators/ChanceGenerator":150,"./generators/OneOf":152,"./generators/Sequence":153,"babel-runtime/core-js/get-iterator":1,"babel-runtime/core-js/promise":9,"babel-runtime/core-js/set":10,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/slicedToArray":19,"babel-runtime/regenerator":21}],141:[function(require,module,exports){
+},{"./Factory":139,"./adapters/DefaultAdapter":142,"./generators/Assoc":147,"./generators/AssocAttrs":148,"./generators/AssocAttrsMany":149,"./generators/AssocMany":150,"./generators/ChanceGenerator":151,"./generators/OneOf":153,"./generators/Sequence":154,"babel-runtime/core-js/get-iterator":1,"babel-runtime/core-js/promise":9,"babel-runtime/core-js/set":10,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/slicedToArray":19,"babel-runtime/regenerator":21}],141:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11241,6 +11241,131 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _DefaultAdapter2 = require('./DefaultAdapter');
+
+var _DefaultAdapter3 = _interopRequireDefault(_DefaultAdapter2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* eslint-disable no-unused-vars */
+
+var ReduxORMAdapter = function (_DefaultAdapter) {
+  (0, _inherits3.default)(ReduxORMAdapter, _DefaultAdapter);
+
+  function ReduxORMAdapter(session) {
+    (0, _classCallCheck3.default)(this, ReduxORMAdapter);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(ReduxORMAdapter).call(this));
+
+    _this.session = session;
+    return _this;
+  }
+
+  (0, _createClass3.default)(ReduxORMAdapter, [{
+    key: 'build',
+    value: function build(modelName, props) {
+      return this.session[modelName].create(props);
+    }
+  }, {
+    key: 'get',
+    value: function get(model, attr) {
+      return model[attr];
+    }
+  }, {
+    key: 'save',
+    value: function () {
+      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(model, Model) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                return _context.abrupt('return', model);
+
+              case 1:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function save(_x, _x2) {
+        return _ref.apply(this, arguments);
+      }
+
+      return save;
+    }()
+  }, {
+    key: 'destroy',
+    value: function () {
+      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(model, Model) {
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                return _context2.abrupt('return', _promise2.default.resolve(model.delete()).then(function () {
+                  return true;
+                }));
+
+              case 1:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function destroy(_x3, _x4) {
+        return _ref2.apply(this, arguments);
+      }
+
+      return destroy;
+    }()
+  }]);
+  return ReduxORMAdapter;
+}(_DefaultAdapter3.default);
+
+exports.default = ReduxORMAdapter;
+
+},{"./DefaultAdapter":142,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],146:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -11288,7 +11413,7 @@ var SequelizeAdapter = function (_DefaultAdapter) {
 
 exports.default = SequelizeAdapter;
 
-},{"./DefaultAdapter":142,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18}],146:[function(require,module,exports){
+},{"./DefaultAdapter":142,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18}],147:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11376,7 +11501,7 @@ var Assoc = function (_Generator) {
 
 exports.default = Assoc;
 
-},{"./Generator":151,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],147:[function(require,module,exports){
+},{"./Generator":152,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],148:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11464,7 +11589,7 @@ var AssocAttrs = function (_Generator) {
 
 exports.default = AssocAttrs;
 
-},{"./Generator":151,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],148:[function(require,module,exports){
+},{"./Generator":152,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],149:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11565,7 +11690,7 @@ var AssocAttrsMany = function (_Generator) {
 
 exports.default = AssocAttrsMany;
 
-},{"./Generator":151,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],149:[function(require,module,exports){
+},{"./Generator":152,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],150:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11658,7 +11783,7 @@ var AssocMany = function (_Generator) {
 
 exports.default = AssocMany;
 
-},{"./Generator":151,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],150:[function(require,module,exports){
+},{"./Generator":152,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],151:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11719,7 +11844,7 @@ var ChanceGenerator = function (_Generator) {
 
 exports.default = ChanceGenerator;
 
-},{"./Generator":151,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"chance":24}],151:[function(require,module,exports){
+},{"./Generator":152,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"chance":24}],152:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11762,7 +11887,7 @@ var Generator = function () {
 
 exports.default = Generator;
 
-},{"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15}],152:[function(require,module,exports){
+},{"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15}],153:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11861,7 +11986,7 @@ var OneOf = function (_Generator) {
 
 exports.default = OneOf;
 
-},{"./Generator":151,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],153:[function(require,module,exports){
+},{"./Generator":152,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18,"babel-runtime/regenerator":21}],154:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11945,17 +12070,21 @@ function generateId() {
   return id;
 }
 
-},{"./Generator":151,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18}],154:[function(require,module,exports){
+},{"./Generator":152,"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/inherits":17,"babel-runtime/helpers/possibleConstructorReturn":18}],155:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.factory = exports.ObjectAdapter = exports.SequelizeAdapter = exports.MongooseAdapter = exports.DefaultAdapter = exports.BookshelfAdapter = undefined;
+exports.factory = exports.ReduxORMAdapter = exports.SequelizeAdapter = exports.MongooseAdapter = exports.DefaultAdapter = exports.BookshelfAdapter = exports.ObjectAdapter = undefined;
 
 var _FactoryGirl = require('./FactoryGirl');
 
 var _FactoryGirl2 = _interopRequireDefault(_FactoryGirl);
+
+var _ObjectAdapter2 = require('./adapters/ObjectAdapter');
+
+var _ObjectAdapter3 = _interopRequireDefault(_ObjectAdapter2);
 
 var _BookshelfAdapter2 = require('./adapters/BookshelfAdapter');
 
@@ -11973,17 +12102,18 @@ var _SequelizeAdapter2 = require('./adapters/SequelizeAdapter');
 
 var _SequelizeAdapter3 = _interopRequireDefault(_SequelizeAdapter2);
 
-var _ObjectAdapter2 = require('./adapters/ObjectAdapter');
+var _ReduxORMAdapter2 = require('./adapters/ReduxORMAdapter');
 
-var _ObjectAdapter3 = _interopRequireDefault(_ObjectAdapter2);
+var _ReduxORMAdapter3 = _interopRequireDefault(_ReduxORMAdapter2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+exports.ObjectAdapter = _ObjectAdapter3.default;
 exports.BookshelfAdapter = _BookshelfAdapter3.default;
 exports.DefaultAdapter = _DefaultAdapter3.default;
 exports.MongooseAdapter = _MongooseAdapter3.default;
 exports.SequelizeAdapter = _SequelizeAdapter3.default;
-exports.ObjectAdapter = _ObjectAdapter3.default;
+exports.ReduxORMAdapter = _ReduxORMAdapter3.default;
 
 
 var factory = new _FactoryGirl2.default();
@@ -11992,7 +12122,7 @@ factory.FactoryGirl = _FactoryGirl2.default;
 exports.factory = factory;
 exports.default = factory;
 
-},{"./FactoryGirl":140,"./adapters/BookshelfAdapter":141,"./adapters/DefaultAdapter":142,"./adapters/MongooseAdapter":143,"./adapters/ObjectAdapter":144,"./adapters/SequelizeAdapter":145}],155:[function(require,module,exports){
+},{"./FactoryGirl":140,"./adapters/BookshelfAdapter":141,"./adapters/DefaultAdapter":142,"./adapters/MongooseAdapter":143,"./adapters/ObjectAdapter":144,"./adapters/ReduxORMAdapter":145,"./adapters/SequelizeAdapter":146}],156:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12049,5 +12179,5 @@ function asyncPopulate(target, source) {
 }
 /* eslint-enable no-underscore-dangle */
 
-},{"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/typeof":20}]},{},[154])(154)
+},{"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/typeof":20}]},{},[155])(155)
 });
