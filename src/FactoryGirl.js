@@ -7,6 +7,7 @@ import AssocAttrsMany from './generators/AssocAttrsMany';
 import ChanceGenerator from './generators/ChanceGenerator';
 import OneOf from './generators/OneOf';
 import DefaultAdapter from './adapters/DefaultAdapter';
+import bluebird from 'bluebird';
 
 export default class FactoryGirl {
   factories = {};
@@ -121,13 +122,17 @@ export default class FactoryGirl {
   }
 
   cleanUp() {
-    const promises = [];
-    for (const [adapter, model] of this.created) {
-      promises.push(adapter.destroy(model, model.constructor));
+    const createdArray = [];
+    for (const c of this.created) {
+      createdArray.push(c);
     }
+    const promise = bluebird.each(
+      createdArray,
+      ([adapter, model]) => adapter.destroy(model, model.constructor)
+    );
     this.created.clear();
     this.resetSeq();
-    return Promise.all(promises);
+    return promise;
   }
 
   setAdapter(adapter, factoryNames = null) {
