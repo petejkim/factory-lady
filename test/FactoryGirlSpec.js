@@ -601,7 +601,7 @@ describe('FactoryGirl', function () {
       expect(Sequence.sequences['some.id.1']).to.exist;
 
 
-      factoryGirl.cleanUp().then(() => {
+      return factoryGirl.cleanUp().then(() => {
         expect(spy1).to.have.callCount(4);
         expect(spy2).to.have.callCount(1);
         expect(spy2).to.have.been.calledWith(dummyModel2, DummyModel);
