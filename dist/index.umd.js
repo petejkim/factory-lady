@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance'), require('bluebird'), require('babel-runtime/core-js/object/assign')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/core-js/object/keys', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance', 'bluebird', 'babel-runtime/core-js/object/assign'], factory) :
-  (factory((global.Factory = global.Factory || {}),global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Set,global._classCallCheck,global._createClass,global._Object$keys,global._typeof,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance,global.bluebird,global._Object$assign));
-}(this, function (exports,_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Set,_classCallCheck,_createClass,_Object$keys,_typeof,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance,bluebird,_Object$assign) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance'), require('babel-runtime/core-js/object/assign')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/core-js/object/keys', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance', 'babel-runtime/core-js/object/assign'], factory) :
+  (factory((global.Factory = global.Factory || {}),global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Set,global._classCallCheck,global._createClass,global._Object$keys,global._typeof,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance,global._Object$assign));
+}(this, function (exports,_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Set,_classCallCheck,_createClass,_Object$keys,_typeof,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance,_Object$assign) { 'use strict';
 
   _slicedToArray = 'default' in _slicedToArray ? _slicedToArray['default'] : _slicedToArray;
   _getIterator = 'default' in _getIterator ? _getIterator['default'] : _getIterator;
@@ -19,7 +19,6 @@
   _possibleConstructorReturn = 'default' in _possibleConstructorReturn ? _possibleConstructorReturn['default'] : _possibleConstructorReturn;
   _inherits = 'default' in _inherits ? _inherits['default'] : _inherits;
   Chance = 'default' in Chance ? Chance['default'] : Chance;
-  bluebird = 'default' in bluebird ? bluebird['default'] : bluebird;
   _Object$assign = 'default' in _Object$assign ? _Object$assign['default'] : _Object$assign;
 
   /* eslint-disable no-underscore-dangle */
@@ -1052,13 +1051,15 @@
           }
         }
 
-        var promise = bluebird.each(createdArray, function (_ref6) {
+        var promise = createdArray.reduce(function (prev, _ref6) {
           var _ref7 = _slicedToArray(_ref6, 2),
               adapter = _ref7[0],
               model = _ref7[1];
 
-          return adapter.destroy(model, model.constructor);
-        });
+          return prev.then(function () {
+            return adapter.destroy(model, model.constructor);
+          });
+        }, _Promise.resolve());
         this.created.clear();
         this.resetSeq();
         return promise;

@@ -13,7 +13,6 @@ import _Object$getPrototypeOf from 'babel-runtime/core-js/object/get-prototype-o
 import _possibleConstructorReturn from 'babel-runtime/helpers/possibleConstructorReturn';
 import _inherits from 'babel-runtime/helpers/inherits';
 import Chance from 'chance';
-import bluebird from 'bluebird';
 import _Object$assign from 'babel-runtime/core-js/object/assign';
 
 /* eslint-disable no-underscore-dangle */
@@ -1046,13 +1045,15 @@ var FactoryGirl = function () {
         }
       }
 
-      var promise = bluebird.each(createdArray, function (_ref6) {
+      var promise = createdArray.reduce(function (prev, _ref6) {
         var _ref7 = _slicedToArray(_ref6, 2),
             adapter = _ref7[0],
             model = _ref7[1];
 
-        return adapter.destroy(model, model.constructor);
-      });
+        return prev.then(function () {
+          return adapter.destroy(model, model.constructor);
+        });
+      }, _Promise.resolve());
       this.created.clear();
       this.resetSeq();
       return promise;

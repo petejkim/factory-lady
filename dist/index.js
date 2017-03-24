@@ -19,7 +19,6 @@ var _Object$getPrototypeOf = _interopDefault(require('babel-runtime/core-js/obje
 var _possibleConstructorReturn = _interopDefault(require('babel-runtime/helpers/possibleConstructorReturn'));
 var _inherits = _interopDefault(require('babel-runtime/helpers/inherits'));
 var Chance = _interopDefault(require('chance'));
-var bluebird = _interopDefault(require('bluebird'));
 var _Object$assign = _interopDefault(require('babel-runtime/core-js/object/assign'));
 
 /* eslint-disable no-underscore-dangle */
@@ -1052,13 +1051,15 @@ var FactoryGirl = function () {
         }
       }
 
-      var promise = bluebird.each(createdArray, function (_ref6) {
+      var promise = createdArray.reduce(function (prev, _ref6) {
         var _ref7 = _slicedToArray(_ref6, 2),
             adapter = _ref7[0],
             model = _ref7[1];
 
-        return adapter.destroy(model, model.constructor);
-      });
+        return prev.then(function () {
+          return adapter.destroy(model, model.constructor);
+        });
+      }, _Promise.resolve());
       this.created.clear();
       this.resetSeq();
       return promise;
