@@ -236,6 +236,24 @@ factory.setAdapter(adapter);
 factory.setAdapter(adapter, 'factory-name');
 ```
 
+### ObjectAdapter
+
+`ObjectAdapter` is a simple adapter that uses `const model = new MyModel()`,
+`model.save()` and `model.destroy()`.
+
+```js
+factory.setAdapter(new factory.ObjectAdapter());
+class MyModel {
+  save() {
+    // save the model
+  },
+  destroy() {
+    // destroy the model
+  }
+}
+factory.define('model', MyModel);
+```
+
 ## Creating new Factories
 
 You can create multiple factories which have different settings:

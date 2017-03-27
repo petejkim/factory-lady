@@ -121,13 +121,18 @@ export default class FactoryGirl {
   }
 
   cleanUp() {
-    const promises = [];
-    for (const [adapter, model] of this.created) {
-      promises.push(adapter.destroy(model, model.constructor));
+    const createdArray = [];
+    for (const c of this.created) {
+      createdArray.push(c);
     }
+    const promise = createdArray.reduce(
+      (prev, [adapter, model]) =>
+        prev.then(() => adapter.destroy(model, model.constructor)),
+      Promise.resolve()
+    );
     this.created.clear();
     this.resetSeq();
-    return Promise.all(promises);
+    return promise;
   }
 
   setAdapter(adapter, factoryNames = null) {

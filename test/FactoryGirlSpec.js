@@ -601,14 +601,15 @@ describe('FactoryGirl', function () {
       expect(Sequence.sequences['some.id.1']).to.exist;
 
 
-      factoryGirl.cleanUp();
-      expect(spy1).to.have.callCount(4);
-      expect(spy2).to.have.callCount(1);
-      expect(spy2).to.have.been.calledWith(dummyModel2, DummyModel);
-      expect(spy3).to.have.callCount(1);
+      return factoryGirl.cleanUp().then(() => {
+        expect(spy1).to.have.callCount(4);
+        expect(spy2).to.have.callCount(1);
+        expect(spy2).to.have.been.calledWith(dummyModel2, DummyModel);
+        expect(spy3).to.have.callCount(1);
 
-      expect(factoryGirl.created.size).to.be.equal(0);
-      expect(Sequence.sequences['some.id.1']).to.not.exist;
+        expect(factoryGirl.created.size).to.be.equal(0);
+        expect(Sequence.sequences['some.id.1']).to.not.exist;
+      });
     });
   });
 });
