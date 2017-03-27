@@ -112,7 +112,7 @@ Currently the supported options are:
 #### `afterBuild: function(model, attrs, buildOptions)`
 
 Provides a function that is called after the model is built.
-The function should return the instance or throw an error. For asynchronous functions, it should return a promise that either resolves with the instance or rejects with the error.
+The function should return the instance or a Promise for the instance.
 
 #### `afterCreate: function(model, attrs, buildOptions)`
 
@@ -249,6 +249,7 @@ class MyModel {
   },
   destroy() {
     // destroy the model
+  }
   }
 }
 factory.define('model', MyModel);
