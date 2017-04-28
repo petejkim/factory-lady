@@ -172,8 +172,6 @@ factory.attrsMany('post', 5, [{title: 'foo1'}, {title: 'foo2'}]).then(postAttrsA
 });
 ```
 
-Refer [API docs](docs/api.md) for complete API documentation.
-
 ### Factory#build
 
 Builds a new model instance that is not persisted.
