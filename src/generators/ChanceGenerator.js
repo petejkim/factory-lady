@@ -5,10 +5,10 @@ import Chance from 'chance';
 const chance = new Chance();
 
 export default class ChanceGenerator extends Generator {
-  generate(chanceMethod, options) {
+  generate(chanceMethod, ...options) {
     if (typeof chance[chanceMethod] !== 'function') {
       throw new Error('Invalid chance method requested');
     }
-    return chance[chanceMethod](options);
+    return chance[chanceMethod](...options);
   }
 }
