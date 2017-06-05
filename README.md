@@ -249,7 +249,6 @@ class MyModel {
   destroy() {
     // destroy the model
   }
-  }
 }
 factory.define('model', MyModel);
 ```
