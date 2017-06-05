@@ -31,5 +31,12 @@ describe('ChanceGenerator', function () {
       const val = await chance.generate('bool', { likelihood: 30 });
       expect(val).to.exist;
     }));
+
+    it('supports multiple parameters', asyncFunction(async function () {
+      const chance = new ChanceGenerator({});
+      const val = await chance.generate('pickset', ['one', 'two', 'three'], 2);
+      expect(val).to.exist;
+      expect(val.length).to.equal(2);
+    }));
   });
 });
