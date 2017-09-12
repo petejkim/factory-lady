@@ -50,9 +50,9 @@ exports.default = function (fn) {
           resolve(value);
         } else {
           return _promise2.default.resolve(value).then(function (value) {
-            return step("next", value);
+            step("next", value);
           }, function (err) {
-            return step("throw", err);
+            step("throw", err);
           });
         }
       }
@@ -240,14 +240,14 @@ var _symbol = require("../core-js/symbol");
 
 var _symbol2 = _interopRequireDefault(_symbol);
 
-var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default ? "symbol" : typeof obj; };
+var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.default) === "symbol" ? function (obj) {
   return typeof obj === "undefined" ? "undefined" : _typeof(obj);
 } : function (obj) {
-  return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
+  return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
 };
 },{"../core-js/symbol":11,"../core-js/symbol/iterator":12}],21:[function(require,module,exports){
 module.exports = require("regenerator-runtime");
@@ -255,6 +255,7 @@ module.exports = require("regenerator-runtime");
 },{"regenerator-runtime":137}],22:[function(require,module,exports){
 'use strict'
 
+exports.byteLength = byteLength
 exports.toByteArray = toByteArray
 exports.fromByteArray = fromByteArray
 
@@ -262,23 +263,17 @@ var lookup = []
 var revLookup = []
 var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-function init () {
-  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-  for (var i = 0, len = code.length; i < len; ++i) {
-    lookup[i] = code[i]
-    revLookup[code.charCodeAt(i)] = i
-  }
-
-  revLookup['-'.charCodeAt(0)] = 62
-  revLookup['_'.charCodeAt(0)] = 63
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
 }
 
-init()
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
 
-function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
+function placeHoldersCount (b64) {
   var len = b64.length
-
   if (len % 4 > 0) {
     throw new Error('Invalid string. Length must be a multiple of 4')
   }
@@ -288,9 +283,19 @@ function toByteArray (b64) {
   // represent one byte
   // if there is only one, then the three characters before it represent 2 bytes
   // this is just a cheap hack to not do indexOf twice
-  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+}
 
+function byteLength (b64) {
   // base64 is 4/3 + up to two characters of the original data
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
+}
+
+function toByteArray (b64) {
+  var i, j, l, tmp, placeHolders, arr
+  var len = b64.length
+  placeHolders = placeHoldersCount(b64)
+
   arr = new Arr(len * 3 / 4 - placeHolders)
 
   // if there are placeholders, only get up to the last complete 4 chars
@@ -2158,7 +2163,7 @@ function isnan (val) {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"base64-js":22,"ieee754":134,"isarray":135}],24:[function(require,module,exports){
 (function (Buffer){
-//  Chance.js 1.0.4
+//  Chance.js 1.0.6
 //  http://chancejs.com
 //  (c) 2013 Victor Quinn
 //  Chance may be freely distributed or modified under the MIT license.
@@ -2222,7 +2227,7 @@ function isnan (val) {
         return this;
     }
 
-    Chance.prototype.VERSION = "1.0.4";
+    Chance.prototype.VERSION = "1.0.6";
 
     // Random helper functions
     function initOptions(options, defaults) {
@@ -2414,6 +2419,27 @@ function isnan (val) {
         testRange(options.min < 0, "Chance: Min cannot be less than zero.");
         return this.integer(options);
     };
+	
+	/**
+     *  Return a random hex number as string
+     *
+     *  NOTE the max and min are INCLUDED in the range. So:
+     *  chance.hex({min: '9', max: 'B'});
+     *  would return either '9', 'A' or 'B'.
+     *
+     *  @param {Object} [options={}] can specify a min and/or max and/or casing
+     *  @returns {String} a single random string hex number
+     *  @throws {RangeError} min cannot be greater than max
+     */
+    Chance.prototype.hex = function (options) {
+        options = initOptions(options, {min: 0, max: MAX_INT, casing: 'lower'});
+        testRange(options.min < 0, "Chance: Min cannot be less than zero.");
+		var integer = this.natural({min: options.min, max: options.max});
+		if (options.casing === 'upper') {
+			return integer.toString(16).toUpperCase();
+		}
+		return integer.toString(16);
+    };
 
     /**
      *  Return a random string
@@ -2593,6 +2619,10 @@ function isnan (val) {
         var val;
         for (var weightIndex = 0; weightIndex < weights.length; ++weightIndex) {
             val = weights[weightIndex];
+            if (isNaN(val)) {
+                throw new RangeError("all weights must be numbers");
+            }
+
             if (val > 0) {
                 sum += val;
             }
@@ -2841,6 +2871,10 @@ function isnan (val) {
     Chance.prototype.first = function (options) {
         options = initOptions(options, {gender: this.gender(), nationality: 'en'});
         return this.pick(this.get("firstNames")[options.gender.toLowerCase()][options.nationality.toLowerCase()]);
+    };
+
+    Chance.prototype.profession = function () {
+        return this.pick(this.get("professions"));
     };
 
     Chance.prototype.gender = function (options) {
@@ -3216,43 +3250,100 @@ function isnan (val) {
      *
      * * Make color uppercase
      * chance.color({casing: 'upper'})  => '#29CFA7'
+	 
+	 * * Min Max values for RGBA
+	 * var light_red = chance.color({format: 'hex', min_red: 200, max_red: 255, max_green: 0, max_blue: 0, min_alpha: .2, max_alpha: .3});
      *
      * @param  [object] options
      * @return [string] color value
      */
     Chance.prototype.color = function (options) {
-
+		function pad(n, width, z) {
+			z = z || '0';
+			n = n + '';
+			return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+		}
+		
         function gray(value, delimiter) {
             return [value, value, value].join(delimiter || '');
         }
 
         function rgb(hasAlpha) {
-
-            var rgbValue    = (hasAlpha)    ? 'rgba' : 'rgb';
-            var alphaChanal = (hasAlpha)    ? (',' + this.floating({min:0, max:1})) : "";
-            var colorValue  = (isGrayscale) ? (gray(this.natural({max: 255}), ',')) : (this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.natural({max: 255}));
-
-            return rgbValue + '(' + colorValue + alphaChanal + ')';
+            var rgbValue     = (hasAlpha)    ? 'rgba' : 'rgb';
+            var alphaChannel = (hasAlpha)    ? (',' + this.floating({min:min_alpha, max:max_alpha})) : "";
+            var colorValue   = (isGrayscale) ? (gray(this.natural({min: min_rgb, max: max_rgb}), ',')) : (this.natural({min: min_green, max: max_green}) + ',' + this.natural({min: min_blue, max: max_blue}) + ',' + this.natural({max: 255}));
+            return rgbValue + '(' + colorValue + alphaChannel + ')';
         }
 
         function hex(start, end, withHash) {
-
-            var simbol = (withHash) ? "#" : "";
-            var expression  = (isGrayscale ? gray(this.hash({length: start})) : this.hash({length: end}));
-            return simbol + expression;
+            var symbol = (withHash) ? "#" : "";
+			var hexstring = "";
+			
+			if (isGrayscale) {
+				hexstring = gray(pad(this.hex({min: min_rgb, max: max_rgb}), 2));
+				if (options.format === "shorthex") {
+					hexstring = gray(this.hex({min: 0, max: 15}));
+					console.log("hex: " + hexstring);
+				}
+			}
+			else {
+				if (options.format === "shorthex") {
+					hexstring = pad(this.hex({min: Math.floor(min_red / 16), max: Math.floor(max_red / 16)}), 1) + pad(this.hex({min: Math.floor(min_green / 16), max: Math.floor(max_green / 16)}), 1) + pad(this.hex({min: Math.floor(min_blue / 16), max: Math.floor(max_blue / 16)}), 1);
+				}
+				else if (min_red !== undefined || max_red !== undefined || min_green !== undefined || max_green !== undefined || min_blue !== undefined || max_blue !== undefined) {
+					hexstring = pad(this.hex({min: min_red, max: max_red}), 2) + pad(this.hex({min: min_green, max: max_green}), 2) + pad(this.hex({min: min_blue, max: max_blue}), 2);
+				}
+				else {
+					hexstring = pad(this.hex({min: min_rgb, max: max_rgb}), 2) + pad(this.hex({min: min_rgb, max: max_rgb}), 2) + pad(this.hex({min: min_rgb, max: max_rgb}), 2);
+				}
+			}
+			
+            return symbol + hexstring;
         }
 
         options = initOptions(options, {
             format: this.pick(['hex', 'shorthex', 'rgb', 'rgba', '0x', 'name']),
             grayscale: false,
-            casing: 'lower'
+            casing: 'lower', 
+			min: 0, 
+			max: 255, 
+			min_red: undefined,
+			max_red: undefined, 
+			min_green: undefined,
+			max_green: undefined, 
+			min_blue: undefined, 
+			max_blue: undefined, 
+			min_alpha: 0,
+			max_alpha: 1
         });
 
         var isGrayscale = options.grayscale;
+		var min_rgb = options.min;
+		var max_rgb = options.max;		
+		var min_red = options.min_red;
+		var max_red = options.max_red;
+		var min_green = options.min_green;
+		var max_green = options.max_green;
+		var min_blue = options.min_blue;
+		var max_blue = options.max_blue;
+		var min_alpha = options.min_alpha;
+		var max_alpha = options.max_alpha;
+		if (options.min_red === undefined) { min_red = min_rgb; }
+		if (options.max_red === undefined) { max_red = max_rgb; }
+		if (options.min_green === undefined) { min_green = min_rgb; }
+		if (options.max_green === undefined) { max_green = max_rgb; }
+		if (options.min_blue === undefined) { min_blue = min_rgb; }
+		if (options.max_blue === undefined) { max_blue = max_rgb; }
+		if (options.min_alpha === undefined) { min_alpha = 0; }
+		if (options.max_alpha === undefined) { max_alpha = 1; }
+		if (isGrayscale && min_rgb === 0 && max_rgb === 255 && min_red !== undefined && max_red !== undefined) {			
+			min_rgb = ((min_red + min_green + min_blue) / 3);
+			max_rgb = ((max_red + max_green + max_blue) / 3);
+		}
         var colorValue;
 
         if (options.format === 'hex') {
-            colorValue =  hex.call(this, 2, 6, true);
+            colorValue = hex.call(this, 2, 6, true);
         }
         else if (options.format === 'shorthex') {
             colorValue = hex.call(this, 1, 3, true);
@@ -3358,6 +3449,10 @@ function isnan (val) {
         var domain = options.domain_prefix ? options.domain_prefix + "." + options.domain : options.domain;
 
         return options.protocol + "://" + domain + "/" + options.path + extension;
+    };
+
+    Chance.prototype.port = function() {
+        return this.integer({min: 0, max: 65535});
     };
 
     // -- End Web --
@@ -3476,6 +3571,7 @@ function isnan (val) {
                 if (!options.mobile) {
                     numPick = this.pick([
                         //valid area codes of major cities/counties followed by random numbers in required format.
+
                         { area: '01' + this.character({ pool: '234569' }) + '1 ', sections: [3,4] },
                         { area: '020 ' + this.character({ pool: '378' }), sections: [3,4] },
                         { area: '023 ' + this.character({ pool: '89' }), sections: [3,4] },
@@ -3499,6 +3595,30 @@ function isnan (val) {
                     phone = options.formatted ? ukNum(numPick) : ukNum(numPick).replace(' ', '');
                 }
                 break;
+            case 'za':
+                if (!options.mobile) {
+                    numPick = this.pick([
+                       '01' + this.pick(['0', '1', '2', '3', '4', '5', '6', '7', '8']) + self.string({ pool: '0123456789', length: 7}),
+                       '02' + this.pick(['1', '2', '3', '4', '7', '8']) + self.string({ pool: '0123456789', length: 7}),
+                       '03' + this.pick(['1', '2', '3', '5', '6', '9']) + self.string({ pool: '0123456789', length: 7}),
+                       '04' + this.pick(['1', '2', '3', '4', '5','6','7', '8','9']) + self.string({ pool: '0123456789', length: 7}),   
+                       '05' + this.pick(['1', '3', '4', '6', '7', '8']) + self.string({ pool: '0123456789', length: 7}),
+                    ]);
+                    phone = options.formatted || numPick;
+                } else {
+                    numPick = this.pick([
+                        '060' + this.pick(['3','4','5','6','7','8','9']) + self.string({ pool: '0123456789', length: 6}),
+                        '061' + this.pick(['0','1','2','3','4','5','8']) + self.string({ pool: '0123456789', length: 6}),
+                        '06'  + self.string({ pool: '0123456789', length: 7}),
+                        '071' + this.pick(['0','1','2','3','4','5','6','7','8','9']) + self.string({ pool: '0123456789', length: 6}),
+                        '07'  + this.pick(['2','3','4','6','7','8','9']) + self.string({ pool: '0123456789', length: 7}),
+                        '08'  + this.pick(['0','1','2','3','4','5']) + self.string({ pool: '0123456789', length: 7}),                     
+                    ]);
+                    phone = options.formatted || numPick;
+                }
+                
+                break;
+
             case 'us':
                 var areacode = this.areacode(options).toString();
                 var exchange = this.natural({ min: 2, max: 9 }).toString() +
@@ -3929,6 +4049,21 @@ function isnan (val) {
         }
     };
 
+    /**
+     * Generate a string matching IBAN pattern (https://en.wikipedia.org/wiki/International_Bank_Account_Number). 
+     * No country-specific formats support (yet)
+     */
+    Chance.prototype.iban = function () {
+        var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var alphanum = alpha + '0123456789';
+        var iban = 
+            this.string({ length: 2, pool: alpha }) + 
+            this.pad(this.integer({ min: 0, max: 99 }), 2) + 
+            this.string({ length: 4, pool: alphanum }) + 
+            this.pad(this.natural(), this.natural({ min: 6, max: 26 }));
+        return iban;
+    };
+
     // -- End Finance
 
     // -- Regional
@@ -4185,58 +4320,58 @@ function isnan (val) {
     /**
      * #Description:
      * =====================================================
-     * Generate random file name with extention
+     * Generate random file name with extension
      *
-     * The argument provide extention type
+     * The argument provide extension type
      * -> raster
      * -> vector
      * -> 3d
      * -> document
      *
-     * If noting is provided the function return random file name with random
-     * extention type of any kind
+     * If nothing is provided the function return random file name with random
+     * extension type of any kind
      *
      * The user can validate the file name length range
-     * If noting provided the generated file name is radom
+     * If nothing provided the generated file name is random
      *
-     * #Extention Pool :
-     * * Currently the supported extentions are
-     *  -> some of the most popular raster image extentions
-     *  -> some of the most popular vector image extentions
-     *  -> some of the most popular 3d image extentions
-     *  -> some of the most popular document extentions
+     * #Extension Pool :
+     * * Currently the supported extensions are
+     *  -> some of the most popular raster image extensions
+     *  -> some of the most popular vector image extensions
+     *  -> some of the most popular 3d image extensions
+     *  -> some of the most popular document extensions
      *
      * #Examples :
      * =====================================================
      *
-     * Return random file name with random extention. The file extention
-     * is provided by a predifined collection of extentions. More abouth the extention
-     * pool can be fond in #Extention Pool section
+     * Return random file name with random extension. The file extension
+     * is provided by a predefined collection of extensions. More about the extension
+     * pool can be found in #Extension Pool section
      *
      * chance.file()
      * => dsfsdhjf.xml
      *
-     * In order to generate a file name with sspecific length, specify the
-     * length property and integer value. The extention is going to be random
+     * In order to generate a file name with specific length, specify the
+     * length property and integer value. The extension is going to be random
      *
      * chance.file({length : 10})
      * => asrtineqos.pdf
      *
-     * In order to geerate file with extention form some of the predifined groups
-     * of the extention pool just specify the extenton pool category in fileType property
+     * In order to generate file with extension from some of the predefined groups
+     * of the extension pool just specify the extension pool category in fileType property
      *
      * chance.file({fileType : 'raster'})
      * => dshgssds.psd
      *
-     * You can provide specific extention for your files
-     * chance.file({extention : 'html'})
+     * You can provide specific extension for your files
+     * chance.file({extension : 'html'})
      * => djfsd.html
      *
-     * Or you could pass custom collection of extentons bt array or by object
-     * chance.file({extentions : [...]})
+     * Or you could pass custom collection of extensions by array or by object
+     * chance.file({extensions : [...]})
      * => dhgsdsd.psd
      *
-     * chance.file({extentions : { key : [...], key : [...]}})
+     * chance.file({extensions : { key : [...], key : [...]}})
      * => djsfksdjsd.xml
      *
      * @param  [collection] options
@@ -4249,54 +4384,54 @@ function isnan (val) {
         var poolCollectionKey = "fileExtension";
         var typeRange   = Object.keys(this.get("fileExtension"));//['raster', 'vector', '3d', 'document'];
         var fileName;
-        var fileExtention;
+        var fileExtension;
 
         // Generate random file name
         fileName = this.word({length : fileOptions.length});
 
-        // Generate file by specific extention provided by the user
-        if(fileOptions.extention) {
+        // Generate file by specific extension provided by the user
+        if(fileOptions.extension) {
 
-            fileExtention = fileOptions.extention;
-            return (fileName + '.' + fileExtention);
+            fileExtension = fileOptions.extension;
+            return (fileName + '.' + fileExtension);
         }
 
-        // Generate file by specific axtention collection
-        if(fileOptions.extentions) {
+        // Generate file by specific extension collection
+        if(fileOptions.extensions) {
 
-            if(Array.isArray(fileOptions.extentions)) {
+            if(Array.isArray(fileOptions.extensions)) {
 
-                fileExtention = this.pickone(fileOptions.extentions);
-                return (fileName + '.' + fileExtention);
+                fileExtension = this.pickone(fileOptions.extensions);
+                return (fileName + '.' + fileExtension);
             }
-            else if(fileOptions.extentions.constructor === Object) {
+            else if(fileOptions.extensions.constructor === Object) {
 
-                var extentionObjectCollection = fileOptions.extentions;
-                var keys = Object.keys(extentionObjectCollection);
+                var extensionObjectCollection = fileOptions.extensions;
+                var keys = Object.keys(extensionObjectCollection);
 
-                fileExtention = this.pickone(extentionObjectCollection[this.pickone(keys)]);
-                return (fileName + '.' + fileExtention);
+                fileExtension = this.pickone(extensionObjectCollection[this.pickone(keys)]);
+                return (fileName + '.' + fileExtension);
             }
 
             throw new Error("Expect collection of type Array or Object to be passed as an argument ");
         }
 
-        // Generate file extention based on specific file type
+        // Generate file extension based on specific file type
         if(fileOptions.fileType) {
 
             var fileType = fileOptions.fileType;
             if(typeRange.indexOf(fileType) !== -1) {
 
-                fileExtention = this.pickone(this.get(poolCollectionKey)[fileType]);
-                return (fileName + '.' + fileExtention);
+                fileExtension = this.pickone(this.get(poolCollectionKey)[fileType]);
+                return (fileName + '.' + fileExtension);
             }
 
             throw new Error("Expect file type value to be 'raster', 'vector', '3d' or 'document' ");
         }
 
-        // Generate random file name if no extenton options are passed
-        fileExtention = this.pickone(this.get(poolCollectionKey)[this.pickone(typeRange)]);
-        return (fileName + '.' + fileExtention);
+        // Generate random file name if no extension options are passed
+        fileExtension = this.pickone(this.get(poolCollectionKey)[this.pickone(typeRange)]);
+        return (fileName + '.' + fileExtension);
     };
 
     var data = {
@@ -4308,7 +4443,7 @@ function isnan (val) {
                 "it": ["Adolfo", "Alberto", "Aldo", "Alessandro", "Alessio", "Alfredo", "Alvaro", "Andrea", "Angelo", "Angiolo", "Antonino", "Antonio", "Attilio", "Benito", "Bernardo", "Bruno", "Carlo", "Cesare", "Christian", "Claudio", "Corrado", "Cosimo", "Cristian", "Cristiano", "Daniele", "Dario", "David", "Davide", "Diego", "Dino", "Domenico", "Duccio", "Edoardo", "Elia", "Elio", "Emanuele", "Emiliano", "Emilio", "Enrico", "Enzo", "Ettore", "Fabio", "Fabrizio", "Federico", "Ferdinando", "Fernando", "Filippo", "Francesco", "Franco", "Gabriele", "Giacomo", "Giampaolo", "Giampiero", "Giancarlo", "Gianfranco", "Gianluca", "Gianmarco", "Gianni", "Gino", "Giorgio", "Giovanni", "Giuliano", "Giulio", "Giuseppe", "Graziano", "Gregorio", "Guido", "Iacopo", "Jacopo", "Lapo", "Leonardo", "Lorenzo", "Luca", "Luciano", "Luigi", "Manuel", "Marcello", "Marco", "Marino", "Mario", "Massimiliano", "Massimo", "Matteo", "Mattia", "Maurizio", "Mauro", "Michele", "Mirko", "Mohamed", "Nello", "Neri", "Niccolò", "Nicola", "Osvaldo", "Otello", "Paolo", "Pier Luigi", "Piero", "Pietro", "Raffaele", "Remo", "Renato", "Renzo", "Riccardo", "Roberto", "Rolando", "Romano", "Salvatore", "Samuele", "Sandro", "Sergio", "Silvano", "Simone", "Stefano", "Thomas", "Tommaso", "Ubaldo", "Ugo", "Umberto", "Valerio", "Valter", "Vasco", "Vincenzo", "Vittorio"]
             },
             "female": {
-                "en": ["Mary", "Emma", "Elizabeth", "Minnie", "Margaret", "Ida", "Alice", "Bertha", "Sarah", "Annie", "Clara", "Ella", "Florence", "Cora", "Martha", "Laura", "Nellie", "Grace", "Carrie", "Maude", "Mabel", "Bessie", "Jennie", "Gertrude", "Julia", "Hattie", "Edith", "Mattie", "Rose", "Catherine", "Lillian", "Ada", "Lillie", "Helen", "Jessie", "Louise", "Ethel", "Lula", "Myrtle", "Eva", "Frances", "Lena", "Lucy", "Edna", "Maggie", "Pearl", "Daisy", "Fannie", "Josephine", "Dora", "Rosa", "Katherine", "Agnes", "Marie", "Nora", "May", "Mamie", "Blanche", "Stella", "Ellen", "Nancy", "Effie", "Sallie", "Nettie", "Della", "Lizzie", "Flora", "Susie", "Maud", "Mae", "Etta", "Harriet", "Sadie", "Caroline", "Katie", "Lydia", "Elsie", "Kate", "Susan", "Mollie", "Alma", "Addie", "Georgia", "Eliza", "Lulu", "Nannie", "Lottie", "Amanda", "Belle", "Charlotte", "Rebecca", "Ruth", "Viola", "Olive", "Amelia", "Hannah", "Jane", "Virginia", "Emily", "Matilda", "Irene", "Kathryn", "Esther", "Willie", "Henrietta", "Ollie", "Amy", "Rachel", "Sara", "Estella", "Theresa", "Augusta", "Ora", "Pauline", "Josie", "Lola", "Sophia", "Leona", "Anne", "Mildred", "Ann", "Beulah", "Callie", "Lou", "Delia", "Eleanor", "Barbara", "Iva", "Louisa", "Maria", "Mayme", "Evelyn", "Estelle", "Nina", "Betty", "Marion", "Bettie", "Dorothy", "Luella", "Inez", "Lela", "Rosie", "Allie", "Millie", "Janie", "Cornelia", "Victoria", "Ruby", "Winifred", "Alta", "Celia", "Christine", "Beatrice", "Birdie", "Harriett", "Mable", "Myra", "Sophie", "Tillie", "Isabel", "Sylvia", "Carolyn", "Isabelle", "Leila", "Sally", "Ina", "Essie", "Bertie", "Nell", "Alberta", "Katharine", "Lora", "Rena", "Mina", "Rhoda", "Mathilda", "Abbie", "Eula", "Dollie", "Hettie", "Eunice", "Fanny", "Ola", "Lenora", "Adelaide", "Christina", "Lelia", "Nelle", "Sue", "Johanna", "Lilly", "Lucinda", "Minerva", "Lettie", "Roxie", "Cynthia", "Helena", "Hilda", "Hulda", "Bernice", "Genevieve", "Jean", "Cordelia", "Marian", "Francis", "Jeanette", "Adeline", "Gussie", "Leah", "Lois", "Lura", "Mittie", "Hallie", "Isabella", "Olga", "Phoebe", "Teresa", "Hester", "Lida", "Lina", "Winnie", "Claudia", "Marguerite", "Vera", "Cecelia", "Bess", "Emilie", "John", "Rosetta", "Verna", "Myrtie", "Cecilia", "Elva", "Olivia", "Ophelia", "Georgie", "Elnora", "Violet", "Adele", "Lily", "Linnie", "Loretta", "Madge", "Polly", "Virgie", "Eugenia", "Lucile", "Lucille", "Mabelle", "Rosalie"],
+                "en": ["Mary", "Emma", "Elizabeth", "Minnie", "Margaret", "Ida", "Alice", "Bertha", "Sarah", "Annie", "Clara", "Ella", "Florence", "Cora", "Martha", "Laura", "Nellie", "Grace", "Carrie", "Maude", "Mabel", "Bessie", "Jennie", "Gertrude", "Julia", "Hattie", "Edith", "Mattie", "Rose", "Catherine", "Lillian", "Ada", "Lillie", "Helen", "Jessie", "Louise", "Ethel", "Lula", "Myrtle", "Eva", "Frances", "Lena", "Lucy", "Edna", "Maggie", "Pearl", "Daisy", "Fannie", "Josephine", "Dora", "Rosa", "Katherine", "Agnes", "Marie", "Nora", "May", "Mamie", "Blanche", "Stella", "Ellen", "Nancy", "Effie", "Sallie", "Nettie", "Della", "Lizzie", "Flora", "Susie", "Maud", "Mae", "Etta", "Harriet", "Sadie", "Caroline", "Katie", "Lydia", "Elsie", "Kate", "Susan", "Mollie", "Alma", "Addie", "Georgia", "Eliza", "Lulu", "Nannie", "Lottie", "Amanda", "Belle", "Charlotte", "Rebecca", "Ruth", "Viola", "Olive", "Amelia", "Hannah", "Jane", "Virginia", "Emily", "Matilda", "Irene", "Kathryn", "Esther", "Willie", "Henrietta", "Ollie", "Amy", "Rachel", "Sara", "Estella", "Theresa", "Augusta", "Ora", "Pauline", "Josie", "Lola", "Sophia", "Leona", "Anne", "Mildred", "Ann", "Beulah", "Callie", "Lou", "Delia", "Eleanor", "Barbara", "Iva", "Louisa", "Maria", "Mayme", "Evelyn", "Estelle", "Nina", "Betty", "Marion", "Bettie", "Dorothy", "Luella", "Inez", "Lela", "Rosie", "Allie", "Millie", "Janie", "Cornelia", "Victoria", "Ruby", "Winifred", "Alta", "Celia", "Christine", "Beatrice", "Birdie", "Harriett", "Mable", "Myra", "Sophie", "Tillie", "Isabel", "Sylvia", "Carolyn", "Isabelle", "Leila", "Sally", "Ina", "Essie", "Bertie", "Nell", "Alberta", "Katharine", "Lora", "Rena", "Mina", "Rhoda", "Mathilda", "Abbie", "Eula", "Dollie", "Hettie", "Eunice", "Fanny", "Ola", "Lenora", "Adelaide", "Christina", "Lelia", "Nelle", "Sue", "Johanna", "Lilly", "Lucinda", "Minerva", "Lettie", "Roxie", "Cynthia", "Helena", "Hilda", "Hulda", "Bernice", "Genevieve", "Jean", "Cordelia", "Marian", "Francis", "Jeanette", "Adeline", "Gussie", "Leah", "Lois", "Lura", "Mittie", "Hallie", "Isabella", "Olga", "Phoebe", "Teresa", "Hester", "Lida", "Lina", "Winnie", "Claudia", "Marguerite", "Vera", "Cecelia", "Bess", "Emilie", "Rosetta", "Verna", "Myrtie", "Cecilia", "Elva", "Olivia", "Ophelia", "Georgie", "Elnora", "Violet", "Adele", "Lily", "Linnie", "Loretta", "Madge", "Polly", "Virgie", "Eugenia", "Lucile", "Lucille", "Mabelle", "Rosalie"],
                 // Data taken from http://www.dati.gov.it/dataset/comune-di-firenze_0162
                 "it": ["Ada", "Adriana", "Alessandra", "Alessia", "Alice", "Angela", "Anna", "Anna Maria", "Annalisa", "Annita", "Annunziata", "Antonella", "Arianna", "Asia", "Assunta", "Aurora", "Barbara", "Beatrice", "Benedetta", "Bianca", "Bruna", "Camilla", "Carla", "Carlotta", "Carmela", "Carolina", "Caterina", "Catia", "Cecilia", "Chiara", "Cinzia", "Clara", "Claudia", "Costanza", "Cristina", "Daniela", "Debora", "Diletta", "Dina", "Donatella", "Elena", "Eleonora", "Elisa", "Elisabetta", "Emanuela", "Emma", "Eva", "Federica", "Fernanda", "Fiorella", "Fiorenza", "Flora", "Franca", "Francesca", "Gabriella", "Gaia", "Gemma", "Giada", "Gianna", "Gina", "Ginevra", "Giorgia", "Giovanna", "Giulia", "Giuliana", "Giuseppa", "Giuseppina", "Grazia", "Graziella", "Greta", "Ida", "Ilaria", "Ines", "Iolanda", "Irene", "Irma", "Isabella", "Jessica", "Laura", "Leda", "Letizia", "Licia", "Lidia", "Liliana", "Lina", "Linda", "Lisa", "Livia", "Loretta", "Luana", "Lucia", "Luciana", "Lucrezia", "Luisa", "Manuela", "Mara", "Marcella", "Margherita", "Maria", "Maria Cristina", "Maria Grazia", "Maria Luisa", "Maria Pia", "Maria Teresa", "Marina", "Marisa", "Marta", "Martina", "Marzia", "Matilde", "Melissa", "Michela", "Milena", "Mirella", "Monica", "Natalina", "Nella", "Nicoletta", "Noemi", "Olga", "Paola", "Patrizia", "Piera", "Pierina", "Raffaella", "Rebecca", "Renata", "Rina", "Rita", "Roberta", "Rosa", "Rosanna", "Rossana", "Rossella", "Sabrina", "Sandra", "Sara", "Serena", "Silvana", "Silvia", "Simona", "Simonetta", "Sofia", "Sonia", "Stefania", "Susanna", "Teresa", "Tina", "Tiziana", "Tosca", "Valentina", "Valeria", "Vanda", "Vanessa", "Vanna", "Vera", "Veronica", "Vilma", "Viola", "Virginia", "Vittoria"]
             }
@@ -4327,6 +4462,9 @@ function isnan (val) {
             // Data taken from http://www.downloadexcelfiles.com/gb_en/download-excel-file-list-counties-uk
             "uk": [
                 {name: 'Bath and North East Somerset'},
+                {name: 'Aberdeenshire'},
+                {name: 'Anglesey'},
+                {name: 'Angus'},
                 {name: 'Bedford'},
                 {name: 'Blackburn with Darwen'},
                 {name: 'Blackpool'},
@@ -4336,28 +4474,49 @@ function isnan (val) {
                 {name: 'Bristol'},
                 {name: 'Buckinghamshire'},
                 {name: 'Cambridgeshire'},
+                {name: 'Carmarthenshire'},
                 {name: 'Central Bedfordshire'},
+                {name: 'Ceredigion'},
                 {name: 'Cheshire East'},
                 {name: 'Cheshire West and Chester'},
+                {name: 'Clackmannanshire'},
+                {name: 'Conwy'},
                 {name: 'Cornwall'},
+                {name: 'County Antrim'},
+                {name: 'County Armagh'},
+                {name: 'County Down'},
                 {name: 'County Durham'},
+                {name: 'County Fermanagh'},
+                {name: 'County Londonderry'},
+                {name: 'County Tyrone'},
                 {name: 'Cumbria'},
                 {name: 'Darlington'},
+                {name: 'Denbighshire'},
                 {name: 'Derby'},
                 {name: 'Derbyshire'},
                 {name: 'Devon'},
                 {name: 'Dorset'},
+                {name: 'Dumfries and Galloway'},
+                {name: 'Dundee'},
+                {name: 'East Lothian'},
                 {name: 'East Riding of Yorkshire'},
                 {name: 'East Sussex'},
+                {name: 'Edinburgh?'},
                 {name: 'Essex'},
+                {name: 'Falkirk'},
+                {name: 'Fife'},
+                {name: 'Flintshire'},
                 {name: 'Gloucestershire'},
                 {name: 'Greater London'},
                 {name: 'Greater Manchester'},
+                {name: 'Gwent'},
+                {name: 'Gwynedd'},
                 {name: 'Halton'},
                 {name: 'Hampshire'},
                 {name: 'Hartlepool'},
                 {name: 'Herefordshire'},
                 {name: 'Hertfordshire'},
+                {name: 'Highlands'},
                 {name: 'Hull'},
                 {name: 'Isle of Wight'},
                 {name: 'Isles of Scilly'},
@@ -4366,11 +4525,15 @@ function isnan (val) {
                 {name: 'Leicester'},
                 {name: 'Leicestershire'},
                 {name: 'Lincolnshire'},
+                {name: 'Lothian'},
                 {name: 'Luton'},
                 {name: 'Medway'},
                 {name: 'Merseyside'},
+                {name: 'Mid Glamorgan'},
                 {name: 'Middlesbrough'},
                 {name: 'Milton Keynes'},
+                {name: 'Monmouthshire'},
+                {name: 'Moray'},
                 {name: 'Norfolk'},
                 {name: 'North East Lincolnshire'},
                 {name: 'North Lincolnshire'},
@@ -4381,23 +4544,30 @@ function isnan (val) {
                 {name: 'Nottingham'},
                 {name: 'Nottinghamshire'},
                 {name: 'Oxfordshire'},
+                {name: 'Pembrokeshire'},
+                {name: 'Perth and Kinross'},
                 {name: 'Peterborough'},
                 {name: 'Plymouth'},
                 {name: 'Poole'},
                 {name: 'Portsmouth'},
+                {name: 'Powys'},
                 {name: 'Reading'},
                 {name: 'Redcar and Cleveland'},
                 {name: 'Rutland'},
+                {name: 'Scottish Borders'},
                 {name: 'Shropshire'},
                 {name: 'Slough'},
                 {name: 'Somerset'},
+                {name: 'South Glamorgan'},
                 {name: 'South Gloucestershire'},
                 {name: 'South Yorkshire'},
                 {name: 'Southampton'},
                 {name: 'Southend-on-Sea'},
                 {name: 'Staffordshire'},
+                {name: 'Stirlingshire'},
                 {name: 'Stockton-on-Tees'},
                 {name: 'Stoke-on-Trent'},
+                {name: 'Strathclyde'},
                 {name: 'Suffolk'},
                 {name: 'Surrey'},
                 {name: 'Swindon'},
@@ -4408,13 +4578,17 @@ function isnan (val) {
                 {name: 'Warrington'},
                 {name: 'Warwickshire'},
                 {name: 'West Berkshire'},
+                {name: 'West Glamorgan'},
+                {name: 'West Lothian'},
                 {name: 'West Midlands'},
                 {name: 'West Sussex'},
                 {name: 'West Yorkshire'},
+                {name: 'Western Isles'},
                 {name: 'Wiltshire'},
                 {name: 'Windsor and Maidenhead'},
                 {name: 'Wokingham'},
                 {name: 'Worcestershire'},
+                {name: 'Wrexham'},
                 {name: 'York'}]
 				},
         provinces: {
@@ -4950,6 +5124,27 @@ function isnan (val) {
                 { name: 'Viale', abbreviation: 'V.le' },
                 { name: 'Vicinale', abbreviation: 'Vic.le' },
                 { name: 'Vicolo', abbreviation: 'Vic.' }
+            ],
+            'uk' : [
+                {name: 'Avenue', abbreviation: 'Ave'},
+                {name: 'Close', abbreviation: 'Cl'},
+                {name: 'Court', abbreviation: 'Ct'},
+                {name: 'Crescent', abbreviation: 'Cr'},
+                {name: 'Drive', abbreviation: 'Dr'},
+                {name: 'Garden', abbreviation: 'Gdn'},
+                {name: 'Gardens', abbreviation: 'Gdns'},
+                {name: 'Green', abbreviation: 'Gn'},
+                {name: 'Grove', abbreviation: 'Gr'},
+                {name: 'Lane', abbreviation: 'Ln'},
+                {name: 'Mount', abbreviation: 'Mt'},
+                {name: 'Place', abbreviation: 'Pl'},
+                {name: 'Park', abbreviation: 'Pk'},
+                {name: 'Ridge', abbreviation: 'Rdg'},
+                {name: 'Road', abbreviation: 'Rd'},
+                {name: 'Square', abbreviation: 'Sq'},
+                {name: 'Street', abbreviation: 'St'},
+                {name: 'Terrace', abbreviation: 'Ter'},
+                {name: 'Valley', abbreviation: 'Val'}
             ]
         },
 
@@ -6519,7 +6714,399 @@ function isnan (val) {
                       "Pacific/Apia"
                     ]
                   }
-                ]
+                ],
+        //List source: http://answers.google.com/answers/threadview/id/589312.html
+        profession: [
+            "Airline Pilot",
+            "Academic Team",
+            "Accountant",
+            "Account Executive",
+            "Actor",
+            "Actuary",
+            "Acquisition Analyst",
+            "Administrative Asst.",
+            "Administrative Analyst",
+            "Administrator",
+            "Advertising Director",
+            "Aerospace Engineer",
+            "Agent",
+            "Agricultural Inspector",
+            "Agricultural Scientist",
+            "Air Traffic Controller",
+            "Animal Trainer",
+            "Anthropologist",
+            "Appraiser",
+            "Architect",
+            "Art Director",
+            "Artist",
+            "Astronomer",
+            "Athletic Coach",
+            "Auditor",
+            "Author",
+            "Baker",
+            "Banker",
+            "Bankruptcy Attorney",
+            "Benefits Manager",
+            "Biologist",
+            "Bio-feedback Specialist",
+            "Biomedical Engineer",
+            "Biotechnical Researcher",
+            "Broadcaster",
+            "Broker",
+            "Building Manager",
+            "Building Contractor",
+            "Building Inspector",
+            "Business Analyst",
+            "Business Planner",
+            "Business Manager",
+            "Buyer",
+            "Call Center Manager",
+            "Career Counselor",
+            "Cash Manager",
+            "Ceramic Engineer",
+            "Chief Executive Officer",
+            "Chief Operation Officer",
+            "Chef",
+            "Chemical Engineer",
+            "Chemist",
+            "Child Care Manager",
+            "Chief Medical Officer",
+            "Chiropractor",
+            "Cinematographer",
+            "City Housing Manager",
+            "City Manager",
+            "Civil Engineer",
+            "Claims Manager",
+            "Clinical Research Assistant",
+            "Collections Manager.",
+            "Compliance Manager",
+            "Comptroller",
+            "Computer Manager",
+            "Commercial Artist",
+            "Communications Affairs Director",
+            "Communications Director",
+            "Communications Engineer",
+            "Compensation Analyst",
+            "Computer Programmer",
+            "Computer Ops. Manager",
+            "Computer Engineer",
+            "Computer Operator",
+            "Computer Graphics Specialist",
+            "Construction Engineer",
+            "Construction Manager",
+            "Consultant",
+            "Consumer Relations Manager",
+            "Contract Administrator",
+            "Copyright Attorney",
+            "Copywriter",
+            "Corporate Planner",
+            "Corrections Officer",
+            "Cosmetologist",
+            "Credit Analyst",
+            "Cruise Director",
+            "Chief Information Officer",
+            "Chief Technology Officer",
+            "Customer Service Manager",
+            "Cryptologist",
+            "Dancer",
+            "Data Security Manager",
+            "Database Manager",
+            "Day Care Instructor",
+            "Dentist",
+            "Designer",
+            "Design Engineer",
+            "Desktop Publisher",
+            "Developer",
+            "Development Officer",
+            "Diamond Merchant",
+            "Dietitian",
+            "Direct Marketer",
+            "Director",
+            "Distribution Manager",
+            "Diversity Manager",
+            "Economist",
+            "EEO Compliance Manager",
+            "Editor",
+            "Education Adminator",
+            "Electrical Engineer",
+            "Electro Optical Engineer",
+            "Electronics Engineer",
+            "Embassy Management",
+            "Employment Agent",
+            "Engineer Technician",
+            "Entrepreneur",
+            "Environmental Analyst",
+            "Environmental Attorney",
+            "Environmental Engineer",
+            "Environmental Specialist",
+            "Escrow Officer",
+            "Estimator",
+            "Executive Assistant",
+            "Executive Director",
+            "Executive Recruiter",
+            "Facilities Manager",
+            "Family Counselor",
+            "Fashion Events Manager",
+            "Fashion Merchandiser",
+            "Fast Food Manager",
+            "Film Producer",
+            "Film Production Assistant",
+            "Financial Analyst",
+            "Financial Planner",
+            "Financier",
+            "Fine Artist",
+            "Wildlife Specialist",
+            "Fitness Consultant",
+            "Flight Attendant",
+            "Flight Engineer",
+            "Floral Designer",
+            "Food & Beverage Director",
+            "Food Service Manager",
+            "Forestry Technician",
+            "Franchise Management",
+            "Franchise Sales",
+            "Fraud Investigator",
+            "Freelance Writer",
+            "Fund Raiser",
+            "General Manager",
+            "Geologist",
+            "General Counsel",
+            "Geriatric Specialist",
+            "Gerontologist",
+            "Glamour Photographer",
+            "Golf Club Manager",
+            "Gourmet Chef",
+            "Graphic Designer",
+            "Grounds Keeper",
+            "Hazardous Waste Manager",
+            "Health Care Manager",
+            "Health Therapist",
+            "Health Service Administrator",
+            "Hearing Officer",
+            "Home Economist",
+            "Horticulturist",
+            "Hospital Administrator",
+            "Hotel Manager",
+            "Human Resources Manager",
+            "Importer",
+            "Industrial Designer",
+            "Industrial Engineer",
+            "Information Director",
+            "Inside Sales",
+            "Insurance Adjuster",
+            "Interior Decorator",
+            "Internal Controls Director",
+            "International Acct.",
+            "International Courier",
+            "International Lawyer",
+            "Interpreter",
+            "Investigator",
+            "Investment Banker",
+            "Investment Manager",
+            "IT Architect",
+            "IT Project Manager",
+            "IT Systems Analyst",
+            "Jeweler",
+            "Joint Venture Manager",
+            "Journalist",
+            "Labor Negotiator",
+            "Labor Organizer",
+            "Labor Relations Manager",
+            "Lab Services Director",
+            "Lab Technician",
+            "Land Developer",
+            "Landscape Architect",
+            "Law Enforcement Officer",
+            "Lawyer",
+            "Lead Software Engineer",
+            "Lead Software Test Engineer",
+            "Leasing Manager",
+            "Legal Secretary",
+            "Library Manager",
+            "Litigation Attorney",
+            "Loan Officer",
+            "Lobbyist",
+            "Logistics Manager",
+            "Maintenance Manager",
+            "Management Consultant",
+            "Managed Care Director",
+            "Managing Partner",
+            "Manufacturing Director",
+            "Manpower Planner",
+            "Marine Biologist",
+            "Market Res. Analyst",
+            "Marketing Director",
+            "Materials Manager",
+            "Mathematician",
+            "Membership Chairman",
+            "Mechanic",
+            "Mechanical Engineer",
+            "Media Buyer",
+            "Medical Investor",
+            "Medical Secretary",
+            "Medical Technician",
+            "Mental Health Counselor",
+            "Merchandiser",
+            "Metallurgical Engineering",
+            "Meteorologist",
+            "Microbiologist",
+            "MIS Manager",
+            "Motion Picture Director",
+            "Multimedia Director",
+            "Musician",
+            "Network Administrator",
+            "Network Specialist",
+            "Network Operator",
+            "New Product Manager",
+            "Novelist",
+            "Nuclear Engineer",
+            "Nuclear Specialist",
+            "Nutritionist",
+            "Nursing Administrator",
+            "Occupational Therapist",
+            "Oceanographer",
+            "Office Manager",
+            "Operations Manager",
+            "Operations Research Director",
+            "Optical Technician",
+            "Optometrist",
+            "Organizational Development Manager",
+            "Outplacement Specialist",
+            "Paralegal",
+            "Park Ranger",
+            "Patent Attorney",
+            "Payroll Specialist",
+            "Personnel Specialist",
+            "Petroleum Engineer",
+            "Pharmacist",
+            "Photographer",
+            "Physical Therapist",
+            "Physician",
+            "Physician Assistant",
+            "Physicist",
+            "Planning Director",
+            "Podiatrist",
+            "Political Analyst",
+            "Political Scientist",
+            "Politician",
+            "Portfolio Manager",
+            "Preschool Management",
+            "Preschool Teacher",
+            "Principal",
+            "Private Banker",
+            "Private Investigator",
+            "Probation Officer",
+            "Process Engineer",
+            "Producer",
+            "Product Manager",
+            "Product Engineer",
+            "Production Engineer",
+            "Production Planner",
+            "Professional Athlete",
+            "Professional Coach",
+            "Professor",
+            "Project Engineer",
+            "Project Manager",
+            "Program Manager",
+            "Property Manager",
+            "Public Administrator",
+            "Public Safety Director",
+            "PR Specialist",
+            "Publisher",
+            "Purchasing Agent",
+            "Publishing Director",
+            "Quality Assurance Specialist",
+            "Quality Control Engineer",
+            "Quality Control Inspector",
+            "Radiology Manager",
+            "Railroad Engineer",
+            "Real Estate Broker",
+            "Recreational Director",
+            "Recruiter",
+            "Redevelopment Specialist",
+            "Regulatory Affairs Manager",
+            "Registered Nurse",
+            "Rehabilitation Counselor",
+            "Relocation Manager",
+            "Reporter",
+            "Research Specialist",
+            "Restaurant Manager",
+            "Retail Store Manager",
+            "Risk Analyst",
+            "Safety Engineer",
+            "Sales Engineer",
+            "Sales Trainer",
+            "Sales Promotion Manager",
+            "Sales Representative",
+            "Sales Manager",
+            "Service Manager",
+            "Sanitation Engineer",
+            "Scientific Programmer",
+            "Scientific Writer",
+            "Securities Analyst",
+            "Security Consultant",
+            "Security Director",
+            "Seminar Presenter",
+            "Ship's Officer",
+            "Singer",
+            "Social Director",
+            "Social Program Planner",
+            "Social Research",
+            "Social Scientist",
+            "Social Worker",
+            "Sociologist",
+            "Software Developer",
+            "Software Engineer",
+            "Software Test Engineer",
+            "Soil Scientist",
+            "Special Events Manager",
+            "Special Education Teacher",
+            "Special Projects Director",
+            "Speech Pathologist",
+            "Speech Writer",
+            "Sports Event Manager",
+            "Statistician",
+            "Store Manager",
+            "Strategic Alliance Director",
+            "Strategic Planning Director",
+            "Stress Reduction Specialist",
+            "Stockbroker",
+            "Surveyor",
+            "Structural Engineer",
+            "Superintendent",
+            "Supply Chain Director",
+            "System Engineer",
+            "Systems Analyst",
+            "Systems Programmer",
+            "System Administrator",
+            "Tax Specialist",
+            "Teacher",
+            "Technical Support Specialist",
+            "Technical Illustrator",
+            "Technical Writer",
+            "Technology Director",
+            "Telecom Analyst",
+            "Telemarketer",
+            "Theatrical Director",
+            "Title Examiner",
+            "Tour Escort",
+            "Tour Guide Director",
+            "Traffic Manager",
+            "Trainer Translator",
+            "Transportation Manager",
+            "Travel Agent",
+            "Treasurer",
+            "TV Programmer",
+            "Underwriter",
+            "Union Representative",
+            "University Administrator",
+            "University Dean",
+            "Urban Planner",
+            "Veterinarian",
+            "Vendor Relations Director",
+            "Viticulturist",
+            "Warehouse Manager"
+        ]
     };
 
     var o_hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -9279,25 +9866,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -9318,6 +9920,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -9479,7 +10086,8 @@ if (hadRuntime) {
 !(function(global) {
   "use strict";
 
-  var hasOwn = Object.prototype.hasOwnProperty;
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
   var undefined; // More compressible than void 0.
   var $Symbol = typeof Symbol === "function" ? Symbol : {};
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
@@ -9503,8 +10111,9 @@ if (hadRuntime) {
   runtime = global.regeneratorRuntime = inModule ? module.exports : {};
 
   function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided, then outerFn.prototype instanceof Generator.
-    var generator = Object.create((outerFn || Generator).prototype);
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
     var context = new Context(tryLocsList || []);
 
     // The ._invoke method unifies the implementations of the .next,
@@ -9550,10 +10159,29 @@ if (hadRuntime) {
   function GeneratorFunction() {}
   function GeneratorFunctionPrototype() {}
 
-  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
   GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
   GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunctionPrototype[toStringTagSymbol] = GeneratorFunction.displayName = "GeneratorFunction";
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
 
   // Helper for defining the .next, .throw, and .return methods of the
   // Iterator interface in terms of a single ._invoke method.
@@ -9590,16 +10218,11 @@ if (hadRuntime) {
 
   // Within the body of any async function, `await x` is transformed to
   // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `value instanceof AwaitArgument` to determine if the yielded value is
-  // meant to be awaited. Some may consider the name of this method too
-  // cutesy, but they are curmudgeons.
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
   runtime.awrap = function(arg) {
-    return new AwaitArgument(arg);
+    return { __await: arg };
   };
-
-  function AwaitArgument(arg) {
-    this.arg = arg;
-  }
 
   function AsyncIterator(generator) {
     function invoke(method, arg, resolve, reject) {
@@ -9609,8 +10232,10 @@ if (hadRuntime) {
       } else {
         var result = record.arg;
         var value = result.value;
-        if (value instanceof AwaitArgument) {
-          return Promise.resolve(value.arg).then(function(value) {
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return Promise.resolve(value.__await).then(function(value) {
             invoke("next", value, resolve, reject);
           }, function(err) {
             invoke("throw", err, resolve, reject);
@@ -9679,6 +10304,7 @@ if (hadRuntime) {
   }
 
   defineIteratorMethods(AsyncIterator.prototype);
+  runtime.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
   // AsyncIterator objects; they just return a Promise for the value of
@@ -9713,90 +10339,34 @@ if (hadRuntime) {
         return doneResult();
       }
 
+      context.method = method;
+      context.arg = arg;
+
       while (true) {
         var delegate = context.delegate;
         if (delegate) {
-          if (method === "return" ||
-              (method === "throw" && delegate.iterator[method] === undefined)) {
-            // A return or throw (when the delegate iterator has no throw
-            // method) always terminates the yield* loop.
-            context.delegate = null;
-
-            // If the delegate iterator has a return method, give it a
-            // chance to clean up.
-            var returnMethod = delegate.iterator["return"];
-            if (returnMethod) {
-              var record = tryCatch(returnMethod, delegate.iterator, arg);
-              if (record.type === "throw") {
-                // If the return method threw an exception, let that
-                // exception prevail over the original return or throw.
-                method = "throw";
-                arg = record.arg;
-                continue;
-              }
-            }
-
-            if (method === "return") {
-              // Continue with the outer return, now that the delegate
-              // iterator has been terminated.
-              continue;
-            }
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
           }
-
-          var record = tryCatch(
-            delegate.iterator[method],
-            delegate.iterator,
-            arg
-          );
-
-          if (record.type === "throw") {
-            context.delegate = null;
-
-            // Like returning generator.throw(uncaught), but without the
-            // overhead of an extra function call.
-            method = "throw";
-            arg = record.arg;
-            continue;
-          }
-
-          // Delegate generator ran and handled its own exceptions so
-          // regardless of what the method was, we continue as if it is
-          // "next" with an undefined arg.
-          method = "next";
-          arg = undefined;
-
-          var info = record.arg;
-          if (info.done) {
-            context[delegate.resultName] = info.value;
-            context.next = delegate.nextLoc;
-          } else {
-            state = GenStateSuspendedYield;
-            return info;
-          }
-
-          context.delegate = null;
         }
 
-        if (method === "next") {
+        if (context.method === "next") {
           // Setting context._sent for legacy support of Babel's
           // function.sent implementation.
-          context.sent = context._sent = arg;
+          context.sent = context._sent = context.arg;
 
-        } else if (method === "throw") {
+        } else if (context.method === "throw") {
           if (state === GenStateSuspendedStart) {
             state = GenStateCompleted;
-            throw arg;
+            throw context.arg;
           }
 
-          if (context.dispatchException(arg)) {
-            // If the dispatched exception was caught by a catch block,
-            // then let that catch block handle the exception normally.
-            method = "next";
-            arg = undefined;
-          }
+          context.dispatchException(context.arg);
 
-        } else if (method === "return") {
-          context.abrupt("return", arg);
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
         }
 
         state = GenStateExecuting;
@@ -9809,39 +10379,111 @@ if (hadRuntime) {
             ? GenStateCompleted
             : GenStateSuspendedYield;
 
-          var info = {
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
             value: record.arg,
             done: context.done
           };
 
-          if (record.arg === ContinueSentinel) {
-            if (context.delegate && method === "next") {
-              // Deliberately forget the last sent value so that we don't
-              // accidentally pass it on to the delegate.
-              arg = undefined;
-            }
-          } else {
-            return info;
-          }
-
         } else if (record.type === "throw") {
           state = GenStateCompleted;
           // Dispatch the exception by looping back around to the
-          // context.dispatchException(arg) call above.
-          method = "throw";
-          arg = record.arg;
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
         }
       }
     };
   }
 
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        if (delegate.iterator.return) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
   // Define Generator.prototype.{next,throw,return} in terms of the
   // unified ._invoke helper method.
   defineIteratorMethods(Gp);
-
-  Gp[iteratorSymbol] = function() {
-    return this;
-  };
 
   Gp[toStringTagSymbol] = "Generator";
 
@@ -9959,6 +10601,9 @@ if (hadRuntime) {
       this.done = false;
       this.delegate = null;
 
+      this.method = "next";
+      this.arg = undefined;
+
       this.tryEntries.forEach(resetTryEntry);
 
       if (!skipTempReset) {
@@ -9995,7 +10640,15 @@ if (hadRuntime) {
         record.type = "throw";
         record.arg = exception;
         context.next = loc;
-        return !!caught;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
       }
 
       for (var i = this.tryEntries.length - 1; i >= 0; --i) {
@@ -10063,12 +10716,12 @@ if (hadRuntime) {
       record.arg = arg;
 
       if (finallyEntry) {
+        this.method = "next";
         this.next = finallyEntry.finallyLoc;
-      } else {
-        this.complete(record);
+        return ContinueSentinel;
       }
 
-      return ContinueSentinel;
+      return this.complete(record);
     },
 
     complete: function(record, afterLoc) {
@@ -10080,11 +10733,14 @@ if (hadRuntime) {
           record.type === "continue") {
         this.next = record.arg;
       } else if (record.type === "return") {
-        this.rval = record.arg;
+        this.rval = this.arg = record.arg;
+        this.method = "return";
         this.next = "end";
       } else if (record.type === "normal" && afterLoc) {
         this.next = afterLoc;
       }
+
+      return ContinueSentinel;
     },
 
     finish: function(finallyLoc) {
@@ -10122,6 +10778,12 @@ if (hadRuntime) {
         resultName: resultName,
         nextLoc: nextLoc
       };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
 
       return ContinueSentinel;
     }
@@ -10183,7 +10845,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Factory = function () {
   function Factory(Model, initializer) {
-    var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     (0, _classCallCheck3.default)(this, Factory);
     this.name = null;
     this.Model = null;
@@ -10205,7 +10867,7 @@ var Factory = function () {
   (0, _createClass3.default)(Factory, [{
     key: 'getFactoryAttrs',
     value: function getFactoryAttrs() {
-      var buildOptions = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var buildOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var attrs = void 0;
       if (typeof this.initializer === 'function') {
@@ -10219,8 +10881,8 @@ var Factory = function () {
     key: 'attrs',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        var extraAttrs = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-        var buildOptions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+        var extraAttrs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var buildOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var factoryAttrs, modelAttrs, filteredAttrs;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -10254,7 +10916,7 @@ var Factory = function () {
         }, _callee, this);
       }));
 
-      function attrs(_x3, _x4) {
+      function attrs() {
         return _ref.apply(this, arguments);
       }
 
@@ -10264,8 +10926,8 @@ var Factory = function () {
     key: 'build',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(adapter) {
-        var extraAttrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-        var buildOptions = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+        var extraAttrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var buildOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var modelAttrs, model;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -10287,7 +10949,7 @@ var Factory = function () {
         }, _callee2, this);
       }));
 
-      function build(_x7, _x8, _x9) {
+      function build(_x5) {
         return _ref2.apply(this, arguments);
       }
 
@@ -10299,8 +10961,8 @@ var Factory = function () {
       var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(adapter) {
         var _this = this;
 
-        var attrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-        var buildOptions = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+        var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var buildOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var model;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
@@ -10323,7 +10985,7 @@ var Factory = function () {
         }, _callee3, this);
       }));
 
-      function create(_x12, _x13, _x14) {
+      function create(_x8) {
         return _ref3.apply(this, arguments);
       }
 
@@ -10332,8 +10994,8 @@ var Factory = function () {
   }, {
     key: 'attrsMany',
     value: function attrsMany(num) {
-      var attrsArray = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-      var buildOptionsArray = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
+      var attrsArray = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+      var buildOptionsArray = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
       var attrObject = null;
       var buildOptionsObject = null;
@@ -10366,12 +11028,12 @@ var Factory = function () {
     key: 'buildMany',
     value: function () {
       var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(adapter, num) {
-        var attrsArray = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
+        var attrsArray = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
         var _this2 = this;
 
-        var buildOptionsArray = arguments.length <= 3 || arguments[3] === undefined ? [] : arguments[3];
-        var buildCallbacks = arguments.length <= 4 || arguments[4] === undefined ? true : arguments[4];
+        var buildOptionsArray = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+        var buildCallbacks = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
         var attrs, models;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -10399,7 +11061,7 @@ var Factory = function () {
         }, _callee4, this);
       }));
 
-      function buildMany(_x19, _x20, _x21, _x22, _x23) {
+      function buildMany(_x13, _x14) {
         return _ref4.apply(this, arguments);
       }
 
@@ -10411,8 +11073,8 @@ var Factory = function () {
       var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(adapter, num) {
         var _this3 = this;
 
-        var attrsArray = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
-        var buildOptionsArray = arguments.length <= 3 || arguments[3] === undefined ? [] : arguments[3];
+        var attrsArray = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+        var buildOptionsArray = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
         var models, savedModels;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -10440,7 +11102,7 @@ var Factory = function () {
         }, _callee5, this);
       }));
 
-      function createMany(_x27, _x28, _x29, _x30) {
+      function createMany(_x18, _x19) {
         return _ref5.apply(this, arguments);
       }
 
@@ -10539,7 +11201,7 @@ var FactoryGirl = function () {
   function FactoryGirl() {
     var _this = this;
 
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     (0, _classCallCheck3.default)(this, FactoryGirl);
     this.factories = {};
     this.options = {};
@@ -10603,8 +11265,8 @@ var FactoryGirl = function () {
       var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(name) {
         var _this2 = this;
 
-        var attrs = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-        var buildOptions = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+        var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var buildOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var adapter;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -10623,7 +11285,7 @@ var FactoryGirl = function () {
         }, _callee2, this);
       }));
 
-      function build(_x5, _x6, _x7) {
+      function build(_x5) {
         return _ref2.apply(this, arguments);
       }
 
@@ -10655,7 +11317,7 @@ var FactoryGirl = function () {
         }, _callee3, this);
       }));
 
-      function create(_x10, _x11, _x12) {
+      function create(_x8, _x9, _x10) {
         return _ref3.apply(this, arguments);
       }
 
@@ -10692,7 +11354,7 @@ var FactoryGirl = function () {
         }, _callee4, this);
       }));
 
-      function buildMany(_x13, _x14, _x15, _x16) {
+      function buildMany(_x11, _x12, _x13, _x14) {
         return _ref4.apply(this, arguments);
       }
 
@@ -10726,7 +11388,7 @@ var FactoryGirl = function () {
         }, _callee5, this);
       }));
 
-      function createMany(_x17, _x18, _x19, _x20) {
+      function createMany(_x15, _x16, _x17, _x18) {
         return _ref5.apply(this, arguments);
       }
 
@@ -10735,7 +11397,7 @@ var FactoryGirl = function () {
   }, {
     key: 'getFactory',
     value: function getFactory(name) {
-      var throwError = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+      var throwError = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
       if (!this.factories[name] && throwError) {
         throw new Error('Invalid factory \'' + name + ' requested');
@@ -10745,7 +11407,7 @@ var FactoryGirl = function () {
   }, {
     key: 'withOptions',
     value: function withOptions(options) {
-      var merge = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      var merge = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       this.options = merge ? (0, _extends3.default)({}, this.options, options) : options;
     }
@@ -10817,10 +11479,10 @@ var FactoryGirl = function () {
       }
 
       var promise = createdArray.reduce(function (prev, _ref6) {
-        var _ref7 = (0, _slicedToArray3.default)(_ref6, 2);
+        var _ref7 = (0, _slicedToArray3.default)(_ref6, 2),
+            adapter = _ref7[0],
+            model = _ref7[1];
 
-        var adapter = _ref7[0];
-        var model = _ref7[1];
         return prev.then(function () {
           return adapter.destroy(model, model.constructor);
         });
@@ -10834,7 +11496,7 @@ var FactoryGirl = function () {
     value: function setAdapter(adapter) {
       var _this6 = this;
 
-      var factoryNames = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var factoryNames = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       if (!factoryNames) {
         this.defaultAdapter = adapter;
@@ -10904,13 +11566,12 @@ var _DefaultAdapter3 = _interopRequireDefault(_DefaultAdapter2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-unused-vars */
-
 var BookshelfAdapter = function (_DefaultAdapter) {
   (0, _inherits3.default)(BookshelfAdapter, _DefaultAdapter);
 
   function BookshelfAdapter() {
     (0, _classCallCheck3.default)(this, BookshelfAdapter);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(BookshelfAdapter).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (BookshelfAdapter.__proto__ || (0, _getPrototypeOf2.default)(BookshelfAdapter)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(BookshelfAdapter, [{
@@ -10954,7 +11615,6 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-unused-vars */
-
 var DefaultAdapter = function () {
   function DefaultAdapter() {
     (0, _classCallCheck3.default)(this, DefaultAdapter);
@@ -11075,13 +11735,12 @@ var _DefaultAdapter3 = _interopRequireDefault(_DefaultAdapter2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-unused-vars */
-
 var MongooseAdapter = function (_DefaultAdapter) {
   (0, _inherits3.default)(MongooseAdapter, _DefaultAdapter);
 
   function MongooseAdapter() {
     (0, _classCallCheck3.default)(this, MongooseAdapter);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(MongooseAdapter).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (MongooseAdapter.__proto__ || (0, _getPrototypeOf2.default)(MongooseAdapter)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(MongooseAdapter, [{
@@ -11160,13 +11819,12 @@ var _DefaultAdapter3 = _interopRequireDefault(_DefaultAdapter2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-unused-vars */
-
 var ObjectAdapter = function (_DefaultAdapter) {
   (0, _inherits3.default)(ObjectAdapter, _DefaultAdapter);
 
   function ObjectAdapter() {
     (0, _classCallCheck3.default)(this, ObjectAdapter);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(ObjectAdapter).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (ObjectAdapter.__proto__ || (0, _getPrototypeOf2.default)(ObjectAdapter)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(ObjectAdapter, [{
@@ -11286,14 +11944,13 @@ var _DefaultAdapter3 = _interopRequireDefault(_DefaultAdapter2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-unused-vars */
-
 var ReduxORMAdapter = function (_DefaultAdapter) {
   (0, _inherits3.default)(ReduxORMAdapter, _DefaultAdapter);
 
   function ReduxORMAdapter(session) {
     (0, _classCallCheck3.default)(this, ReduxORMAdapter);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(ReduxORMAdapter).call(this));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (ReduxORMAdapter.__proto__ || (0, _getPrototypeOf2.default)(ReduxORMAdapter)).call(this));
 
     _this.session = session;
     return _this;
@@ -11399,13 +12056,12 @@ var _DefaultAdapter3 = _interopRequireDefault(_DefaultAdapter2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-unused-vars */
-
 var SequelizeAdapter = function (_DefaultAdapter) {
   (0, _inherits3.default)(SequelizeAdapter, _DefaultAdapter);
 
   function SequelizeAdapter() {
     (0, _classCallCheck3.default)(this, SequelizeAdapter);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(SequelizeAdapter).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (SequelizeAdapter.__proto__ || (0, _getPrototypeOf2.default)(SequelizeAdapter)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(SequelizeAdapter, [{
@@ -11465,16 +12121,16 @@ var Assoc = function (_Generator) {
 
   function Assoc() {
     (0, _classCallCheck3.default)(this, Assoc);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Assoc).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (Assoc.__proto__ || (0, _getPrototypeOf2.default)(Assoc)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(Assoc, [{
     key: 'generate',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(name) {
-        var key = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-        var attrs = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-        var buildOptions = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+        var key = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        var attrs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+        var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var model;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -11495,7 +12151,7 @@ var Assoc = function (_Generator) {
         }, _callee, this);
       }));
 
-      function generate(_x, _x2, _x3, _x4) {
+      function generate(_x) {
         return _ref.apply(this, arguments);
       }
 
@@ -11553,16 +12209,16 @@ var AssocAttrs = function (_Generator) {
 
   function AssocAttrs() {
     (0, _classCallCheck3.default)(this, AssocAttrs);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(AssocAttrs).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (AssocAttrs.__proto__ || (0, _getPrototypeOf2.default)(AssocAttrs)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(AssocAttrs, [{
     key: 'generate',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(name) {
-        var key = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-        var attrs = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-        var buildOptions = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+        var key = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        var attrs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+        var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var model;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -11583,7 +12239,7 @@ var AssocAttrs = function (_Generator) {
         }, _callee, this);
       }));
 
-      function generate(_x, _x2, _x3, _x4) {
+      function generate(_x) {
         return _ref.apply(this, arguments);
       }
 
@@ -11641,19 +12297,19 @@ var AssocAttrsMany = function (_Generator) {
 
   function AssocAttrsMany() {
     (0, _classCallCheck3.default)(this, AssocAttrsMany);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(AssocAttrsMany).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (AssocAttrsMany.__proto__ || (0, _getPrototypeOf2.default)(AssocAttrsMany)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(AssocAttrsMany, [{
     key: 'generate',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(name, num) {
-        var key = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+        var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
         var _this2 = this;
 
-        var attrs = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-        var buildOptions = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+        var attrs = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var buildOptions = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
         var models;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -11684,7 +12340,7 @@ var AssocAttrsMany = function (_Generator) {
         }, _callee, this);
       }));
 
-      function generate(_x, _x2, _x3, _x4, _x5) {
+      function generate(_x, _x2) {
         return _ref.apply(this, arguments);
       }
 
@@ -11742,19 +12398,19 @@ var AssocMany = function (_Generator) {
 
   function AssocMany() {
     (0, _classCallCheck3.default)(this, AssocMany);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(AssocMany).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (AssocMany.__proto__ || (0, _getPrototypeOf2.default)(AssocMany)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(AssocMany, [{
     key: 'generate',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(name, num) {
-        var key = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+        var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
         var _this2 = this;
 
-        var attrs = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-        var buildOptions = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+        var attrs = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var buildOptions = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
         var models;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -11777,7 +12433,7 @@ var AssocMany = function (_Generator) {
         }, _callee, this);
       }));
 
-      function generate(_x, _x2, _x3, _x4, _x5) {
+      function generate(_x, _x2) {
         return _ref.apply(this, arguments);
       }
 
@@ -11833,16 +12489,21 @@ var ChanceGenerator = function (_Generator) {
 
   function ChanceGenerator() {
     (0, _classCallCheck3.default)(this, ChanceGenerator);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(ChanceGenerator).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (ChanceGenerator.__proto__ || (0, _getPrototypeOf2.default)(ChanceGenerator)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(ChanceGenerator, [{
     key: 'generate',
-    value: function generate(chanceMethod, options) {
+    value: function generate(chanceMethod) {
       if (typeof chance[chanceMethod] !== 'function') {
         throw new Error('Invalid chance method requested');
       }
-      return chance[chanceMethod](options);
+
+      for (var _len = arguments.length, options = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        options[_key - 1] = arguments[_key];
+      }
+
+      return chance[chanceMethod].apply(chance, options);
     }
   }]);
   return ChanceGenerator;
@@ -11939,7 +12600,7 @@ var OneOf = function (_Generator) {
 
   function OneOf() {
     (0, _classCallCheck3.default)(this, OneOf);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(OneOf).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (OneOf.__proto__ || (0, _getPrototypeOf2.default)(OneOf)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(OneOf, [{
@@ -12030,14 +12691,14 @@ var Sequence = function (_Generator) {
 
   function Sequence() {
     (0, _classCallCheck3.default)(this, Sequence);
-    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Sequence).apply(this, arguments));
+    return (0, _possibleConstructorReturn3.default)(this, (Sequence.__proto__ || (0, _getPrototypeOf2.default)(Sequence)).apply(this, arguments));
   }
 
   (0, _createClass3.default)(Sequence, [{
     key: 'generate',
     value: function generate() {
-      var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-      var callback = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       if (typeof id === 'function') {
         callback = id;
@@ -12051,7 +12712,7 @@ var Sequence = function (_Generator) {
   }], [{
     key: 'reset',
     value: function reset() {
-      var id = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       if (!id) {
         Sequence.sequences = {};
@@ -12135,6 +12796,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
 var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
@@ -12167,7 +12832,7 @@ function asyncPopulate(target, source) {
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (source[attr] === null) {
       target[attr] = null;
-    } else if ((0, _typeof3.default)(source[attr]) === 'object' && !source[attr]._bsontype) {
+    } else if (isPlainObject(source[attr])) {
       target[attr] = target[attr] || {};
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (typeof source[attr] === 'function') {
@@ -12185,5 +12850,10 @@ function asyncPopulate(target, source) {
 }
 /* eslint-enable no-underscore-dangle */
 
-},{"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/typeof":20}]},{},[155])(155)
+var objectProto = (0, _getPrototypeOf2.default)({});
+function isPlainObject(o) {
+  return (0, _getPrototypeOf2.default)(o) === objectProto;
+}
+
+},{"babel-runtime/core-js/object/get-prototype-of":6,"babel-runtime/core-js/object/keys":7,"babel-runtime/core-js/promise":9,"babel-runtime/helpers/typeof":20}]},{},[155])(155)
 });
