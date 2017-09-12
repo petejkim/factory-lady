@@ -23,10 +23,13 @@ describe('asyncPopulate', function () {
   });
 
   it('populates objects correctly', asyncFunction(async function () {
+    function Foo() {}
     const source = {
       num: 1,
       nullValue: null,
       str: 'hello',
+      date: new Date,
+      foo: new Foo,
       funcs: {
         sync: () => 'shouldHaveThisValue',
         /* eslint-disable arrow-parens */
@@ -61,6 +64,8 @@ describe('asyncPopulate', function () {
       num: 1,
       nullValue: null,
       str: 'hello',
+      date: source.date,
+      foo: source.foo,
       funcs: {
         sync: 'shouldHaveThisValue',
         async: 'shouldHaveResolvedValue',

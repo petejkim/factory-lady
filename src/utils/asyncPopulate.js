@@ -14,7 +14,7 @@ export default function asyncPopulate(target, source) {
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (source[attr] === null) {
       target[attr] = null;
-    } else if (typeof source[attr] === 'object' && !source[attr]._bsontype) {
+    } else if (isPlainObject(source[attr])) {
       target[attr] = target[attr] || {};
       promise = asyncPopulate(target[attr], source[attr]);
     } else if (typeof source[attr] === 'function') {
@@ -27,3 +27,8 @@ export default function asyncPopulate(target, source) {
   return Promise.all(promises);
 }
 /* eslint-enable no-underscore-dangle */
+
+const objectProto = Object.getPrototypeOf({});
+function isPlainObject(o) {
+  return Object.getPrototypeOf(o) === objectProto;
+}

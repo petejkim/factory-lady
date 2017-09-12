@@ -163,6 +163,20 @@ describe('Factory', function () {
         },
       });
     }));
+
+    it('preserves Dates and other object types', asyncFunction(async function () {
+      function Foo() {}
+      const init = {
+        date: new Date,
+        foo: new Foo,
+        function: () => new Foo,
+      };
+      const factory = new Factory(DummyModel, init);
+      const attrs = await factory.attrs();
+      expect(attrs.date).to.be.eql(init.date);
+      expect(attrs.foo).to.be.eql(init.foo);
+      expect(attrs.function).to.be.instanceOf(Foo);
+    }));
   });
 
   describe('#build', function () {
