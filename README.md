@@ -139,6 +139,23 @@ factory.define('user', User, {foo: 'bar'}, {
 });
 ```
 
+### Extending Factories
+
+You can extend a factory using `#extend`:
+
+```js
+factory.define('user', User, { username: 'Bob', expired: false });
+factory.extend('expiredUser', 'user', { expired: true });
+factory.build('expiredUser').then(user => {
+  console.log(user); // => User { username: 'Bob', expired: true });
+});
+```
+
+### `#extend(parent, name, initializer, options = {})`
+
+The `#extend` method takes the same options as `#define` except you 
+can provide a different `Model` using `options.model`.
+
 ## Using Factories
 
 ### Factory#attrs

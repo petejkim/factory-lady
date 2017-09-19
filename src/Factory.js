@@ -1,4 +1,3 @@
-
 import asyncPopulate from './utils/asyncPopulate';
 
 export default class Factory {
