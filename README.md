@@ -225,8 +225,9 @@ specific models, or as the 'default adapter', which is used for any models for w
 adapter has not been specified. See the adapter docs for usage, but typical usage is:
 
 ```javascript
-const factory = require('factory-girl').factory;
-const adapter = new factoryGirl.MongooseAdapter();
+const FactoryGirl = require('factory-girl');
+const factory = FactoryGirl.factory;
+const adapter = new FactoryGirl.MongooseAdapter();
 
 // use the mongoose adapter as the default adapter
 factory.setAdapter(adapter);
