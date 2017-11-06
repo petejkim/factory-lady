@@ -11150,6 +11150,10 @@ var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _set = require('babel-runtime/core-js/set');
 
 var _set2 = _interopRequireDefault(_set);
@@ -11234,16 +11238,33 @@ var FactoryGirl = function () {
 
   (0, _createClass3.default)(FactoryGirl, [{
     key: 'define',
-    value: function define(name, Model, initializer, options) {
+    value: function define(name, Model, initializer) {
+      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
       if (this.getFactory(name, false)) {
         throw new Error('Factory ' + name + ' already defined');
       }
-      this.factories[name] = new _Factory2.default(Model, initializer, options);
+      var factory = this.factories[name] = new _Factory2.default(Model, initializer, options);
+      return factory;
+    }
+  }, {
+    key: 'extend',
+    value: function extend(parent, name, initializer) {
+      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+      if (this.getFactory(name, false)) {
+        throw new Error('Factory ' + name + ' already defined');
+      }
+      var parentFactory = this.getFactory(parent, true);
+      var Model = options.model || parentFactory.Model;
+      var factory = this.factories[name] = new _Factory2.default(Model, (0, _assign2.default)({}, parentFactory.initializer, initializer), options);
+      return factory;
     }
   }, {
     key: 'attrs',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(name, _attrs, buildOptions) {
+      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(name, _attrs) {
+        var buildOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -11258,7 +11279,7 @@ var FactoryGirl = function () {
         }, _callee, this);
       }));
 
-      function attrs(_x2, _x3, _x4) {
+      function attrs(_x4, _x5) {
         return _ref.apply(this, arguments);
       }
 
@@ -11290,7 +11311,7 @@ var FactoryGirl = function () {
         }, _callee2, this);
       }));
 
-      function build(_x5) {
+      function build(_x7) {
         return _ref2.apply(this, arguments);
       }
 
@@ -11299,9 +11320,10 @@ var FactoryGirl = function () {
   }, {
     key: 'create',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(name, attrs, buildOptions) {
+      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(name, attrs) {
         var _this3 = this;
 
+        var buildOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var adapter;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
@@ -11322,7 +11344,7 @@ var FactoryGirl = function () {
         }, _callee3, this);
       }));
 
-      function create(_x8, _x9, _x10) {
+      function create(_x10, _x11) {
         return _ref3.apply(this, arguments);
       }
 
@@ -11330,15 +11352,18 @@ var FactoryGirl = function () {
     }()
   }, {
     key: 'attrsMany',
-    value: function attrsMany(name, num, attrs, buildOptions) {
+    value: function attrsMany(name, num, attrs) {
+      var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
       return this.getFactory(name).attrsMany(num, attrs, buildOptions);
     }
   }, {
     key: 'buildMany',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(name, num, attrs, buildOptions) {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(name, num, attrs) {
         var _this4 = this;
 
+        var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var adapter;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -11359,7 +11384,7 @@ var FactoryGirl = function () {
         }, _callee4, this);
       }));
 
-      function buildMany(_x11, _x12, _x13, _x14) {
+      function buildMany(_x14, _x15, _x16) {
         return _ref4.apply(this, arguments);
       }
 
@@ -11368,9 +11393,10 @@ var FactoryGirl = function () {
   }, {
     key: 'createMany',
     value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(name, num, attrs, buildOptions) {
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(name, num, attrs) {
         var _this5 = this;
 
+        var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var adapter;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -11393,7 +11419,7 @@ var FactoryGirl = function () {
         }, _callee5, this);
       }));
 
-      function createMany(_x15, _x16, _x17, _x18) {
+      function createMany(_x18, _x19, _x20) {
         return _ref5.apply(this, arguments);
       }
 
@@ -11537,7 +11563,7 @@ function deprecate(method, see) {
   };
 }
 
-},{"./Factory":139,"./adapters/DefaultAdapter":142,"./generators/Assoc":147,"./generators/AssocAttrs":148,"./generators/AssocAttrsMany":149,"./generators/AssocMany":150,"./generators/ChanceGenerator":151,"./generators/OneOf":153,"./generators/Sequence":154,"babel-runtime/core-js/get-iterator":1,"babel-runtime/core-js/promise":9,"babel-runtime/core-js/set":10,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/slicedToArray":19,"babel-runtime/regenerator":21}],141:[function(require,module,exports){
+},{"./Factory":139,"./adapters/DefaultAdapter":142,"./generators/Assoc":147,"./generators/AssocAttrs":148,"./generators/AssocAttrsMany":149,"./generators/AssocMany":150,"./generators/ChanceGenerator":151,"./generators/OneOf":153,"./generators/Sequence":154,"babel-runtime/core-js/get-iterator":1,"babel-runtime/core-js/object/assign":3,"babel-runtime/core-js/promise":9,"babel-runtime/core-js/set":10,"babel-runtime/helpers/asyncToGenerator":13,"babel-runtime/helpers/classCallCheck":14,"babel-runtime/helpers/createClass":15,"babel-runtime/helpers/extends":16,"babel-runtime/helpers/slicedToArray":19,"babel-runtime/regenerator":21}],141:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance'), require('babel-runtime/core-js/object/assign')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/core-js/object/keys', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance', 'babel-runtime/core-js/object/assign'], factory) :
-  (factory((global.Factory = global.Factory || {}),global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Set,global._classCallCheck,global._createClass,global._Object$keys,global._typeof,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance,global._Object$assign));
-}(this, function (exports,_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Set,_classCallCheck,_createClass,_Object$keys,_typeof,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance,_Object$assign) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/core-js/get-iterator'), require('babel-runtime/helpers/extends'), require('babel-runtime/core-js/promise'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/core-js/object/assign'), require('babel-runtime/core-js/set'), require('babel-runtime/helpers/classCallCheck'), require('babel-runtime/helpers/createClass'), require('babel-runtime/core-js/object/keys'), require('babel-runtime/helpers/typeof'), require('babel-runtime/core-js/object/get-prototype-of'), require('babel-runtime/helpers/possibleConstructorReturn'), require('babel-runtime/helpers/inherits'), require('chance')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/core-js/get-iterator', 'babel-runtime/helpers/extends', 'babel-runtime/core-js/promise', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/core-js/object/assign', 'babel-runtime/core-js/set', 'babel-runtime/helpers/classCallCheck', 'babel-runtime/helpers/createClass', 'babel-runtime/core-js/object/keys', 'babel-runtime/helpers/typeof', 'babel-runtime/core-js/object/get-prototype-of', 'babel-runtime/helpers/possibleConstructorReturn', 'babel-runtime/helpers/inherits', 'chance'], factory) :
+  (factory((global.Factory = global.Factory || {}),global._slicedToArray,global._getIterator,global._extends,global._Promise,global._regeneratorRuntime,global._asyncToGenerator,global._Object$assign,global._Set,global._classCallCheck,global._createClass,global._Object$keys,global._typeof,global._Object$getPrototypeOf,global._possibleConstructorReturn,global._inherits,global.Chance));
+}(this, function (exports,_slicedToArray,_getIterator,_extends,_Promise,_regeneratorRuntime,_asyncToGenerator,_Object$assign,_Set,_classCallCheck,_createClass,_Object$keys,_typeof,_Object$getPrototypeOf,_possibleConstructorReturn,_inherits,Chance) { 'use strict';
 
   _slicedToArray = 'default' in _slicedToArray ? _slicedToArray['default'] : _slicedToArray;
   _getIterator = 'default' in _getIterator ? _getIterator['default'] : _getIterator;
@@ -10,6 +10,7 @@
   _Promise = 'default' in _Promise ? _Promise['default'] : _Promise;
   _regeneratorRuntime = 'default' in _regeneratorRuntime ? _regeneratorRuntime['default'] : _regeneratorRuntime;
   _asyncToGenerator = 'default' in _asyncToGenerator ? _asyncToGenerator['default'] : _asyncToGenerator;
+  _Object$assign = 'default' in _Object$assign ? _Object$assign['default'] : _Object$assign;
   _Set = 'default' in _Set ? _Set['default'] : _Set;
   _classCallCheck = 'default' in _classCallCheck ? _classCallCheck['default'] : _classCallCheck;
   _createClass = 'default' in _createClass ? _createClass['default'] : _createClass;
@@ -19,7 +20,6 @@
   _possibleConstructorReturn = 'default' in _possibleConstructorReturn ? _possibleConstructorReturn['default'] : _possibleConstructorReturn;
   _inherits = 'default' in _inherits ? _inherits['default'] : _inherits;
   Chance = 'default' in Chance ? Chance['default'] : Chance;
-  _Object$assign = 'default' in _Object$assign ? _Object$assign['default'] : _Object$assign;
 
   /* eslint-disable no-underscore-dangle */
   function asyncPopulate(target, source) {
@@ -817,16 +817,33 @@
 
     _createClass(FactoryGirl, [{
       key: 'define',
-      value: function define(name, Model, initializer, options) {
+      value: function define(name, Model, initializer) {
+        var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
         if (this.getFactory(name, false)) {
           throw new Error('Factory ' + name + ' already defined');
         }
-        this.factories[name] = new Factory(Model, initializer, options);
+        var factory = this.factories[name] = new Factory(Model, initializer, options);
+        return factory;
+      }
+    }, {
+      key: 'extend',
+      value: function extend(parent, name, initializer) {
+        var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+        if (this.getFactory(name, false)) {
+          throw new Error('Factory ' + name + ' already defined');
+        }
+        var parentFactory = this.getFactory(parent, true);
+        var Model = options.model || parentFactory.Model;
+        var factory = this.factories[name] = new Factory(Model, _Object$assign({}, parentFactory.initializer, initializer), options);
+        return factory;
       }
     }, {
       key: 'attrs',
       value: function () {
-        var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(name, _attrs, buildOptions) {
+        var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(name, _attrs) {
+          var buildOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
           return _regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
@@ -841,7 +858,7 @@
           }, _callee, this);
         }));
 
-        function attrs(_x2, _x3, _x4) {
+        function attrs(_x4, _x5) {
           return _ref.apply(this, arguments);
         }
 
@@ -873,7 +890,7 @@
           }, _callee2, this);
         }));
 
-        function build(_x5) {
+        function build(_x7) {
           return _ref2.apply(this, arguments);
         }
 
@@ -882,9 +899,10 @@
     }, {
       key: 'create',
       value: function () {
-        var _ref3 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(name, attrs, buildOptions) {
+        var _ref3 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(name, attrs) {
           var _this3 = this;
 
+          var buildOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
           var adapter;
           return _regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
@@ -905,7 +923,7 @@
           }, _callee3, this);
         }));
 
-        function create(_x8, _x9, _x10) {
+        function create(_x10, _x11) {
           return _ref3.apply(this, arguments);
         }
 
@@ -913,15 +931,18 @@
       }()
     }, {
       key: 'attrsMany',
-      value: function attrsMany(name, num, attrs, buildOptions) {
+      value: function attrsMany(name, num, attrs) {
+        var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
         return this.getFactory(name).attrsMany(num, attrs, buildOptions);
       }
     }, {
       key: 'buildMany',
       value: function () {
-        var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(name, num, attrs, buildOptions) {
+        var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(name, num, attrs) {
           var _this4 = this;
 
+          var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
           var adapter;
           return _regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
@@ -942,7 +963,7 @@
           }, _callee4, this);
         }));
 
-        function buildMany(_x11, _x12, _x13, _x14) {
+        function buildMany(_x14, _x15, _x16) {
           return _ref4.apply(this, arguments);
         }
 
@@ -951,9 +972,10 @@
     }, {
       key: 'createMany',
       value: function () {
-        var _ref5 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee5(name, num, attrs, buildOptions) {
+        var _ref5 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee5(name, num, attrs) {
           var _this5 = this;
 
+          var buildOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
           var adapter;
           return _regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
@@ -976,7 +998,7 @@
           }, _callee5, this);
         }));
 
-        function createMany(_x15, _x16, _x17, _x18) {
+        function createMany(_x18, _x19, _x20) {
           return _ref5.apply(this, arguments);
         }
 
