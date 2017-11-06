@@ -1,7 +1,7 @@
 {
   "name": "factory-girl",
   "main": "index.js",
-  "version": "5.0.0-beta.1",
+  "version": "5.0.0",
   "homepage": "https://github.com/aexmachina/factory-girl",
   "authors": [
     "aexmachina"

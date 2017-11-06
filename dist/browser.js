@@ -11080,10 +11080,15 @@ var Factory = function () {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _context5.next = 2;
+                if (Array.isArray(num)) {
+                  buildOptionsArray = attrsArray;
+                  attrsArray = num;
+                  num = attrsArray.length;
+                }
+                _context5.next = 3;
                 return this.buildMany(adapter, num, attrsArray, buildOptionsArray);
 
-              case 2:
+              case 3:
                 models = _context5.sent;
                 savedModels = models.map(function (model) {
                   return adapter.save(model, _this3.Model);
@@ -11094,7 +11099,7 @@ var Factory = function () {
                   })) : createdModels;
                 }));
 
-              case 5:
+              case 6:
               case 'end':
                 return _context5.stop();
             }

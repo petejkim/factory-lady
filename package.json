@@ -16,7 +16,7 @@
       "transform-class-properties"
     ]
   },
-  "version": "5.0.0-beta.1",
+  "version": "5.0.0",
   "keywords": [
     "factory",
     "test",
