@@ -139,6 +139,23 @@ factory.define('user', User, {foo: 'bar'}, {
 });
 ```
 
+### Extending Factories
+
+You can extend a factory using `#extend`:
+
+```js
+factory.define('user', User, { username: 'Bob', expired: false });
+factory.extend('user', 'expiredUser', { expired: true });
+factory.build('expiredUser').then(user => {
+  console.log(user); // => User { username: 'Bob', expired: true });
+});
+```
+
+### `#extend(parent, name, initializer, options = {})`
+
+The `#extend` method takes the same options as `#define` except you 
+can provide a different `Model` using `options.model`.
+
 ## Using Factories
 
 ### Factory#attrs
@@ -202,6 +219,8 @@ factory.create('post').then(post => {
 });
 ```
 
+### Factory#createMany(name, num, attrs, buildOptions = {})
+
 The createMany version creates an array of model instances.
 
 ```javascript
@@ -211,7 +230,13 @@ factory.createMany('post', 5).then(postsArray => {
 ```
 
 Similar to `Factory#attrs` and `Factory#build`, you can pass `attrs` to override and
-`buildOptions`.
+`buildOptions`. If you pass an array of `attrs` then each element of the array will be
+used as the attrs for a each model created.
+
+### Factory#createMany(name, attrs, buildOptions = {})
+
+If you can pass an array of `attrs` then you can omit `num` and the length of the array
+will be used.
 
 ### Factory#cleanUp
 
