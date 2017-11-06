@@ -477,6 +477,15 @@ describe('Factory', function () {
         expect(spy).to.have.callCount(2);
       })
     );
+
+    it('accepts an array of attrs', asyncFunction(async function () {
+      const models = await objFactory.createMany(dummyAdapter, [
+        { name: 'One' },
+        { name: 'Two' },
+      ]);
+      expect(models[0].get('name')).to.equal('One');
+      expect(models[1].get('name')).to.equal('Two');
+    }));
   });
 
   describe('#attrsMany', function () {

@@ -109,6 +109,11 @@ export default class Factory {
   }
 
   async createMany(adapter, num, attrsArray = [], buildOptionsArray = []) {
+    if (Array.isArray(num)) {
+      buildOptionsArray = attrsArray;
+      attrsArray = num;
+      num = attrsArray.length;
+    }
     const models = await this.buildMany(
       adapter, num, attrsArray, buildOptionsArray
     );
