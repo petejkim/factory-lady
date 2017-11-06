@@ -31,14 +31,27 @@ export default class FactoryGirl {
     this.options = options;
   }
 
-  define(name, Model, initializer, options) {
+  define(name, Model, initializer, options = {}) {
     if (this.getFactory(name, false)) {
       throw new Error(`Factory ${name} already defined`);
     }
-    this.factories[name] = new Factory(Model, initializer, options);
+    const factory = this.factories[name] = new Factory(Model, initializer, options);
+    return factory;
   }
 
-  async attrs(name, attrs, buildOptions) {
+  extend(parent, name, initializer, options = {}) {
+    if (this.getFactory(name, false)) {
+      throw new Error(`Factory ${name} already defined`);
+    }
+    const parentFactory = this.getFactory(parent, true);
+    const Model = options.model || parentFactory.Model;
+    const factory = this.factories[name] = new Factory(
+      Model, Object.assign({}, parentFactory.initializer, initializer), options
+    );
+    return factory;
+  }
+
+  async attrs(name, attrs, buildOptions = {}) {
     return this.getFactory(name).attrs(attrs, buildOptions);
   }
 
@@ -52,7 +65,7 @@ export default class FactoryGirl {
       ));
   }
 
-  async create(name, attrs, buildOptions) {
+  async create(name, attrs, buildOptions = {}) {
     const adapter = this.getAdapter(name);
     return this.getFactory(name)
       .create(adapter, attrs, buildOptions)
@@ -63,11 +76,11 @@ export default class FactoryGirl {
       ));
   }
 
-  attrsMany(name, num, attrs, buildOptions) {
+  attrsMany(name, num, attrs, buildOptions = {}) {
     return this.getFactory(name).attrsMany(num, attrs, buildOptions);
   }
 
-  async buildMany(name, num, attrs, buildOptions) {
+  async buildMany(name, num, attrs, buildOptions = {}) {
     const adapter = this.getAdapter(name);
     return this.getFactory(name)
       .buildMany(adapter, num, attrs, buildOptions)
@@ -79,7 +92,7 @@ export default class FactoryGirl {
       ));
   }
 
-  async createMany(name, num, attrs, buildOptions) {
+  async createMany(name, num, attrs, buildOptions = {}) {
     const adapter = this.getAdapter(name);
     return this.getFactory(name)
       .createMany(adapter, num, attrs, buildOptions)
