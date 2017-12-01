@@ -94,7 +94,7 @@ export default class FactoryGirl {
 
   getFactory(name, throwError = true) {
     if (!this.factories[name] && throwError) {
-      throw new Error(`Invalid factory '${name} requested`);
+      throw new Error(`Invalid factory '${name}' requested`);
     }
     return this.factories[name];
   }
