@@ -115,17 +115,13 @@ describe('FactoryGirl', function () {
       factoryGirl.define('parentWithObjectInitializer', Object, {
         parent: true,
       });
-      factoryGirl.extend(
-        'parentWithObjectInitializer',
-        'childWithFunctionInitializer',
+      factoryGirl.extend('parentWithObjectInitializer', 'childWithFunctionInitializer',
         function (buildOptions) {
           return { child: true, option: buildOptions.option };
         }
       );
       const model = await factoryGirl.build(
-        'childWithFunctionInitializer',
-        {},
-        { option: true }
+        'childWithFunctionInitializer', {}, { option: true }
       );
       expect(model.parent).to.equal(true, 'parent initializer');
       expect(model.child).to.equal(true, 'child initializer');
@@ -133,20 +129,16 @@ describe('FactoryGirl', function () {
     });
 
     it('can extend a parent that has an initializer function', async function () {
-      factoryGirl.define('parentWithFunctionInitializer', Object, function (
-        buildOptions
-      ) {
-        return { parent: true, option: buildOptions.option };
-      });
+      factoryGirl.define('parentWithFunctionInitializer', Object,
+        function (buildOptions) {
+          return { parent: true, option: buildOptions.option };
+        }
+      );
       factoryGirl.extend(
-        'parentWithFunctionInitializer',
-        'childWithObjectInitializer',
-        { child: true }
+        'parentWithFunctionInitializer', 'childWithObjectInitializer', { child: true }
       );
       const model = await factoryGirl.build(
-        'childWithObjectInitializer',
-        {},
-        { option: true }
+        'childWithObjectInitializer', {}, { option: true }
       );
       expect(model.parent).to.equal(true, 'parent initializer');
       expect(model.child).to.equal(true, 'child initializer');
