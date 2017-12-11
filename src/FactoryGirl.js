@@ -39,15 +39,34 @@ export default class FactoryGirl {
     return factory;
   }
 
-  extend(parent, name, initializer, options = {}) {
+  extend(parent, name, childInitializer, options = {}) {
     if (this.getFactory(name, false)) {
       throw new Error(`Factory ${name} already defined`);
     }
     const parentFactory = this.getFactory(parent, true);
     const Model = options.model || parentFactory.Model;
-    const factory = this.factories[name] = new Factory(
-      Model, Object.assign({}, parentFactory.initializer, initializer), options
-    );
+    let jointInitializer;
+
+    function resolveInitializer(initializer, buildOptions) {
+      return typeof initializer === 'function' ? initializer(buildOptions) : initializer;
+    }
+
+    if (
+      typeof parentFactory.initializer === 'function' ||
+      typeof childInitializer === 'function'
+    ) {
+      jointInitializer = function initializer(buildOptions = {}) {
+        return Object.assign(
+          {},
+          resolveInitializer(parentFactory.initializer, buildOptions),
+          resolveInitializer(childInitializer, buildOptions)
+        );
+      };
+    } else {
+      jointInitializer = Object.assign({}, parentFactory.initializer, childInitializer);
+    }
+
+    const factory = this.factories[name] = new Factory(Model, jointInitializer, options);
     return factory;
   }
 
