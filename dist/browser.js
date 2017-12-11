@@ -11249,7 +11249,7 @@ var FactoryGirl = function () {
     }
   }, {
     key: 'extend',
-    value: function extend(parent, name, initializer) {
+    value: function extend(parent, name, childInitializer) {
       var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
       if (this.getFactory(name, false)) {
@@ -11257,7 +11257,23 @@ var FactoryGirl = function () {
       }
       var parentFactory = this.getFactory(parent, true);
       var Model = options.model || parentFactory.Model;
-      var factory = this.factories[name] = new _Factory2.default(Model, (0, _assign2.default)({}, parentFactory.initializer, initializer), options);
+      var jointInitializer = void 0;
+
+      function resolveInitializer(initializer, buildOptions) {
+        return typeof initializer === 'function' ? initializer(buildOptions) : initializer;
+      }
+
+      if (typeof parentFactory.initializer === 'function' || typeof childInitializer === 'function') {
+        jointInitializer = function initializer() {
+          var buildOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+          return (0, _assign2.default)({}, resolveInitializer(parentFactory.initializer, buildOptions), resolveInitializer(childInitializer, buildOptions));
+        };
+      } else {
+        jointInitializer = (0, _assign2.default)({}, parentFactory.initializer, childInitializer);
+      }
+
+      var factory = this.factories[name] = new _Factory2.default(Model, jointInitializer, options);
       return factory;
     }
   }, {
@@ -11279,7 +11295,7 @@ var FactoryGirl = function () {
         }, _callee, this);
       }));
 
-      function attrs(_x4, _x5) {
+      function attrs(_x5, _x6) {
         return _ref.apply(this, arguments);
       }
 
@@ -11311,7 +11327,7 @@ var FactoryGirl = function () {
         }, _callee2, this);
       }));
 
-      function build(_x7) {
+      function build(_x8) {
         return _ref2.apply(this, arguments);
       }
 
@@ -11344,7 +11360,7 @@ var FactoryGirl = function () {
         }, _callee3, this);
       }));
 
-      function create(_x10, _x11) {
+      function create(_x11, _x12) {
         return _ref3.apply(this, arguments);
       }
 
@@ -11384,7 +11400,7 @@ var FactoryGirl = function () {
         }, _callee4, this);
       }));
 
-      function buildMany(_x14, _x15, _x16) {
+      function buildMany(_x15, _x16, _x17) {
         return _ref4.apply(this, arguments);
       }
 
@@ -11419,7 +11435,7 @@ var FactoryGirl = function () {
         }, _callee5, this);
       }));
 
-      function createMany(_x18, _x19, _x20) {
+      function createMany(_x19, _x20, _x21) {
         return _ref5.apply(this, arguments);
       }
 
@@ -11431,7 +11447,7 @@ var FactoryGirl = function () {
       var throwError = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
       if (!this.factories[name] && throwError) {
-        throw new Error('Invalid factory \'' + name + ' requested');
+        throw new Error('Invalid factory \'' + name + '\' requested');
       }
       return this.factories[name];
     }
