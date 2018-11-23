@@ -1,0 +1,21 @@
+{
+  "name": "factory-girl",
+  "main": "index.js",
+  "version": "5.0.3",
+  "homepage": "https://github.com/aexmachina/factory-girl",
+  "authors": [
+    "aexmachina"
+  ],
+  "keywords": [
+    "factory-girl",
+    "factory"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
